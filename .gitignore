@@ -1,0 +1,10 @@
+node_modules/
+.env
+dist/
+build/
+.wrangler/
+*.tar.gz
+temp/
+tmp/
+.DS_Store
+*.log
