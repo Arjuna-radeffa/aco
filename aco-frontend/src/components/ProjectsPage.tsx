@@ -5,9 +5,18 @@ import { api } from '../services/api';
 interface ProjectsPageProps {
   onBack: () => void;
   onLoginClick: () => void;
+  onViewDetail: (id: string) => void;
 }
 
-const ProjectsPage: React.FC<ProjectsPageProps> = ({ onBack, onLoginClick }) => {
+const getProjectImage = (title: string) => {
+  const t = title.toLowerCase();
+  if (t.includes('lumbung') || t.includes('pangan') || t.includes('farm')) return '/projects/farm.png';
+  if (t.includes('ruko') || t.includes('properti')) return '/projects/ruko.png';
+  if (t.includes('laundry') || t.includes('umkm')) return '/projects/laundry.png';
+  return '/projects/farm.png'; // fallback
+};
+
+const ProjectsPage: React.FC<ProjectsPageProps> = ({ onBack, onLoginClick, onViewDetail }) => {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
@@ -83,11 +92,11 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onBack, onLoginClick }) => 
             {filteredProjects.map((project, i) => (
               <div key={i} className="bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-slate-200 transition-all group flex flex-col">
                 <div className="h-56 bg-slate-100 relative overflow-hidden">
-                   {/* Fallback pattern if no image */}
-                   <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center opacity-40">
-                      <LayoutGrid size={80} className="text-slate-300" />
-                   </div>
-                   {/* Real Image support would go here */}
+                   <img 
+                     src={getProjectImage(project.name || project.title)} 
+                     alt={project.name || project.title} 
+                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                   />
                    <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-slate-600 border border-slate-100 italic">
                     {project.category}
                   </div>
@@ -119,12 +128,20 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onBack, onLoginClick }) => 
                     </div>
                   </div>
 
-                  <button 
-                    onClick={onLoginClick}
-                    className="mt-auto w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 active:scale-[0.98]"
-                  >
-                    Investasi Sekarang
-                  </button>
+                  <div className="mt-auto flex flex-col gap-3">
+                    <button 
+                      onClick={() => onViewDetail(project.id)}
+                      className="w-full py-4 border-2 border-slate-900 text-slate-900 font-bold rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                    >
+                      Lihat Detail <ChevronRight size={18} />
+                    </button>
+                    <button 
+                      onClick={onLoginClick}
+                      className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 active:scale-[0.98]"
+                    >
+                      Investasi Sekarang
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

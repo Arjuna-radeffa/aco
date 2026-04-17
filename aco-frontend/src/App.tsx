@@ -3,6 +3,7 @@ import BeautifulLogin from './components/BeautifulLogin'
 import HomePage from './components/HomePage'
 import UniversalDashboard from './components/UniversalDashboard'
 import ProjectsPage from './components/ProjectsPage'
+import ProjectDetailsPage from './components/ProjectDetailsPage'
 
 export interface User {
   id: string
@@ -64,7 +65,8 @@ import { api } from './services/api'
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
-  const [currentView, setCurrentView] = useState<'home' | 'login' | 'dashboard' | 'projects'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'login' | 'dashboard' | 'projects' | 'project-details'>('home')
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
 
   // Constant for quick login emails
@@ -149,12 +151,33 @@ function App() {
             onLoginClick={() => setCurrentView('login')} 
             onQuickLoginClick={handleQuickLogin}
             onViewProjects={() => setCurrentView('projects')}
+            onViewDetail={(id) => {
+              setSelectedProjectId(id)
+              setCurrentView('project-details')
+            }}
           />
         )}
         {currentView === 'projects' && (
           <ProjectsPage 
             onBack={() => setCurrentView('home')}
             onLoginClick={() => setCurrentView('login')}
+            onViewDetail={(id) => {
+              setSelectedProjectId(id)
+              setCurrentView('project-details')
+            }}
+          />
+        )}
+        {currentView === 'project-details' && selectedProjectId && (
+          <ProjectDetailsPage 
+            projectId={selectedProjectId}
+            onBack={() => setCurrentView('projects')}
+            onInvestClick={() => {
+              if (user) {
+                setCurrentView('dashboard')
+              } else {
+                setCurrentView('login')
+              }
+            }}
           />
         )}
         {currentView === 'login' && (

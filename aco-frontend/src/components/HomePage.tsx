@@ -1,17 +1,40 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRight, ChevronRight, Shield, TrendingUp, Building2, Menu, X, BarChart3, Target, Users, LayoutGrid, Clock, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { api } from '../services/api';
 
 interface HomePageProps {
   onLoginClick: () => void;
   onQuickLoginClick: (role: string) => void;
   onViewProjects: () => void;
+  onViewDetail: (id: string) => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, onViewProjects }) => {
+const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, onViewProjects, onViewDetail }) => {
   const [hoveredRole, setHoveredRole] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await api.getProjects();
+        setProjects(data);
+      } catch (err) {
+        console.error('Failed to fetch projects for homepage:', err);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  const getProjectImage = (title: string) => {
+    const t = title?.toLowerCase() || '';
+    if (t.includes('lumbung') || t.includes('pangan') || t.includes('farm')) return '/projects/farm.png';
+    if (t.includes('ruko') || t.includes('properti')) return '/projects/ruko.png';
+    if (t.includes('laundry') || t.includes('umkm')) return '/projects/laundry.png';
+    return '/projects/farm.png';
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -124,31 +147,53 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
           </div>
 
           <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-8 snap-x no-scrollbar" style={{ scrollbarWidth: 'none' }}>
-            {[
-              { id: 1, title: "Lumbung Pangan Sukabumi", cat: "Agribisnis", roi: "12-15%", tenor: "12 Bln", img: "/projects/farm.png", progress: 75, target: "500jt" },
-              { id: 2, title: "Ruko Syariah Mediterania", cat: "Properti", roi: "10-12%", tenor: "24 Bln", img: "/projects/ruko.png", progress: 40, target: "2.5M" },
-              { id: 3, title: "Ekspansi Laundry Eco", cat: "UMKM", roi: "15-18%", tenor: "18 Bln", img: "/projects/laundry.png", progress: 90, target: "150jt" },
-              { id: 4, title: "Kopi Arabika Gayo V2", cat: "Agribisnis", roi: "14-16%", tenor: "12 Bln", img: "/projects/farm.png", progress: 60, target: "300jt" }
-            ].map((p) => (
-              <div key={p.id} className="min-w-[300px] md:min-w-[380px] bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-blue-100 transition-all group flex flex-col snap-start">
-                <div className="h-52 relative overflow-hidden">
-                  <img src={p.img} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute top-4 right-4 px-3 py-1 bg-white/95 backdrop-blur-sm rounded-full text-[10px] font-black uppercase text-slate-600 border border-slate-100 italic">{p.cat}</div>
-                </div>
-                <div className="p-8 flex flex-1 flex-col">
-                  <h4 className="text-xl font-bold text-slate-900 mb-6 group-hover:text-blue-600 transition-colors">{p.title}</h4>
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="space-y-1"><p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ROI Est.</p><p className="text-lg font-bold text-emerald-600">{p.roi}</p></div>
-                    <div className="text-right space-y-1"><p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tenor</p><p className="text-lg font-bold text-slate-700">{p.tenor}</p></div>
+            {projects.map((p) => {
+              const fundingPercent = ((p.raisedFunding / p.targetFunding) * 100).toFixed(0);
+              return (
+                <div key={p.id} className="min-w-[300px] md:min-w-[380px] bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-blue-100 transition-all group flex flex-col snap-start">
+                  <div className="h-52 relative overflow-hidden">
+                    <img src={getProjectImage(p.name || p.title)} alt={p.name || p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute top-4 right-4 px-3 py-1 bg-white/95 backdrop-blur-sm rounded-full text-[10px] font-black uppercase text-slate-600 border border-slate-100 italic">{p.category}</div>
                   </div>
-                  <div className="space-y-3 mb-8">
-                    <div className="flex justify-between text-[11px] font-bold text-slate-500"><span>Terpendaan {p.progress}%</span><span>Target {p.target}</span></div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{width: `${p.progress}%`}}></div></div>
+                  <div className="p-8 flex flex-1 flex-col">
+                    <h4 className="text-xl font-bold text-slate-900 mb-6 group-hover:text-blue-600 transition-colors">{p.name || p.title}</h4>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="space-y-1">
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ROI Est.</p>
+                        <p className="text-lg font-bold text-emerald-600">{(p.monthlyProfit ? (p.monthlyProfit/p.targetFunding * 100).toFixed(1) : 10)}%</p>
+                      </div>
+                      <div className="text-right space-y-1">
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tenor</p>
+                        <p className="text-lg font-bold text-slate-700">12 Bln</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3 mb-8">
+                      <div className="flex justify-between text-[11px] font-bold text-slate-500">
+                        <span>Terpendaan {fundingPercent}%</span>
+                        <span>Target {p.targetFunding / 1000000 >= 1000 ? (p.targetFunding/1000000000).toFixed(1) + 'M' : (p.targetFunding/1000000).toFixed(0) + 'Jt'}</span>
+                      </div>
+                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{width: `${fundingPercent}%`}}></div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <button 
+                        onClick={() => onViewDetail(p.id)}
+                        className="w-full py-4 border-2 border-slate-900 text-slate-900 font-bold rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                      >
+                        Lihat Detail <ChevronRight size={18} />
+                      </button>
+                      <button 
+                        onClick={onLoginClick} 
+                        className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 active:scale-95"
+                      >
+                        Investasi Sekarang
+                      </button>
+                    </div>
                   </div>
-                  <button onClick={onLoginClick} className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 active:scale-95">Investasi Sekarang</button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

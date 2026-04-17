@@ -288,6 +288,19 @@ async function seed() {
       monthlyProfit: 12500000,
       status: ProjectStatus.FUNDED,
       nextReportDue: new Date('2026-04-30')
+    },
+    {
+      ownerId: po1?.id,
+      name: 'Kopi Arabika Gayo V2',
+      businessName: 'Gayo Coffee Co',
+      description: 'Peningkatan kapasitas produksi dan pengolahan biji kopi arabika gayo kualitas ekspor.',
+      category: 'Agribisnis',
+      targetFunding: 300000000,
+      raisedFunding: 180000000,
+      investorCount: 42,
+      monthlyProfit: 15000000,
+      status: ProjectStatus.ACTIVE,
+      nextReportDue: new Date('2026-05-15')
     }
   ];
   await projectRepository.save(projectList);
