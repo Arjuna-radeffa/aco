@@ -4,10 +4,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('projects')
 export class ProjectsController {
-  constructor(private projectsService: ProjectsService) {}
+  constructor(private projectsService: ProjectsService) { }
 
-  @Get()
+  @Get('debug-proyek') // <--- Ganti sementara
   async getAll() {
+    console.log("Endpoint terpanggil!"); // Biar muncul di pm2 logs
     return this.projectsService.findAll();
   }
 
