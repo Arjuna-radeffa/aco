@@ -191,7 +191,7 @@ export const RoleSpecificContent: React.FC<RoleSpecificContentProps> = ({ role, 
               {[1, 2, 3].map((i) => (
                 <div key={i} className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
                   <p className="font-semibold">Proyek #{i}</p>
-                  <p className="text-sm text-slate-600 mt-1">Rp 50.000.000 • ROI: +12.5%</p>
+                  <p className="text-sm text-slate-600 mt-1">Rp 50.000.000 • Bagi Hasil: +12.5%</p>
                 </div>
               ))}
             </div>
@@ -281,12 +281,8 @@ export const RoleSpecificContent: React.FC<RoleSpecificContentProps> = ({ role, 
                 <div className="text-xs text-purple-600 mt-2">15 Assets</div>
               </div>
               <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-300 rounded-lg p-6">
-                <div className="flex items-center gap-2 text-indigo-600 text-sm font-semibold mb-1">
-                  <TrendingUp className="w-4 h-4" />
-                  Annual Return
-                </div>
                 <div className="text-2xl font-bold text-indigo-900">+22.3%</div>
-                <div className="text-xs text-indigo-600 mt-2">Rp 559.3M YTD</div>
+                <div className="text-xs text-indigo-600 mt-2">Bagi Hasil Tahunan</div>
               </div>
               <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 border border-cyan-300 rounded-lg p-6">
                 <div className="flex items-center gap-2 text-cyan-600 text-sm font-semibold mb-1">
@@ -386,7 +382,7 @@ export const RoleSpecificContent: React.FC<RoleSpecificContentProps> = ({ role, 
                 <h3 className="font-semibold text-slate-900 mb-3">Performance Metrics (YTD)</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-sm text-slate-600">Total Return</span>
+                    <span className="text-sm text-slate-600">Total Bagi Hasil</span>
                     <span className="font-semibold text-emerald-600">+22.3%</span>
                   </div>
                   <div className="flex justify-between">
@@ -529,12 +525,8 @@ export const RoleSpecificContent: React.FC<RoleSpecificContentProps> = ({ role, 
                 <div className="text-xs text-blue-600 mt-2">On Schedule</div>
               </div>
               <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-300 rounded-lg p-6">
-                <div className="flex items-center gap-2 text-purple-600 text-sm font-semibold mb-1">
-                  <BarChart className="w-4 h-4" />
-                  Monthly Return
-                </div>
                 <div className="text-2xl font-bold text-purple-900">+3.2%</div>
-                <div className="text-xs text-purple-600 mt-2">Investor ROI</div>
+                <div className="text-xs text-purple-600 mt-2">Bagi Hasil Investor</div>
               </div>
             </div>
 

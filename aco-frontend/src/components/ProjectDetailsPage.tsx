@@ -39,13 +39,53 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
   const [activeTab, setActiveTab] = useState<'overview' | 'financial' | 'impact' | 'docs'>('overview');
 
   useEffect(() => {
-    // Simulate API fetch using mock data
-    const timer = setTimeout(() => {
-      const foundProject = mockProjects.find(p => p.id === projectId);
-      setProject(foundProject || null);
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
+    const fetchProject = async () => {
+      try {
+        // Try to find in mock data first for 'special' demo projects
+        const mockProject = mockProjects.find(p => p.id === projectId);
+        if (mockProject) {
+          setProject(mockProject);
+          setLoading(false);
+          return;
+        }
+
+        // Otherwise, fetch from real API
+        const data = await api.get('/projects/' + projectId);
+        if (data) {
+          // Merge with a default structure to ensure it matches the Project interface
+          // as the backend might not have all the new metadata fields yet.
+          const enrichedProject: Project = {
+            ...data,
+            // Fallbacks for missing fields in the real database
+            metadata: data.metadata || {
+              landStatus: "Commercial",
+              fundingType: "Equity",
+              ownershipModel: "SHM",
+              allocation: { commercial: 100, social: 0 },
+              features: []
+            },
+            milestones: data.milestones || [],
+            financialProjections: data.financialProjections || [],
+            socialImpacts: data.socialImpacts || [],
+            legalDocuments: data.legalDocuments || [],
+            investorCount: data.investorCount || 0,
+            businessName: data.businessName || "ACO Enterprise",
+            category: data.category || "General"
+          };
+          setProject(enrichedProject);
+        }
+      } catch (err) {
+        console.error('Failed to fetch project details:', err);
+        // Fallback to mock data if API fails completely
+        const mockProject = mockProjects.find(p => p.id === projectId);
+        if (mockProject) {
+          setProject(mockProject);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProject();
   }, [projectId]);
 
   if (loading) {

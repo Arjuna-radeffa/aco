@@ -16,11 +16,22 @@ export const api = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'API request failed');
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'API request failed');
+      } else {
+        const text = await response.text();
+        throw new Error(`API failed with status ${response.status}: ${text.substring(0, 100)}`);
+      }
     }
 
-    return response.json();
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
+    } else {
+      return null;
+    }
   },
 
   async get(endpoint: string, token?: string) {
@@ -34,11 +45,22 @@ export const api = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'API request failed');
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'API request failed');
+      } else {
+        const text = await response.text();
+        throw new Error(`API failed with status ${response.status}: ${text.substring(0, 100)}`);
+      }
     }
 
-    return response.json();
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
+    } else {
+      throw new Error('API response was not JSON');
+    }
   },
 
   async patch(endpoint: string, data: any, token: string) {
@@ -52,11 +74,22 @@ export const api = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'API request failed');
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'API request failed');
+      } else {
+        const text = await response.text();
+        throw new Error(`API failed with status ${response.status}: ${text.substring(0, 100)}`);
+      }
     }
 
-    return response.json();
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
+    } else {
+      return null;
+    }
   },
 
   async login(credentials: any) {

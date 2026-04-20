@@ -23,13 +23,16 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
     const fetchProjects = async () => {
       try {
         const data = await api.getProjects();
-        if (data && Array.isArray(data)) {
+        if (data && Array.isArray(data) && data.length > 0) {
           setProjects(data);
+        } else {
+          // Fallback to mock data if API returns empty
+          setProjects(mockProjects);
         }
       } catch (err) {
         console.error('Failed to fetch projects for homepage:', err);
-        // Fallback to empty array if fetch fails or is not JSON
-        setProjects([]);
+        // Fallback to mock data on error (like SyntaxError from HTML response)
+        setProjects(mockProjects);
       }
     };
     fetchProjects();
@@ -69,11 +72,11 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-emerald-600 rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-lg italic">A</div>
             <span className="text-xl font-bold tracking-tight">ACO <span className="text-blue-600">Platform</span></span>
           </div>
-          
+
           <div className="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-600">
             <a href="#about" className="hover:text-blue-600 transition-colors">Tentang</a>
             <button onClick={onViewProjects} className="hover:text-blue-600 transition-colors">Proyek</button>
@@ -128,10 +131,10 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
               </div>
             </div>
             <div className="relative flex justify-center py-10 lg:py-0">
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-400 rounded-full blur-[100px] opacity-20"></div>
-               <div className="relative z-10 w-64 h-64 bg-white rounded-[3rem] shadow-2xl flex items-center justify-center border border-slate-100">
-                  <div className="text-9xl font-black bg-gradient-to-br from-blue-600 to-emerald-600 bg-clip-text text-transparent italic">A</div>
-               </div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-400 rounded-full blur-[100px] opacity-20"></div>
+              <div className="relative z-10 w-64 h-64 bg-white rounded-[3rem] shadow-2xl flex items-center justify-center border border-slate-100">
+                <div className="text-9xl font-black bg-gradient-to-br from-blue-600 to-emerald-600 bg-clip-text text-transparent italic">A</div>
+              </div>
             </div>
           </div>
         </div>
@@ -158,9 +161,9 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
 
           <div className="grid lg:grid-cols-2 gap-10">
             {mockProjects.map((project) => (
-              <ProjectSummaryCard 
-                key={project.id} 
-                project={project} 
+              <ProjectSummaryCard
+                key={project.id}
+                project={project}
                 onViewDetail={onViewDetail}
               />
             ))}
@@ -207,8 +210,8 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
                     <h4 className="text-xl font-bold text-slate-900 mb-6 group-hover:text-blue-600 transition-colors">{p.name || p.title}</h4>
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="space-y-1">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ROI Est.</p>
-                        <p className="text-lg font-bold text-emerald-600">{(p.monthlyProfit ? (p.monthlyProfit/p.targetFunding * 100).toFixed(1) : 10)}%</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Bagi Hasil Est.</p>
+                        <p className="text-lg font-bold text-emerald-600">{(p.monthlyProfit ? (p.monthlyProfit / p.targetFunding * 100).toFixed(1) : 10)}%</p>
                       </div>
                       <div className="text-right space-y-1">
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tenor</p>
@@ -217,22 +220,22 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
                     </div>
                     <div className="space-y-3 mb-8">
                       <div className="flex justify-between text-[11px] font-bold text-slate-500">
-                        <span>Terpendaan {fundingPercent}%</span>
-                        <span>Target {p.targetFunding / 1000000 >= 1000 ? (p.targetFunding/1000000000).toFixed(1) + 'M' : (p.targetFunding/1000000).toFixed(0) + 'Jt'}</span>
+                        <span>Amanah {fundingPercent}%</span>
+                        <span>Target {p.targetFunding / 1000000 >= 1000 ? (p.targetFunding / 1000000000).toFixed(1) + 'M' : (p.targetFunding / 1000000).toFixed(0) + 'Jt'}</span>
                       </div>
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{width: `${fundingPercent}%`}}></div>
+                        <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{ width: `${fundingPercent}%` }}></div>
                       </div>
                     </div>
                     <div className="flex flex-col gap-3">
-                      <button 
+                      <button
                         onClick={() => onViewDetail(p.id)}
                         className="w-full py-4 border-2 border-slate-900 text-slate-900 font-bold rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
                       >
                         Lihat Detail <ChevronRight size={18} />
                       </button>
-                      <button 
-                        onClick={onLoginClick} 
+                      <button
+                        onClick={onLoginClick}
                         className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 active:scale-95"
                       >
                         Investasi Sekarang
@@ -250,40 +253,40 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
       <section id="about" className="py-24 px-6 bg-white overflow-hidden">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-20 items-center">
-             <div className="relative group">
-                <div className="aspect-square bg-slate-100 rounded-[3rem] overflow-hidden shadow-inner relative transition-transform group-hover:scale-95 duration-500">
-                   <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 to-emerald-600/10"></div>
-                   <div className="absolute inset-0 flex items-center justify-center p-12">
-                      <div className="text-center">
-                         <h4 className="text-4xl lg:text-5xl font-black text-slate-900 mb-2 italic">Empowering</h4>
-                         <p className="text-blue-600 font-black text-2xl uppercase tracking-[0.2em]">The Ummah</p>
-                      </div>
-                   </div>
+            <div className="relative group">
+              <div className="aspect-square bg-slate-100 rounded-[3rem] overflow-hidden shadow-inner relative transition-transform group-hover:scale-95 duration-500">
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 to-emerald-600/10"></div>
+                <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <div className="text-center">
+                    <h4 className="text-4xl lg:text-5xl font-black text-slate-900 mb-2 italic">Empowering</h4>
+                    <p className="text-blue-600 font-black text-2xl uppercase tracking-[0.2em]">The Ummah</p>
+                  </div>
                 </div>
-                <div className="absolute -bottom-8 -right-8 bg-slate-900 text-white p-10 rounded-[2.5rem] shadow-2xl max-w-sm hidden lg:block transform rotate-3 hover:rotate-0 transition-transform cursor-default">
-                   <p className="text-sm font-medium italic opacity-80 leading-relaxed">"ACO bukan sekadar platform, tapi gerakan revolusi transparansi amanah dalam ekosistem syariah modern."</p>
-                   <p className="mt-6 font-black text-blue-400 text-xs tracking-widest uppercase">— Tim ACO Indonesia</p>
-                </div>
-             </div>
-             <div className="space-y-8">
-                <h2 className="text-blue-600 font-black uppercase tracking-widest text-sm">Filosofi Kami</h2>
-                <h3 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">Membangun Ekosistem Keuangan yang Adil</h3>
-                <p className="text-lg text-slate-600 leading-relaxed font-medium">
-                   ACO (Amanah, Capital, & Organization) lahir dari semangat mengembalikan nilai-masing-masing dalam pengelolaan dana masyarakat, baik investasi produktif maupun dana sosial ZISWAF.
-                </p>
-                <div className="space-y-4">
-                   {[
-                      { icon: <Shield size={18} />, text: "Transparansi mutlak dengan laporan real-time melalui dashboard." },
-                      { icon: <Target size={18} />, text: "Isolasi dana yang ketat untuk keamanan dan kepatuhan syariah." },
-                      { icon: <CheckCircle2 size={18} />, text: "Verifikasi berkelanjutan oleh Dewan Pengawas Syariah." }
-                   ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-colors">
-                         <div className="w-10 h-10 bg-blue-100/50 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">{item.icon}</div>
-                         <p className="text-slate-700 font-bold leading-relaxed">{item.text}</p>
-                      </div>
-                   ))}
-                </div>
-             </div>
+              </div>
+              <div className="absolute -bottom-8 -right-8 bg-slate-900 text-white p-10 rounded-[2.5rem] shadow-2xl max-w-sm hidden lg:block transform rotate-3 hover:rotate-0 transition-transform cursor-default">
+                <p className="text-sm font-medium italic opacity-80 leading-relaxed">"ACO bukan sekadar platform, tapi gerakan revolusi transparansi amanah dalam ekosistem syariah modern."</p>
+                <p className="mt-6 font-black text-blue-400 text-xs tracking-widest uppercase">— Tim ACO Indonesia</p>
+              </div>
+            </div>
+            <div className="space-y-8">
+              <h2 className="text-blue-600 font-black uppercase tracking-widest text-sm">Filosofi Kami</h2>
+              <h3 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">Membangun Ekosistem Keuangan yang Adil</h3>
+              <p className="text-lg text-slate-600 leading-relaxed font-medium">
+                ACO (Amanah, Capital, & Organization) lahir dari semangat mengembalikan nilai-masing-masing dalam pengelolaan dana masyarakat, baik investasi produktif maupun dana sosial ZISWAF.
+              </p>
+              <div className="space-y-4">
+                {[
+                  { icon: <Shield size={18} />, text: "Transparansi mutlak dengan laporan real-time melalui dashboard." },
+                  { icon: <Target size={18} />, text: "Isolasi dana yang ketat untuk keamanan dan kepatuhan syariah." },
+                  { icon: <CheckCircle2 size={18} />, text: "Verifikasi berkelanjutan oleh Dewan Pengawas Syariah." }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-colors">
+                    <div className="w-10 h-10 bg-blue-100/50 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">{item.icon}</div>
+                    <p className="text-slate-700 font-bold leading-relaxed">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -292,26 +295,26 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
       <section id="vision" className="py-24 px-6 bg-slate-900 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[150px] -mr-64 -mt-64"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[150px] -ml-64 -mb-64"></div>
-        
+
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-20">
-             <h2 className="text-blue-400 font-black uppercase tracking-widest text-sm mb-4">Misi & Visi</h2>
-             <h3 className="text-4xl md:text-5xl font-extrabold mb-6">Pilar Pergerakan Kami</h3>
-             <p className="text-slate-400 max-w-2xl mx-auto font-medium">Tiga fundament utama yang menjamin keberlanjutan dan keberkahan setiap aktivitas di platform.</p>
+            <h2 className="text-blue-400 font-black uppercase tracking-widest text-sm mb-4">Misi & Visi</h2>
+            <h3 className="text-4xl md:text-5xl font-extrabold mb-6">Pilar Pergerakan Kami</h3>
+            <p className="text-slate-400 max-w-2xl mx-auto font-medium">Tiga fundament utama yang menjamin keberlanjutan dan keberkahan setiap aktivitas di platform.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-10">
-             {[
-                { icon: <Shield size={40} />, title: "Amanah", desc: "Integritas tinggi dalam menjaga kepercayaan setiap rupiah yang dititipkan.", color: "text-blue-400" },
-                { icon: <TrendingUp size={40} />, title: "Capital", desc: "Menggerakkan modal secara produktif untuk keberlanjutan ekonomi umat.", color: "text-emerald-400" },
-                { icon: <Building2 size={40} />, title: "Organization", desc: "Tata kelola modern berbasis sistem yang profesional dan transparan.", color: "text-purple-400" }
-             ].map((v, i) => (
-                <div key={i} className="relative group bg-white/5 border border-white/10 p-12 rounded-[3.5rem] hover:bg-white/10 transition-all duration-500">
-                   <div className={`${v.color} mb-8 group-hover:scale-110 transition-transform origin-left`}>{v.icon}</div>
-                   <h4 className="text-3xl font-black mb-4 italic tracking-tighter">{v.title}</h4>
-                   <p className="text-slate-400 font-medium leading-relaxed">{v.desc}</p>
-                </div>
-             ))}
+            {[
+              { icon: <Shield size={40} />, title: "Amanah", desc: "Integritas tinggi dalam menjaga kepercayaan setiap rupiah yang dititipkan.", color: "text-blue-400" },
+              { icon: <TrendingUp size={40} />, title: "Capital", desc: "Menggerakkan modal secara produktif untuk keberlanjutan ekonomi umat.", color: "text-emerald-400" },
+              { icon: <Building2 size={40} />, title: "Organization", desc: "Tata kelola modern berbasis sistem yang profesional dan transparan.", color: "text-purple-400" }
+            ].map((v, i) => (
+              <div key={i} className="relative group bg-white/5 border border-white/10 p-12 rounded-[3.5rem] hover:bg-white/10 transition-all duration-500">
+                <div className={`${v.color} mb-8 group-hover:scale-110 transition-transform origin-left`}>{v.icon}</div>
+                <h4 className="text-3xl font-black mb-4 italic tracking-tighter">{v.title}</h4>
+                <p className="text-slate-400 font-medium leading-relaxed">{v.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -349,19 +352,19 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
             <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Kesan Mereka Bersama Kami</h3>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
-             {[
-                { name: "Hj. Ahmad Fauzi", role: "Investor Mikro", quote: "Transparansi di ACO luar biasa. Saya bisa pantau tiap rupiah yang saya investasikan setiap hari lewat dashboard." },
-                { name: "Sarah Malik", role: "Muzakki", quote: "Penyaluran Zakat yang sangat profesional. Laporan distribusinya sangat detail dan terdokumentasi dengan baik." }
-             ].map((t, i) => (
-                <div key={i} className="bg-white p-12 rounded-[3rem] shadow-sm border border-slate-100 relative group hover:shadow-2xl transition-shadow">
-                   <div className="text-blue-600 mb-6 opacity-20"><Target size={40} /></div>
-                   <p className="text-lg text-slate-700 font-bold mb-8 leading-relaxed italic">"{t.quote}"</p>
-                   <div>
-                      <p className="font-black text-slate-900">{t.name}</p>
-                      <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">{t.role}</p>
-                   </div>
+            {[
+              { name: "Hj. Ahmad Fauzi", role: "Investor Mikro", quote: "Transparansi di ACO luar biasa. Saya bisa pantau tiap rupiah yang saya investasikan setiap hari lewat dashboard." },
+              { name: "Sarah Malik", role: "Muzakki", quote: "Penyaluran Zakat yang sangat profesional. Laporan distribusinya sangat detail dan terdokumentasi dengan baik." }
+            ].map((t, i) => (
+              <div key={i} className="bg-white p-12 rounded-[3rem] shadow-sm border border-slate-100 relative group hover:shadow-2xl transition-shadow">
+                <div className="text-blue-600 mb-6 opacity-20"><Target size={40} /></div>
+                <p className="text-lg text-slate-700 font-bold mb-8 leading-relaxed italic">"{t.quote}"</p>
+                <div>
+                  <p className="font-black text-slate-900">{t.name}</p>
+                  <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">{t.role}</p>
                 </div>
-             ))}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -376,8 +379,8 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {roles.map((r, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`p-10 bg-gradient-to-br ${r.color} rounded-[3rem] text-white shadow-xl flex flex-col justify-between min-h-[350px] transition-all hover:-translate-y-3 hover:shadow-2xl`}
                 onMouseEnter={() => setHoveredRole(r.title)}
                 onMouseLeave={() => setHoveredRole(null)}
@@ -388,8 +391,8 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
                 </div>
                 <div className={`space-y-2 mt-8 transition-all duration-300 ${hoveredRole === r.title ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
                   {r.roles.map((rn, ri) => (
-                    <button 
-                      key={ri} 
+                    <button
+                      key={ri}
                       onClick={() => onQuickLoginClick(rn.toLowerCase().replace(/\s+/g, '_'))}
                       className="w-full py-3 bg-white/20 hover:bg-white/40 rounded-2xl text-[10px] font-black uppercase tracking-wider text-left px-5 flex items-center justify-between"
                     >
@@ -405,31 +408,31 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
 
       {/* FAQ */}
       <section className="py-24 px-6 bg-slate-50">
-         <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-               <h2 className="text-blue-600 font-black uppercase tracking-widest text-sm mb-4">FAQ</h2>
-               <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">Pertanyaan Populer</h3>
-            </div>
-            <div className="space-y-4">
-               {faqs.map((faq, i) => (
-                  <div key={i} className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm transition-all">
-                     <button 
-                        onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                        className="w-full flex items-center justify-between p-8 text-left hover:bg-slate-50 transition-colors"
-                     >
-                        <span className="font-black text-slate-800 flex items-center gap-4">
-                           <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">{i+1}</span>
-                           {faq.q}
-                        </span>
-                        <ChevronDown className={`text-slate-400 transition-transform duration-300 ${activeFaq === i ? 'rotate-180' : ''}`} />
-                     </button>
-                     <div className={`transition-all duration-300 overflow-hidden ${activeFaq === i ? 'max-h-40 py-8 px-12' : 'max-h-0'}`}>
-                        <p className="text-slate-600 font-medium leading-relaxed">{faq.a}</p>
-                     </div>
-                  </div>
-               ))}
-            </div>
-         </div>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-blue-600 font-black uppercase tracking-widest text-sm mb-4">FAQ</h2>
+            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">Pertanyaan Populer</h3>
+          </div>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm transition-all">
+                <button
+                  onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between p-8 text-left hover:bg-slate-50 transition-colors"
+                >
+                  <span className="font-black text-slate-800 flex items-center gap-4">
+                    <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">{i + 1}</span>
+                    {faq.q}
+                  </span>
+                  <ChevronDown className={`text-slate-400 transition-transform duration-300 ${activeFaq === i ? 'rotate-180' : ''}`} />
+                </button>
+                <div className={`transition-all duration-300 overflow-hidden ${activeFaq === i ? 'max-h-40 py-8 px-12' : 'max-h-0'}`}>
+                  <p className="text-slate-600 font-medium leading-relaxed">{faq.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
@@ -443,8 +446,8 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
             Membangun kemandirian ekonomi umat melalui sinergi investasi produktif dan optimalisasi dana sosial yang terintegrasi secara profesional dan transparan.
           </p>
           <div className="flex justify-center gap-6 text-sm font-black text-slate-500 uppercase tracking-widest">
-             <a href="#" className="hover:text-blue-400">Privacy Policy</a>
-             <a href="#" className="hover:text-blue-400">Terms of Service</a>
+            <a href="#" className="hover:text-blue-400">Privacy Policy</a>
+            <a href="#" className="hover:text-blue-400">Terms of Service</a>
           </div>
           <div className="pt-12 border-t border-slate-800 text-slate-600 text-xs font-bold font-mono">
             © 2024 ACO ENGINE v2.1. DESIGNED FOR TRANSPARENCY & GROWTH.

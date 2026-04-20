@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search, Filter, BarChart3, Building2, Target, ChevronRight } from 'lucide-react';
 import { api } from '../services/api';
+import { mockProjects } from '../data/projectMockData';
 
 interface ProjectsPageProps {
   onBack: () => void;
@@ -25,9 +26,14 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onBack, onLoginClick, onVie
     const fetchProjects = async () => {
       try {
         const data = await api.getProjects();
-        setProjects(data);
+        if (data && Array.isArray(data) && data.length > 0) {
+          setProjects(data);
+        } else {
+          setProjects(mockProjects);
+        }
       } catch (err) {
         console.error('Failed to fetch projects:', err);
+        setProjects(mockProjects);
       } finally {
         setLoading(false);
       }
@@ -107,11 +113,11 @@ const ProjectsPage: React.FC<ProjectsPageProps> = ({ onBack, onLoginClick, onVie
                   
                   <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="space-y-1">
-                      <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Target Return</p>
+                      <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Bagi Hasil Est.</p>
                       <p className="text-lg font-bold text-emerald-600">{(project.monthlyProfit ? (project.monthlyProfit/project.targetFunding * 100).toFixed(1) : 10)}%</p>
                     </div>
                     <div className="space-y-1 text-right">
-                      <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Target Pendanaan</p>
+                      <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Amanah Modal</p>
                       <p className="text-sm font-bold text-slate-700">Rp {(project.targetFunding/1000000).toFixed(0)}Jt</p>
                     </div>
                   </div>
