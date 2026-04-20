@@ -60,7 +60,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, Error
   }
 }
 
-import { api } from './services/api'
+import { mockLogin, mockValidateToken } from './mockAuth'
 
 function App() {
   const [user, setUser] = useState<User | null>(null)
@@ -89,10 +89,14 @@ function App() {
       const savedToken = localStorage.getItem('token')
       if (savedToken) {
         try {
-          const userData = await api.getMe(savedToken)
-          setUser(userData)
-          setToken(savedToken)
-          setCurrentView('dashboard')
+          const userData = mockValidateToken(savedToken)
+          if (userData) {
+            setUser(userData)
+            setToken(savedToken)
+            setCurrentView('dashboard')
+          } else {
+            throw new Error('Invalid mock token')
+          }
         } catch (err) {
           console.error('Session restoration failed:', err)
           localStorage.removeItem('token')
@@ -116,7 +120,7 @@ function App() {
     const email = quickLoginEmails[role]
     if (email) {
       try {
-        const response = await api.login({ email, password: 'password123' })
+        const response = await mockLogin(email, 'password123')
         handleLogin(response)
       } catch (err: any) {
         alert('Quick Login Failed: ' + err.message)
@@ -183,7 +187,8 @@ function App() {
         {currentView === 'login' && (
           <BeautifulLogin 
             onLogin={handleLogin} 
-            onQuickLogin={handleQuickLogin} 
+            onQuickLogin={handleQuickLogin}
+            onBack={() => setCurrentView('home')} 
           />
         )}
         {currentView === 'dashboard' && user && (

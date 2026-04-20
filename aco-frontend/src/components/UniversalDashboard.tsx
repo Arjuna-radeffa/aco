@@ -16,7 +16,7 @@ interface Tab {
   description: string;
 }
 
-import { api } from '../services/api';
+// import { api } from '../services/api';
 
 const UniversalDashboard: React.FC<UniversalDashboardProps> = ({ user, onLogout }) => {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
@@ -29,16 +29,17 @@ const UniversalDashboard: React.FC<UniversalDashboardProps> = ({ user, onLogout 
   const roleDescription = getRoleDescription(user.role);
 
   const fetchDashboard = async () => {
-    if (!token) return;
+    // Mock dashboard data fetching
     setIsLoading(true);
-    try {
-      const data = await api.getDashboard(token);
-      setDashboardData(data);
-    } catch (err) {
-      console.error('Failed to fetch dashboard:', err);
-    } finally {
+    setTimeout(() => {
+      setDashboardData({
+        investmentBalance: 'Rp 500.000.000',
+        totalReturns: 'Rp 62.500.000',
+        activeInvestments: 2,
+        nextDisbursement: '15 Mei 2026'
+      });
       setIsLoading(false);
-    }
+    }, 500);
   };
 
   useEffect(() => {

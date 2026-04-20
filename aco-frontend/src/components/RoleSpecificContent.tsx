@@ -205,7 +205,11 @@ export const RoleSpecificContent: React.FC<RoleSpecificContentProps> = ({ role, 
         )}
 
         {activeTab === 'investment_explore' && (
-          <ProjectsPage onBack={() => onTabChange?.('dashboard')} onLoginClick={() => onTabChange?.('input_data')} />
+          <ProjectsPage 
+            onBack={() => onTabChange?.('dashboard')} 
+            onLoginClick={() => onTabChange?.('input_data')} 
+            onViewDetail={() => {}}
+          />
         )}
       </div>
     );
@@ -370,7 +374,11 @@ export const RoleSpecificContent: React.FC<RoleSpecificContentProps> = ({ role, 
         )}
 
         {activeTab === 'investment_explore' && (
-          <ProjectsPage onBack={() => onTabChange?.('dashboard')} onLoginClick={() => onTabChange?.('portfolio')} />
+          <ProjectsPage 
+            onBack={() => onTabChange?.('dashboard')} 
+            onLoginClick={() => onTabChange?.('portfolio')} 
+            onViewDetail={() => {}}
+          />
         )}
       </div>
     );

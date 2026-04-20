@@ -7,16 +7,18 @@ import {
   ChevronRight, 
   ShieldCheck, 
   ArrowRight,
-  Globe
+  Globe,
+  ArrowLeft
 } from 'lucide-react';
-import { api } from '../services/api';
+import { mockLogin } from '../mockAuth';
 
 interface BeautifulLoginProps {
   onLogin: (authData: any) => void;
   onQuickLogin: (role: string) => void;
+  onBack: () => void;
 }
 
-const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin }) => {
+const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, onBack }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,10 +31,10 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin }
     setIsLoading(true);
 
     try {
-      const response = await api.login({ email, password });
+      const response = await mockLogin(email, password);
       onLogin(response);
     } catch (err: any) {
-      setError(err.message || 'Login failed. Pastikan backend sudah jalan di port 3001.');
+      setError(err.message || 'Login failed.');
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +93,18 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin }
         </div>
 
         {/* Bagian Kanan: Form Login */}
-        <div className="flex-1 p-8 md:p-16 flex flex-col items-center overflow-y-auto">
+        <div className="flex-1 p-8 md:p-16 flex flex-col items-center overflow-y-auto relative">
+          {/* Back Button */}
+          <button 
+            onClick={onBack}
+            className="absolute top-8 left-8 md:top-12 md:left-12 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors font-semibold group"
+          >
+            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+              <ArrowLeft size={16} />
+            </div>
+            <span>Kembali</span>
+          </button>
+
           {/* Spacer to push content down */}
           <div className="w-full h-12 md:h-24 hidden md:block" />
           
