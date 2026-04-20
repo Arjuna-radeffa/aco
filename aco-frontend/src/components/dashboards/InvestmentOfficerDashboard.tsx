@@ -1,6 +1,7 @@
 import React from 'react';
 import { MaterialIcon, dashboardIcons } from './IconHelper';
 import { RoleBasedForms } from '../RoleBasedForms';
+import VisualAllocationChart from '../VisualAllocationChart';
 
 interface InvestmentOfficerDashboardProps {
   activeTab: string;
@@ -144,40 +145,65 @@ const InvestmentOfficerDashboard: React.FC<InvestmentOfficerDashboardProps> = ({
       )}
 
       {activeTab === 'scheme' && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <MaterialIcon icon="architecture" size="large" />
-            <h2 className="text-lg font-semibold">Scheme Designer - Desain Struktur</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { name: 'Murabaha Scheme', type: 'Cost Plus', projects: 12, investors: 45, returns: '8-10%' },
-              { name: 'Musharaka Scheme', type: 'Partnership', projects: 8, investors: 32, returns: '12-15%' },
-              { name: 'Ijarah Scheme', type: 'Lease', projects: 5, investors: 18, returns: '7-9%' },
-              { name: 'Wakaf Scheme', type: 'Endowment', projects: 3, investors: 12, returns: '5-6%' },
-              { name: 'Qard Scheme', type: 'Interest-Free Loan', projects: 6, investors: 20, returns: 'Charity' },
-              { name: 'Hybrid Scheme', type: 'Mixed', projects: 4, investors: 15, returns: '10-12%' },
-            ].map((scheme, idx) => (
-              <div key={idx} className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-semibold text-slate-900">{scheme.name}</h3>
-                    <p className="text-xs text-slate-600">{scheme.type}</p>
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg border border-slate-200 p-6">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-2">
+                <MaterialIcon icon="architecture" size="large" />
+                <h2 className="text-lg font-semibold text-slate-900">Scheme Designer - Desain Struktur</h2>
+              </div>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">
+                + Design New Scheme
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-1 bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                <h3 className="text-sm font-bold text-slate-700 mb-6 uppercase tracking-wider italic">Proposed Hybrid Model</h3>
+                <VisualAllocationChart commercial={60} social={40} />
+                <div className="mt-6 space-y-4">
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+                    <span className="text-slate-600 font-bold uppercase tracking-tight">60% Akumulasi Capital (Commercial)</span>
                   </div>
-                  <span className="text-purple-600 font-bold">{scheme.returns}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-xs mt-3">
-                  <div className="bg-purple-50 p-2 rounded">
-                    <p className="text-purple-600 font-semibold">{scheme.projects}</p>
-                    <p className="text-purple-600">Projects</p>
-                  </div>
-                  <div className="bg-indigo-50 p-2 rounded">
-                    <p className="text-indigo-600 font-semibold">{scheme.investors}</p>
-                    <p className="text-indigo-600">Investors</p>
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                    <span className="text-slate-600 font-bold uppercase tracking-tight">40% Alokasi Sosial (Wakaf/Zakat)</span>
                   </div>
                 </div>
               </div>
-            ))}
+
+              <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { name: 'Murabaha Scheme', type: 'Cost Plus', projects: 12, investors: 45, returns: '8-10%' },
+                  { name: 'Musharaka Scheme', type: 'Partnership', projects: 8, investors: 32, returns: '12-15%' },
+                  { name: 'Ijarah Scheme', type: 'Lease', projects: 5, investors: 18, returns: '7-9%' },
+                  { name: 'Wakaf Scheme', type: 'Endowment', projects: 3, investors: 12, returns: '5-6%' },
+                  { name: 'Qard Scheme', type: 'Interest-Free Loan', projects: 6, investors: 20, returns: 'Charity' },
+                  { name: 'Hybrid Scheme (ACO Special)', type: 'Mixed (60/40)', projects: 4, investors: 15, returns: '10-12%' },
+                ].map((scheme, idx) => (
+                  <div key={idx} className={`p-4 border rounded-xl hover:shadow-md transition-all ${scheme.name.includes('Hybrid') ? 'border-blue-200 bg-blue-50/30 ring-1 ring-blue-100' : 'border-slate-200 bg-white'}`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-bold text-slate-900">{scheme.name}</h3>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{scheme.type}</p>
+                      </div>
+                      <span className="text-blue-600 font-black text-xs italic">{scheme.returns}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[10px] mt-4">
+                      <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg border border-slate-100 shadow-sm text-center">
+                        <p className="text-slate-900 font-black text-base">{scheme.projects}</p>
+                        <p className="text-slate-400 font-bold uppercase">Proyek</p>
+                      </div>
+                      <div className="bg-white/80 backdrop-blur-sm p-3 rounded-lg border border-slate-100 shadow-sm text-center">
+                        <p className="text-slate-900 font-black text-base">{scheme.investors}</p>
+                        <p className="text-slate-400 font-bold uppercase">Investor</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
