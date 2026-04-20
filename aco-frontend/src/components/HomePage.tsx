@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRight, ChevronRight, Shield, TrendingUp, Building2, Menu, X, BarChart3, Target, Users, LayoutGrid, Clock, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { api } from '../services/api';
+import { Project } from '../types/projectTypes';
+import { mockProjects } from '../data/projectMockData';
+import ProjectSummaryCard from './ProjectSummaryCard';
 
 interface HomePageProps {
   onLoginClick: () => void;
@@ -20,9 +23,13 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
     const fetchProjects = async () => {
       try {
         const data = await api.getProjects();
-        setProjects(data);
+        if (data && Array.isArray(data)) {
+          setProjects(data);
+        }
       } catch (err) {
         console.error('Failed to fetch projects for homepage:', err);
+        // Fallback to empty array if fetch fails or is not JSON
+        setProjects([]);
       }
     };
     fetchProjects();
@@ -126,6 +133,47 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
                   <div className="text-9xl font-black bg-gradient-to-br from-blue-600 to-emerald-600 bg-clip-text text-transparent italic">A</div>
                </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Case Study: Proyek Berkelanjutan */}
+      <section className="py-24 px-4 md:px-6 bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <h2 className="text-indigo-600 font-black uppercase tracking-widest text-sm mb-2">Model Bisnis Dinamis</h2>
+              <h3 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Case Study: Proyek Berkelanjutan</h3>
+              <p className="text-slate-600 mt-4 max-w-2xl font-medium leading-relaxed">
+                Platform ACO mendukung berbagai model kepemilikan dan pendanaan, mulai dari Proyek di Lahan Wakaf (Hybrid Ownership) hingga Sukuk Bagi Hasil pada Lahan Komersil.
+              </p>
+            </div>
+            <div className="hidden lg:block text-right">
+              <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl">
+                <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1 italic">Role Recommendation</p>
+                <p className="text-sm font-bold text-slate-800">Investment Officer & Investor</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-10">
+            {mockProjects.map((project) => (
+              <ProjectSummaryCard 
+                key={project.id} 
+                project={project} 
+                onViewDetail={onViewDetail}
+              />
+            ))}
+          </div>
+
+          <div className="mt-16 p-8 bg-slate-900 rounded-[3rem] text-white flex flex-col md:flex-row items-center justify-between gap-8 h-auto">
+            <div className="space-y-2 text-center md:text-left">
+              <h4 className="text-2xl font-bold italic">Siap Menghitung Akad?</h4>
+              <p className="text-slate-400 font-medium">Beralih ke dashboard untuk mensimulasikan bagi hasil dan alokasi asnaf secara real-time.</p>
+            </div>
+            <button onClick={onLoginClick} className="px-10 py-5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 whitespace-nowrap">
+              Buka Dashboard Simulai
+            </button>
           </div>
         </div>
       </section>
