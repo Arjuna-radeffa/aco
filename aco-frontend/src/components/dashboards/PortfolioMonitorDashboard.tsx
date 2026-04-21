@@ -1,6 +1,7 @@
 import React from 'react';
 import { MaterialIcon, dashboardIcons } from './IconHelper';
 import { RoleBasedForms } from '../RoleBasedForms';
+import { Heart, Users, BarChart3, TrendingUp, AlertCircle, CheckCircle2, Clock, Shield, Target } from 'lucide-react';
 
 interface PortfolioMonitorDashboardProps {
   activeTab: string;
@@ -223,8 +224,11 @@ const PortfolioMonitorDashboard: React.FC<PortfolioMonitorDashboardProps> = ({ a
 
               {/* Impact Card */}
               <div className="p-6 bg-emerald-50/50 rounded-2xl border border-emerald-100">
-                <h3 className="text-sm font-bold text-emerald-800 mb-4 uppercase tracking-wider">Aggregate Social Impact (ACO Index)</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-sm font-bold text-emerald-800 uppercase tracking-wider">Aggregate Social Impact (ACO Index)</h3>
+                  <Heart className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="p-4 bg-white rounded-xl border border-emerald-100 shadow-sm text-center">
                     <p className="text-emerald-600 font-black text-2xl">4.8k</p>
                     <p className="text-[10px] text-slate-400 font-bold uppercase">Beneficiaries</p>
@@ -233,6 +237,21 @@ const PortfolioMonitorDashboard: React.FC<PortfolioMonitorDashboardProps> = ({ a
                     <p className="text-emerald-600 font-black text-2xl">12.5%</p>
                     <p className="text-[10px] text-slate-400 font-bold uppercase">Empowerment Rate</p>
                   </div>
+                </div>
+                <div className="space-y-3">
+                   <p className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Program Reach</p>
+                   {[
+                     { label: 'Education', val: '45%' },
+                     { label: 'Healthcare', val: '30%' },
+                     { label: 'Economy', val: '25%' }
+                   ].map((p, idx) => (
+                     <div key={idx} className="flex items-center gap-3">
+                        <div className="flex-1 bg-white h-1.5 rounded-full overflow-hidden border border-emerald-100">
+                          <div className="bg-emerald-500 h-full" style={{width: p.val}}></div>
+                        </div>
+                        <span className="text-[10px] font-bold text-emerald-700 w-20">{p.label}</span>
+                     </div>
+                   ))}
                 </div>
               </div>
             </div>

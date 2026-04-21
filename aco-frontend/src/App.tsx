@@ -4,6 +4,7 @@ import HomePage from './components/HomePage'
 import UniversalDashboard from './components/UniversalDashboard'
 import ProjectsPage from './components/ProjectsPage'
 import ProjectDetailsPage from './components/ProjectDetailsPage'
+import ZisProjectsPage from './components/ZisProjectsPage'
 
 export interface User {
   id: string
@@ -65,7 +66,7 @@ import { mockLogin, mockValidateToken } from './mockAuth'
 function App() {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
-  const [currentView, setCurrentView] = useState<'home' | 'login' | 'dashboard' | 'projects' | 'project-details'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'login' | 'dashboard' | 'projects' | 'project-details' | 'zis-projects'>('home')
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
 
@@ -155,6 +156,7 @@ function App() {
             onLoginClick={() => setCurrentView('login')} 
             onQuickLoginClick={handleQuickLogin}
             onViewProjects={() => setCurrentView('projects')}
+            onViewZisProjects={() => setCurrentView('zis-projects')}
             onViewDetail={(id) => {
               setSelectedProjectId(id)
               setCurrentView('project-details')
@@ -181,6 +183,16 @@ function App() {
               } else {
                 setCurrentView('login')
               }
+            }}
+          />
+        )}
+        {currentView === 'zis-projects' && (
+          <ZisProjectsPage 
+            onBack={() => setCurrentView('home')}
+            onDonationClick={() => setCurrentView('login')}
+            onViewDetail={(id) => {
+              setSelectedProjectId(id)
+              setCurrentView('project-details')
             }}
           />
         )}

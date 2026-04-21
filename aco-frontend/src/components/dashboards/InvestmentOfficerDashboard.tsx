@@ -2,6 +2,7 @@ import React from 'react';
 import { MaterialIcon, dashboardIcons } from './IconHelper';
 import { RoleBasedForms } from '../RoleBasedForms';
 import VisualAllocationChart from '../VisualAllocationChart';
+import { Heart, Users } from 'lucide-react';
 
 interface InvestmentOfficerDashboardProps {
   activeTab: string;
@@ -98,6 +99,31 @@ const InvestmentOfficerDashboard: React.FC<InvestmentOfficerDashboardProps> = ({
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="mt-8 border-t border-slate-100 pt-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Heart className="w-5 h-5 text-emerald-600" />
+              <h2 className="text-lg font-semibold">ZIS Social Impact Pipeline</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { id: 'zis-p1', title: 'Solar for Rural Schools', type: 'Waqf', impact: '15 Schools', status: 'DD Stage' },
+                { id: 'zis-p2', title: 'Community Water Well', type: 'Infaq', impact: '1.2k People', status: 'Approval' },
+              ].map((zis) => (
+                <div key={zis.id} className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-emerald-900">{zis.title}</h3>
+                    <span className="text-[10px] font-black px-2 py-0.5 bg-white text-emerald-600 rounded-full border border-emerald-200">{zis.type}</span>
+                  </div>
+                  <p className="text-xs text-emerald-700 font-bold uppercase tracking-tight">Impact: {zis.impact}</p>
+                  <div className="mt-3 flex justify-between items-center">
+                    <span className="text-xs font-bold text-slate-500">{zis.status}</span>
+                    <button className="text-[10px] font-black text-emerald-600 hover:underline">REVIEW IMPACT</button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

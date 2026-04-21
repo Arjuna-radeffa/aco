@@ -1,6 +1,7 @@
 import React from 'react';
 import { MaterialIcon, dashboardIcons } from './IconHelper';
 import { RoleBasedForms } from '../RoleBasedForms';
+import { Heart, Users, BarChart3, TrendingUp, AlertCircle, CheckCircle2, Clock, Shield, Target } from 'lucide-react';
 
 interface FinanceOfficerDashboardProps {
   activeTab: string;
@@ -94,6 +95,54 @@ const FinanceOfficerDashboard: React.FC<FinanceOfficerDashboardProps> = ({ activ
               </div>
             ))}
           </div>
+
+          <div className="mt-8 bg-slate-900 text-white rounded-[2.5rem] p-8 relative overflow-hidden border border-slate-800 shadow-2xl">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold tracking-tight">ZIS Fund Isolation Oversight</h3>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Mandatory Shariah Compliance</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Total ZIS Asset pool</p>
+                  <p className="text-3xl font-black text-white tracking-tighter">Rp 6.52B</p>
+                  <div className="mt-4 flex items-center gap-2 text-[10px] text-emerald-400 font-bold">
+                    <CheckCircle2 size={12} /> ISOLATED
+                  </div>
+                </div>
+                <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Mustahiq Pool</p>
+                  <p className="text-3xl font-black text-white tracking-tighter">Rp 1.24B</p>
+                  <div className="mt-4 flex items-center gap-2 text-[10px] text-blue-400 font-bold">
+                    <Users size={12} /> 1,240 RECIPIENTS
+                  </div>
+                </div>
+                <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Audit Transparency</p>
+                  <p className="text-3xl font-black text-white tracking-tighter">100%</p>
+                  <div className="mt-4 flex items-center gap-2 text-[10px] text-purple-400 font-bold">
+                    <Shield size={12} /> VERIFIED
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                <button className="flex-1 py-4 bg-emerald-600 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-900/40">
+                  Generate ZIS Isolation Report
+                </button>
+                <button className="flex-1 py-4 bg-white/10 text-white font-black text-xs uppercase tracking-widest rounded-2xl border border-white/10 hover:bg-white/20 transition-all">
+                  Mustahiq Disbursement Tool
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -105,123 +154,21 @@ const FinanceOfficerDashboard: React.FC<FinanceOfficerDashboardProps> = ({ activ
           </div>
           <div className="space-y-3">
             {[
-              { month: 'April 2026', totalTx: 1245, reconciled: 1242, unreconciled: 3, percentage: 99.8, status: 'Excellent', action: 'Review 3 Pending' },
-              { month: 'March 2026', totalTx: 1183, reconciled: 1183, unreconciled: 0, percentage: 100, status: 'Complete', action: 'Closed' },
-              { month: 'February 2026', totalTx: 1098, reconciled: 1098, unreconciled: 0, percentage: 100, status: 'Complete', action: 'Closed' },
-              { month: 'January 2026', totalTx: 1256, reconciled: 1256, unreconciled: 0, percentage: 100, status: 'Complete', action: 'Closed' },
-            ].map((month, idx) => (
-              <div key={idx} className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-semibold text-slate-900">{month.month}</h3>
-                    <p className="text-sm text-slate-600">{month.totalTx} Total Transactions</p>
-                  </div>
-                  <span className={`text-sm px-2 py-1 rounded-full ${month.status === 'Complete' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
-                    {month.percentage}%
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 mb-2 text-xs">
-                  <div className="bg-emerald-50 p-2 rounded">
-                    <p className="text-emerald-700 font-semibold">{month.reconciled}</p>
-                    <p className="text-emerald-600">Reconciled</p>
-                  </div>
-                  <div className={`${month.unreconciled === 0 ? 'bg-emerald-50' : 'bg-red-50'} p-2 rounded`}>
-                    <p className={`font-semibold ${month.unreconciled === 0 ? 'text-emerald-700' : 'text-red-700'}`}>{month.unreconciled}</p>
-                    <p className={month.unreconciled === 0 ? 'text-emerald-600' : 'text-red-600'}>Pending</p>
-                  </div>
-                  <button className="bg-cyan-100 text-cyan-700 text-xs rounded hover:bg-cyan-200 transition font-semibold">
-                    {month.action}
-                  </button>
-                </div>
-                <div className="w-full bg-slate-200 rounded-full h-2">
-                  <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${month.percentage}%` }}></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'profit' && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <MaterialIcon icon="trending_up" size="large" />
-            <h2 className="text-lg font-semibold">Profit Calculation - Perhitungan Profit</h2>
-          </div>
-          <div className="space-y-3">
-            {[
-              { project: 'Solar Farm Sumatra', revenue: 'Rp 450M', cost: 'Rp 320M', profit: 'Rp 130M', margin: '28.9%', distribution: 'In Process' },
-              { project: 'Coffee Export Indonesia', revenue: 'Rp 200M', cost: 'Rp 140M', profit: 'Rp 60M', margin: '30%', distribution: 'Distributed' },
-              { project: 'Fishery Collective', revenue: 'Rp 150M', cost: 'Rp 115M', profit: 'Rp 35M', margin: '23.3%', distribution: 'Pending Review' },
-              { project: 'AgTech Platform', revenue: 'Rp 300M', cost: 'Rp 210M', profit: 'Rp 90M', margin: '30%', distribution: 'Calculated' },
-              { project: 'Textile Cooperative', revenue: 'Rp 180M', cost: 'Rp 135M', profit: 'Rp 45M', margin: '25%', distribution: 'In Process' },
-            ].map((item, idx) => (
-              <div key={idx} className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-semibold text-slate-900">{item.project}</h3>
-                    <p className="text-xs text-slate-600">{item.distribution}</p>
-                  </div>
-                  <span className="text-green-600 font-bold">{item.profit}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 mb-2 text-xs">
-                  <div className="bg-blue-50 p-2 rounded">
-                    <p className="text-blue-600 font-semibold">{item.revenue}</p>
-                    <p className="text-blue-600">Revenue</p>
-                  </div>
-                  <div className="bg-red-50 p-2 rounded">
-                    <p className="text-red-600 font-semibold">{item.cost}</p>
-                    <p className="text-red-600">Cost</p>
-                  </div>
-                  <div className="bg-green-50 p-2 rounded">
-                    <p className="text-green-600 font-semibold">{item.margin}</p>
-                    <p className="text-green-600">Margin</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'liquidation' && (
-        <div className="bg-white rounded-lg border border-slate-200 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <MaterialIcon icon="assignment_return" size="large" />
-            <h2 className="text-lg font-semibold">Liquidation - Likuidasi Aset</h2>
-          </div>
-          <div className="space-y-3">
-            {[
-              { project: 'Early Coffee Project (Completed)', value: 'Rp 200M', status: 'Completed', investors: 8, returnRate: '12%', maturity: '15 Apr 2026', action: 'Liquidated' },
-              { project: 'First Goat Farm (Matured)', value: 'Rp 120M', status: 'Pending', investors: 5, returnRate: '10%', maturity: '10 May 2026', action: 'Process Now' },
-              { project: 'Fishery Phase 1', value: 'Rp 150M', status: 'Scheduled', investors: 6, returnRate: '11%', maturity: '30 Jul 2026', action: 'Schedule' },
-              { project: 'Early Textile Project', value: 'Rp 80M', status: 'Completed', investors: 4, returnRate: '9%', maturity: '01 Apr 2026', action: 'Liquidated' },
-            ].map((item, idx) => (
-              <div key={idx} className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
+              { id: 1, month: 'March 2026', total: 'Rp 1.2B', unmatched: 0, status: 'Completed' },
+              { id: 2, month: 'February 2026', total: 'Rp 1.5B', unmatched: 0, status: 'Completed' },
+              { id: 3, month: 'January 2026', total: 'Rp 1.1B', unmatched: 2, status: 'Pending' },
+            ].map((item) => (
+              <div key={item.id} className="p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h3 className="font-semibold text-slate-900">{item.project}</h3>
-                    <p className="text-xs text-slate-600">{item.investors} Investors</p>
+                    <h3 className="font-semibold text-slate-900">{item.month}</h3>
+                    <p className="text-sm text-slate-600">Total: {item.total}</p>
                   </div>
-                  <span className="text-emerald-600 font-bold">{item.value}</span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${item.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                    {item.status}
+                  </span>
                 </div>
-                <div className="grid grid-cols-4 gap-2 text-xs mb-2">
-                  <div className={`${item.status === 'Completed' ? 'bg-emerald-50' : item.status === 'Pending' ? 'bg-amber-50' : 'bg-slate-50'} p-2 rounded`}>
-                    <p className={`font-semibold ${item.status === 'Completed' ? 'text-emerald-700' : item.status === 'Pending' ? 'text-amber-700' : 'text-slate-700'}`}>{item.status}</p>
-                    <p className={item.status === 'Completed' ? 'text-emerald-600' : item.status === 'Pending' ? 'text-amber-600' : 'text-slate-600'}>Status</p>
-                  </div>
-                  <div className="bg-purple-50 p-2 rounded">
-                    <p className="text-purple-600 font-semibold">{item.returnRate}</p>
-                    <p className="text-purple-600">Return</p>
-                  </div>
-                  <div className="bg-blue-50 p-2 rounded">
-                    <p className="text-blue-600 font-semibold text-xs">{item.maturity}</p>
-                    <p className="text-blue-600 text-xs">Maturity</p>
-                  </div>
-                  <button className={`rounded text-xs font-semibold transition ${item.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : item.status === 'Pending' ? 'bg-cyan-100 text-cyan-700 hover:bg-cyan-200' : 'bg-slate-100 text-slate-700'}`}>
-                    {item.action}
-                  </button>
-                </div>
+                <p className="text-xs text-red-600">{item.unmatched} unmatched transactions</p>
               </div>
             ))}
           </div>

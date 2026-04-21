@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRight, ChevronRight, Shield, TrendingUp, Building2, Menu, X, BarChart3, Target, Users, LayoutGrid, Clock, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, ChevronRight, Shield, TrendingUp, Building2, Menu, X, BarChart3, Target, Users, LayoutGrid, Clock, ChevronDown, CheckCircle2, Heart } from 'lucide-react';
 import { api } from '../services/api';
 import { Project } from '../types/projectTypes';
 import { mockProjects } from '../data/projectMockData';
@@ -9,10 +9,11 @@ interface HomePageProps {
   onLoginClick: () => void;
   onQuickLoginClick: (role: string) => void;
   onViewProjects: () => void;
+  onViewZisProjects: () => void;
   onViewDetail: (id: string) => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, onViewProjects, onViewDetail }) => {
+const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, onViewProjects, onViewZisProjects, onViewDetail }) => {
   const [hoveredRole, setHoveredRole] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -80,6 +81,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
           <div className="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-600">
             <a href="#about" className="hover:text-blue-600 transition-colors">Tentang</a>
             <button onClick={onViewProjects} className="hover:text-blue-600 transition-colors">Proyek</button>
+            <a href="#zis" className="hover:text-blue-600 transition-colors">ZIS</a>
             <a href="#vision" className="hover:text-blue-600 transition-colors">Visi & Misi</a>
             <a href="#features" className="hover:text-blue-600 transition-colors">Fitur</a>
             <a href="#testimonials" className="hover:text-blue-600 transition-colors">Testimoni</a>
@@ -98,6 +100,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
           <div className="p-6 space-y-4 font-bold text-slate-600">
             <a href="#about" onClick={() => setMobileMenuOpen(false)} className="block hover:text-blue-600">Tentang Kami</a>
             <button onClick={() => { onViewProjects(); setMobileMenuOpen(false); }} className="block w-full text-left hover:text-blue-600">Semua Proyek</button>
+            <button onClick={() => { onViewZisProjects(); setMobileMenuOpen(false); }} className="block w-full text-left hover:text-blue-600">Proyek ZIS</button>
             <a href="#vision" onClick={() => setMobileMenuOpen(false)} className="block hover:text-blue-600">Visi & Misi</a>
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block hover:text-blue-600">Fitur Utama</a>
             <a href="#testimonials" onClick={() => setMobileMenuOpen(false)} className="block hover:text-blue-600">Testimoni</a>
@@ -176,6 +179,64 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
             </div>
             <button onClick={onLoginClick} className="px-10 py-5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 whitespace-nowrap">
               Buka Dashboard Simulai
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ZIS (Zakat, Infaq, Shadaqah) Section */}
+      <section id="zis" className="py-24 px-4 md:px-6 bg-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-emerald-600 font-black uppercase tracking-widest text-sm mb-4">Ekonomi Sosial</h2>
+            <h3 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Zakat, Infaq, & Shadaqah</h3>
+            <p className="text-slate-600 mt-4 max-w-2xl mx-auto font-medium leading-relaxed">
+              Salurkan amanah Anda melalui program sosial berkelanjutan yang terintegrasi. Transparansi penuh dari Muzakki hingga Mustahiq.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { 
+                title: 'Zakat Maal', 
+                desc: 'Sucikan harta Anda dengan perhitungan akurat sesuai syariat.', 
+                impact: '8 Asnaf Terverifikasi',
+                icon: <Heart className="w-8 h-8 text-emerald-600" />,
+                bg: 'bg-emerald-50'
+              },
+              { 
+                title: 'Infaq Program', 
+                desc: 'Dukung program sosial dan kemanusiaan yang berdampak luas.', 
+                impact: '12 Program Aktif',
+                icon: <Users className="w-8 h-8 text-blue-600" />,
+                bg: 'bg-blue-50'
+              },
+              { 
+                title: 'Wakaf Produktif', 
+                desc: 'Abadikan manfaat harta Anda melalui pengelolaan aset produktif.', 
+                impact: '5 Aset Berjalan',
+                icon: <Building2 className="w-8 h-8 text-purple-600" />,
+                bg: 'bg-purple-50'
+              }
+            ].map((item, idx) => (
+              <div key={idx} className={`${item.bg} p-10 rounded-[3rem] border border-white shadow-xl hover:-translate-y-2 transition-all duration-300`}>
+                <div className="mb-6 p-4 bg-white rounded-2xl w-fit shadow-sm">{item.icon}</div>
+                <h4 className="text-2xl font-black mb-4 text-slate-900 italic">{item.title}</h4>
+                <p className="text-slate-600 font-medium mb-8 leading-relaxed">{item.desc}</p>
+                <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  {item.impact}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <button 
+              onClick={() => onViewZisProjects()} 
+              className="px-10 py-5 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200"
+            >
+              Lihat Proyek ZIS
             </button>
           </div>
         </div>
