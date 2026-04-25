@@ -31,10 +31,11 @@ import VisualAllocationChart from './VisualAllocationChart';
 interface ProjectDetailsPageProps {
   projectId: string;
   onBack: () => void;
-  onInvestClick: () => void;
+  onInvestClick: (id?: string) => void;
+  onWaqfClick?: (id?: string) => void;
 }
 
-const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBack, onInvestClick }) => {
+const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBack, onInvestClick, onWaqfClick }) => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'financial' | 'impact' | 'docs' | 'updates' | 'subprojects'>('overview');

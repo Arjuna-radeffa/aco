@@ -1,10 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import BeautifulLogin from './components/BeautifulLogin'
 import HomePage from './components/HomePage'
-import UniversalDashboard from './components/UniversalDashboard'
-import ProjectsPage from './components/ProjectsPage'
 import ProjectDetailsPage from './components/ProjectDetailsPage'
-import ZisProjectsPage from './components/ZisProjectsPage'
+
+// External User Pages
+import BrowsePage from './components/pages/BrowsePage'
+import RegisterPage from './components/pages/RegisterPage'
+import KycUploadPage from './components/pages/KycUploadPage'
+import InvestFlowPage from './components/pages/InvestFlowPage'
+import WaqfMoneyFlowPage from './components/pages/WaqfMoneyFlowPage'
+import ExternalDashboardPage from './components/pages/ExternalDashboardPage'
+import ParticipationDetailPage from './components/pages/ParticipationDetailPage'
+import { TermsPage, PrivacyPage } from './components/pages/StaticPages'
+
+import { mockLogin } from './mockAuth'
+import { RoleBasedLayout } from './components/templates/RoleBasedLayout'
+import { useStore } from './store/useStore'
 
 export interface User {
   id: string
@@ -20,25 +31,37 @@ export interface AuthResponse {
   user: User
 }
 
-interface ErrorBoundaryState {
-  hasError: boolean
-  error: Error | null
+// === View Type ===
+type View =
+  | 'home'
+  | 'login'
+  | 'dashboard'
+  | 'project-details'
+  | 'browse'
+  | 'register'
+  | 'kyc'
+  | 'ex-dashboard'
+  | 'invest'
+  | 'waqf'
+  | 'participation-detail'
+  | 'terms'
+  | 'privacy'
+
+interface ViewState {
+  view: View
+  projectId?: string
+  participationId?: string
 }
 
+// === Error Boundary ===
+interface ErrorBoundaryState { hasError: boolean; error: Error | null }
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
   constructor(props: { children: React.ReactNode }) {
     super(props)
     this.state = { hasError: false, error: null }
   }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error }
-  }
-
-  componentDidCatch(error: Error) {
-    console.error('Error caught by boundary:', error)
-  }
-
+  static getDerivedStateFromError(error: Error) { return { hasError: true, error } }
+  componentDidCatch(error: Error) { console.error('Error caught by boundary:', error) }
   render() {
     if (this.state.hasError) {
       return (
@@ -46,107 +69,112 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, Error
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-md">
             <h1 className="text-2xl font-bold text-red-600 mb-4">⚠️ Error</h1>
             <p className="text-slate-700 mb-4">{this.state.error?.message}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-            >
+            <button onClick={() => window.location.reload()} className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
               Refresh Page
             </button>
           </div>
         </div>
       )
     }
-
     return this.props.children
   }
 }
 
-import { mockLogin, mockValidateToken } from './mockAuth'
-
-import { RoleBasedLayout } from './components/templates/RoleBasedLayout'
-import { useStore } from './store/useStore'
-
+// === App ===
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'login' | 'dashboard' | 'projects' | 'project-details' | 'zis-projects'>('home')
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const [viewState, setViewState] = useState<ViewState>({ view: 'home' })
   const [isInitializing, setIsInitializing] = useState(true)
-  
+
   const currentUser = useStore((state: any) => state.currentUser)
   const setCurrentUser = useStore((state: any) => state.setCurrentUser)
 
-  // Constant for quick login emails
-  const quickLoginEmails: Record<string, string> = {
-    investment_officer: 'arief',
-    portfolio_monitor: 'sinta',
-    finance_officer: 'hendra',
-    admin: 'reza'
+  // === Browser History Integration ===
+  const navigate = useCallback((newState: ViewState) => {
+    window.history.pushState(newState, '', getUrlForView(newState))
+    setViewState(newState)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  const getUrlForView = (s: ViewState): string => {
+    switch (s.view) {
+      case 'home': return '/'
+      case 'login': return '/login'
+      case 'register': return '/register'
+      case 'browse': return '/browse'
+      case 'project-details': return `/project/${s.projectId || ''}`
+      case 'invest': return `/invest/${s.projectId || ''}`
+      case 'waqf': return `/waqf/${s.projectId || ''}`
+      case 'kyc': return '/kyc'
+      case 'ex-dashboard': return '/my-dashboard'
+      case 'participation-detail': return `/my-dashboard/participation/${s.participationId || ''}`
+      case 'terms': return '/terms'
+      case 'privacy': return '/privacy'
+      case 'dashboard': return '/dashboard'
+      default: return '/'
+    }
   }
 
   useEffect(() => {
-    // Simulate init from localStorage if needed, for now just use store default
+    // Listen to popstate (browser back/forward)
+    const handlePopState = (e: PopStateEvent) => {
+      if (e.state) {
+        setViewState(e.state as ViewState)
+      } else {
+        setViewState({ view: 'home' })
+      }
+    }
+    window.addEventListener('popstate', handlePopState)
+
+    // Set initial history state without pushing
+    window.history.replaceState({ view: 'home' }, '', '/')
+
     setIsInitializing(false)
+    return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
+  // === Auth Handlers ===
   const handleLogin = (authData: AuthResponse) => {
     setCurrentUser({
       id: authData.user.id,
       name: authData.user.name,
       role: authData.user.role.toLowerCase()
     })
-    setCurrentView('dashboard')
+    navigate({ view: 'dashboard' })
   }
 
   const handleQuickLogin = async (role: string) => {
     const roleMap: Record<string, string> = {
-      // Direct Main Roles
-      'arief': 'arief',
-      'investment_officer': 'arief',
-      'sinta': 'sinta',
-      'portfolio_monitor': 'sinta',
-      'hendra': 'hendra',
-      'finance_officer': 'hendra',
-      'reza': 'reza',
-      'admin': 'reza',
-      
-      // Homepage Aliases & External Roles
-      'investasi_mikro': 'investor_micro',
-      'investor_micro': 'investor_micro',
-      'investasi_enterprise': 'investor_enterprise',
-      'investor_enterprise': 'investor_enterprise',
-      // Unified Funder Role mapping
-      'muzakki': 'funder',
-      'munfiq': 'funder',
-      'mutashadiq': 'funder',
-      'wakif': 'funder',
-      'funder': 'funder',
-      
-      'mustahiq': 'mustahiq',
-      'project_owner': 'project_owner',
-      'investment': 'arief',
-      'finance': 'hendra'
+      'arief': 'arief', 'investment_officer': 'arief',
+      'sinta': 'sinta', 'portfolio_monitor': 'sinta',
+      'hendra': 'hendra', 'finance_officer': 'hendra',
+      'reza': 'reza', 'admin': 'reza',
+      'investasi_mikro': 'investor_micro', 'investor_micro': 'investor_micro',
+      'investasi_enterprise': 'investor_enterprise', 'investor_enterprise': 'investor_enterprise',
+      'muzakki': 'funder', 'munfiq': 'funder', 'mutashadiq': 'funder', 'wakif': 'funder', 'funder': 'funder',
+      'mustahiq': 'mustahiq', 'project_owner': 'project_owner',
+      'investment': 'arief', 'finance': 'hendra',
+      // External user roles
+      'external_user': 'external_user',
     }
-    
-    // In demo mode, just set the store user directly
-    const tRole = roleMap[role.toLowerCase()] || 'arief'
     const nameMap: Record<string, string> = {
-      'arief': 'Arief Wijaksana',
-      'sinta': 'Sinta Portfolio',
-      'hendra': 'Hendra Finance',
-      'reza': 'Reza Admin',
-      'investor_micro': 'Budi (Micro Investor)',
-      'investor_enterprise': 'Citra (Corp Investor)',
-      'funder': 'Sholeh (Universal Funder)',
-      'mustahiq': 'Maimunah (Recipient)',
-      'project_owner': 'Mitra Tani Sejahtera'
+      'arief': 'Arief Wijaksana', 'sinta': 'Sinta Portfolio', 'hendra': 'Hendra Finance',
+      'reza': 'Reza Admin', 'investor_micro': 'Budi (Micro Investor)',
+      'investor_enterprise': 'Citra (Corp Investor)', 'funder': 'Sholeh (Universal Funder)',
+      'mustahiq': 'Maimunah (Recipient)', 'project_owner': 'Mitra Tani Sejahtera',
+      'external_user': 'Budi Santoso',
     }
-
+    const tRole = roleMap[role.toLowerCase()] || 'arief'
     setCurrentUser({
       id: Math.random().toString(36).substr(2, 9),
       name: nameMap[tRole] || `Demo ${tRole.toUpperCase()}`,
       role: tRole,
-      kycVerified: !['mustahiq'].includes(tRole)
+      kycVerified: !['mustahiq', 'external_user'].includes(tRole)
     })
-    setCurrentView('dashboard')
+    if (['investor_micro', 'investor_enterprise', 'funder', 'external_user'].includes(tRole)) {
+      navigate({ view: 'ex-dashboard' })
+    } else {
+      navigate({ view: 'dashboard' })
+    }
   }
 
   if (isInitializing) {
@@ -160,54 +188,132 @@ function App() {
     )
   }
 
+  const { view, projectId, participationId } = viewState
+
   return (
     <ErrorBoundary>
       <div className="App">
-        {currentView === 'home' && (
-          <HomePage 
-            onLoginClick={() => setCurrentView('login')} 
+        {/* HOME */}
+        {view === 'home' && (
+          <HomePage
+            onLoginClick={() => navigate({ view: 'login' })}
             onQuickLoginClick={handleQuickLogin}
-            onViewProjects={() => setCurrentView('projects')}
-            onViewZisProjects={() => setCurrentView('zis-projects')}
-            onViewDetail={(id) => {
-              setSelectedProjectId(id)
-              setCurrentView('project-details')
-            }}
-          />
-        )}
-        
-        {currentView === 'login' && (
-          <BeautifulLogin 
-            onLogin={handleLogin} 
-            onQuickLogin={handleQuickLogin}
-            onBack={() => setCurrentView('home')} 
+            onViewProjects={() => navigate({ view: 'browse' })}
+            onViewZisProjects={() => navigate({ view: 'browse' })}
+            onViewDetail={(id) => navigate({ view: 'project-details', projectId: id })}
           />
         )}
 
-        {currentView === 'dashboard' && currentUser && (
+        {/* LOGIN */}
+        {view === 'login' && (
+          <BeautifulLogin
+            onLogin={handleLogin}
+            onQuickLogin={handleQuickLogin}
+            onBack={() => navigate({ view: 'home' })}
+          />
+        )}
+
+        {/* REGISTER */}
+        {view === 'register' && (
+          <RegisterPage
+            onBack={() => navigate({ view: 'home' })}
+            onLoginClick={() => navigate({ view: 'login' })}
+          />
+        )}
+
+        {/* INTERNAL DASHBOARD (officers, etc.) */}
+        {view === 'dashboard' && currentUser && (
           <RoleBasedLayout />
         )}
 
-        {/* Existing views fallbacks if needed, but the new RoleBasedLayout handles internal modules */}
-        {currentView === 'projects' && (
-          <HomePage 
-            onLoginClick={() => setCurrentView('login')} 
-            onQuickLoginClick={handleQuickLogin}
-            onViewProjects={() => setCurrentView('projects')}
-            onViewZisProjects={() => setCurrentView('zis-projects')}
-            onViewDetail={(id) => {
-              setSelectedProjectId(id)
-              setCurrentView('project-details')
+        {/* PUBLIC PROJECT DETAIL */}
+        {view === 'project-details' && projectId && (
+          <ProjectDetailsPage
+            projectId={projectId}
+            onBack={() => navigate({ view: 'browse' })}
+            onInvestClick={(id?: string) => {
+              if (!currentUser) {
+                navigate({ view: 'login' })
+              } else {
+                navigate({ view: 'invest', projectId: id || projectId })
+              }
+            }}
+            onWaqfClick={(id?: string) => {
+              if (!currentUser) {
+                navigate({ view: 'login' })
+              } else {
+                navigate({ view: 'waqf', projectId: id || projectId })
+              }
             }}
           />
         )}
-        
-        {currentView === 'project-details' && selectedProjectId && (
-          <ProjectDetailsPage 
-            projectId={selectedProjectId} 
-            onBack={() => setCurrentView('home')} 
-            onInvestClick={() => setCurrentView('login')} 
+
+        {/* BROWSE CATALOG */}
+        {view === 'browse' && (
+          <BrowsePage
+            currentUser={currentUser}
+            onViewDetail={(id) => navigate({ view: 'project-details', projectId: id })}
+            onLoginClick={() => navigate({ view: 'login' })}
+            onKycClick={() => navigate({ view: 'kyc' })}
           />
+        )}
+
+        {/* KYC */}
+        {view === 'kyc' && (
+          <KycUploadPage
+            currentUser={currentUser}
+            onBack={() => navigate({ view: 'ex-dashboard' })}
+          />
+        )}
+
+        {/* INVEST FLOW */}
+        {view === 'invest' && projectId && (
+          <InvestFlowPage
+            projectId={projectId}
+            currentUser={currentUser}
+            onBack={() => navigate({ view: 'project-details', projectId })}
+            onDashboardClick={() => navigate({ view: 'ex-dashboard' })}
+            onBrowseClick={() => navigate({ view: 'browse' })}
+          />
+        )}
+
+        {/* WAQF MONEY FLOW */}
+        {view === 'waqf' && projectId && (
+          <WaqfMoneyFlowPage
+            projectId={projectId}
+            currentUser={currentUser}
+            onBack={() => navigate({ view: 'project-details', projectId })}
+            onDashboardClick={() => navigate({ view: 'ex-dashboard' })}
+            onBrowseClick={() => navigate({ view: 'browse' })}
+          />
+        )}
+
+        {/* EXTERNAL DASHBOARD */}
+        {view === 'ex-dashboard' && (
+          <ExternalDashboardPage
+            currentUser={currentUser}
+            onKycClick={() => navigate({ view: 'kyc' })}
+            onBrowseClick={() => navigate({ view: 'browse' })}
+            onViewParticipation={(id) => navigate({ view: 'participation-detail', participationId: id })}
+          />
+        )}
+
+        {/* PARTICIPATION DETAIL */}
+        {view === 'participation-detail' && participationId && (
+          <ParticipationDetailPage
+            participationId={participationId}
+            onBack={() => navigate({ view: 'ex-dashboard' })}
+          />
+        )}
+
+        {/* TERMS */}
+        {view === 'terms' && (
+          <TermsPage onBack={() => navigate({ view: 'home' })} />
+        )}
+
+        {/* PRIVACY */}
+        {view === 'privacy' && (
+          <PrivacyPage onBack={() => navigate({ view: 'home' })} />
         )}
       </div>
     </ErrorBoundary>

@@ -56,9 +56,10 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
   };
 
   const roles = [
-    { title: 'Investor', description: 'Kelola portofolio investasi Anda dengan transparansi penuh', roles: ['Investasi Mikro', 'Investasi Enterprise'], color: 'from-blue-600 to-cyan-600' },
-    { title: 'Universal Funder', description: 'Integrasi donasi ZIS, wakaf aset/dana, dan investasi dalam satu ekosistem', roles: ['Funder'], color: 'from-emerald-600 to-indigo-600' },
-    { title: 'Officer', description: 'Kelola dan awasi operasional ACO Platform', roles: ['Finance', 'Investment', 'Portfolio Monitor'], color: 'from-amber-600 to-orange-600' }
+    { title: 'External User', description: 'Jelajahi proyek publik, investasi & wakaf tanpa kerumitan. Daftar gratis.', roles: ['investasi_mikro', 'funder'], color: 'from-indigo-600 to-violet-600', labels: ['Investor (Demo)', 'Universal Funder (Demo)'] },
+    { title: 'Investor', description: 'Kelola portofolio investasi Anda dengan transparansi penuh dan laporan real-time.', roles: ['Investasi Mikro', 'Investasi Enterprise'], color: 'from-blue-600 to-cyan-600', labels: ['Investasi Mikro', 'Investasi Enterprise'] },
+    { title: 'Universal Funder', description: 'Integrasi donasi ZIS, wakaf aset/dana, dan investasi dalam satu ekosistem.', roles: ['Funder'], color: 'from-emerald-600 to-teal-600', labels: ['Muzakki / Wakif'] },
+    { title: 'Officer', description: 'Kelola dan awasi operasional ACO Platform dengan kontrol penuh.', roles: ['Finance', 'Investment', 'Portfolio Monitor'], color: 'from-amber-600 to-orange-600', labels: ['Finance', 'Investment', 'Portfolio Monitor'] }
   ];
 
   const faqs = [
@@ -161,8 +162,8 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-10">
-            {mockProjects.map((project) => (
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {mockProjects.slice(0, 3).map((project) => (
               <ProjectSummaryCard
                 key={project.id}
                 project={project}
@@ -170,14 +171,25 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
               />
             ))}
           </div>
+          {mockProjects.length > 3 && (
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8 mt-8">
+              {mockProjects.slice(3).map((project) => (
+                <ProjectSummaryCard
+                  key={project.id}
+                  project={project}
+                  onViewDetail={onViewDetail}
+                />
+              ))}
+            </div>
+          )}
 
-          <div className="mt-16 p-8 bg-slate-900 rounded-[3rem] text-white flex flex-col md:flex-row items-center justify-between gap-8 h-auto">
-            <div className="space-y-2 text-center md:text-left">
+          <div className="mt-16 p-8 bg-slate-900 rounded-[3rem] text-white flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="space-y-2">
               <h4 className="text-2xl font-bold italic">Siap Menghitung Akad?</h4>
               <p className="text-slate-400 font-medium">Beralih ke dashboard untuk mensimulasikan bagi hasil dan alokasi asnaf secara real-time.</p>
             </div>
-            <button onClick={onLoginClick} className="px-10 py-5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 whitespace-nowrap">
-              Buka Dashboard Simulai
+            <button onClick={onLoginClick} className="px-10 py-5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 whitespace-nowrap shrink-0">
+              Buka Dashboard Simulasi
             </button>
           </div>
         </div>
@@ -264,46 +276,50 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
 
           <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-8 snap-x no-scrollbar" style={{ scrollbarWidth: 'none' }}>
             {projects.map((p) => {
-              const fundingPercent = ((p.raisedFunding / p.targetFunding) * 100).toFixed(0);
+              const raised = p.currentFunding ?? p.raisedFunding ?? 0;
+              const pct = p.targetFunding > 0 ? Math.min(100, (raised / p.targetFunding) * 100) : 0;
+              const pctStr = pct.toFixed(0);
+              const title = p.title || p.name || 'Proyek';
               return (
-                <div key={p.id} className="min-w-[300px] md:min-w-[380px] bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-blue-100 transition-all group flex flex-col snap-start">
-                  <div className="h-52 relative overflow-hidden">
-                    <img src={getProjectImage(p.name || p.title)} alt={p.name || p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                    <div className="absolute top-4 right-4 px-3 py-1 bg-white/95 backdrop-blur-sm rounded-full text-[10px] font-black uppercase text-slate-600 border border-slate-100 italic">{p.category}</div>
+                <div key={p.id} className="min-w-[300px] md:min-w-[360px] bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:border-blue-100 transition-all group flex flex-col snap-start shrink-0">
+                  <div className="h-48 relative overflow-hidden">
+                    <img src={p.imageUrl || getProjectImage(title)} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+                    <div className="absolute top-4 right-4 px-3 py-1 bg-white/95 backdrop-blur-sm rounded-full text-[10px] font-black uppercase text-slate-700 border border-slate-100">{p.category}</div>
                   </div>
-                  <div className="p-8 flex flex-1 flex-col">
-                    <h4 className="text-xl font-bold text-slate-900 mb-6 group-hover:text-blue-600 transition-colors">{p.name || p.title}</h4>
-                    <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="p-7 flex flex-1 flex-col">
+                    <h4 className="text-lg font-bold text-slate-900 mb-5 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">{title}</h4>
+                    <div className="grid grid-cols-2 gap-3 mb-5">
                       <div className="space-y-1">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Bagi Hasil Est.</p>
-                        <p className="text-lg font-bold text-emerald-600">{(p.monthlyProfit ? (p.monthlyProfit / p.targetFunding * 100).toFixed(1) : 10)}%</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Est. Return</p>
+                        <p className="text-lg font-bold text-emerald-600">14-16%</p>
                       </div>
                       <div className="text-right space-y-1">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Tenor</p>
-                        <p className="text-lg font-bold text-slate-700">12 Bln</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Partisipan</p>
+                        <p className="text-lg font-bold text-slate-700">{p.investorCount ?? '—'}</p>
                       </div>
                     </div>
-                    <div className="space-y-3 mb-8">
+                    <div className="space-y-2 mb-6">
                       <div className="flex justify-between text-[11px] font-bold text-slate-500">
-                        <span>Amanah {fundingPercent}%</span>
-                        <span>Target {p.targetFunding / 1000000 >= 1000 ? (p.targetFunding / 1000000000).toFixed(1) + 'M' : (p.targetFunding / 1000000).toFixed(0) + 'Jt'}</span>
+                        <span className="text-blue-600">{pctStr}% terpenuhi</span>
+                        <span>dari {p.targetFunding >= 1e9 ? (p.targetFunding / 1e9).toFixed(1) + 'M' : (p.targetFunding / 1e6).toFixed(0) + 'Jt'}</span>
                       </div>
                       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{ width: `${fundingPercent}%` }}></div>
+                        <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-400 rounded-full transition-all duration-1000" style={{ width: `${pctStr}%` }}></div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex gap-3 mt-auto">
                       <button
                         onClick={() => onViewDetail(p.id)}
-                        className="w-full py-4 border-2 border-slate-900 text-slate-900 font-bold rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                        className="flex-1 py-3.5 border-2 border-slate-900 text-slate-900 font-bold rounded-2xl hover:bg-slate-50 transition-all text-sm flex items-center justify-center gap-1"
                       >
-                        Lihat Detail <ChevronRight size={18} />
+                        Detail <ChevronRight size={16} />
                       </button>
                       <button
                         onClick={onLoginClick}
-                        className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 active:scale-95"
+                        className="flex-1 py-3.5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 transition-all text-sm"
                       >
-                        Investasi Sekarang
+                        Investasi
                       </button>
                     </div>
                   </div>
@@ -534,22 +550,22 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
             {roles.map((r, i) => (
               <div
                 key={i}
-                className={`p-10 bg-gradient-to-br ${r.color} rounded-[3rem] text-white shadow-xl flex flex-col justify-between min-h-[350px] transition-all hover:-translate-y-3 hover:shadow-2xl`}
+                className={`p-8 bg-gradient-to-br ${r.color} rounded-[2.5rem] text-white shadow-xl flex flex-col justify-between min-h-[320px] transition-all hover:-translate-y-2 hover:shadow-2xl`}
                 onMouseEnter={() => setHoveredRole(r.title)}
                 onMouseLeave={() => setHoveredRole(null)}
               >
                 <div>
-                  <h4 className="text-2xl font-black mb-3 italic tracking-tighter">{r.title}</h4>
+                  <h4 className="text-xl font-black mb-3 italic tracking-tighter">{r.title}</h4>
                   <p className="text-sm text-white/80 font-bold leading-relaxed">{r.description}</p>
                 </div>
-                <div className={`space-y-2 mt-8 transition-all duration-300 ${hoveredRole === r.title ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
-                  {r.roles.map((rn, ri) => (
+                <div className={`space-y-2 mt-6 transition-all duration-300 ${hoveredRole === r.title ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
+                  {(r.labels ?? r.roles).map((label: string, ri: number) => (
                     <button
                       key={ri}
-                      onClick={() => onQuickLoginClick(rn.toLowerCase().replace(/\s+/g, '_'))}
-                      className="w-full py-3 bg-white/20 hover:bg-white/40 rounded-2xl text-[10px] font-black uppercase tracking-wider text-left px-5 flex items-center justify-between"
+                      onClick={() => onQuickLoginClick(r.roles[ri] ?? label.toLowerCase().replace(/\s+/g, '_'))}
+                      className="w-full py-3 bg-white/20 hover:bg-white/40 rounded-2xl text-[10px] font-black uppercase tracking-wider text-left px-5 flex items-center justify-between transition-all"
                     >
-                      {rn} <ChevronRight size={14} />
+                      {label} <ChevronRight size={14} />
                     </button>
                   ))}
                 </div>
