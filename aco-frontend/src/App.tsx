@@ -63,86 +63,97 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, Error
 
 import { mockLogin, mockValidateToken } from './mockAuth'
 
+import { RoleBasedLayout } from './components/templates/RoleBasedLayout'
+import { useStore } from './store/useStore'
+
 function App() {
-  const [user, setUser] = useState<User | null>(null)
-  const [token, setToken] = useState<string | null>(null)
   const [currentView, setCurrentView] = useState<'home' | 'login' | 'dashboard' | 'projects' | 'project-details' | 'zis-projects'>('home')
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
+  
+  const currentUser = useStore((state: any) => state.currentUser)
+  const setCurrentUser = useStore((state: any) => state.setCurrentUser)
 
   // Constant for quick login emails
   const quickLoginEmails: Record<string, string> = {
-    investor_micro: 'rina@aco.com',
-    investor_enterprise: 'budi@aco.com',
-    project_owner: 'dimas@aco.com',
-    muzakki: 'salim@aco.com',
-    munfiq_mutashadiq: 'tari@aco.com',
-    wakif: 'mahmud@aco.com',
-    mustahiq: 'ruslan@aco.com',
-    investment_officer: 'arief@aco.com',
-    portfolio_monitor: 'sinta@aco.com',
-    finance_officer: 'hendra@aco.com',
-    admin: 'reza@aco.com'
+    investment_officer: 'arief',
+    portfolio_monitor: 'sinta',
+    finance_officer: 'hendra',
+    admin: 'reza'
   }
 
   useEffect(() => {
-    const initAuth = async () => {
-      const savedToken = localStorage.getItem('token')
-      if (savedToken) {
-        try {
-          const userData = mockValidateToken(savedToken)
-          if (userData) {
-            setUser(userData)
-            setToken(savedToken)
-            setCurrentView('dashboard')
-          } else {
-            throw new Error('Invalid mock token')
-          }
-        } catch (err) {
-          console.error('Session restoration failed:', err)
-          localStorage.removeItem('token')
-          localStorage.removeItem('user')
-        }
-      }
-      setIsInitializing(false)
-    }
-    initAuth()
+    // Simulate init from localStorage if needed, for now just use store default
+    setIsInitializing(false)
   }, [])
 
   const handleLogin = (authData: AuthResponse) => {
-    setUser(authData.user)
-    setToken(authData.access_token)
+    setCurrentUser({
+      id: authData.user.id,
+      name: authData.user.name,
+      role: authData.user.role.toLowerCase()
+    })
     setCurrentView('dashboard')
-    localStorage.setItem('token', authData.access_token)
-    localStorage.setItem('user', JSON.stringify(authData.user))
   }
 
   const handleQuickLogin = async (role: string) => {
-    const email = quickLoginEmails[role]
-    if (email) {
-      try {
-        const response = await mockLogin(email, 'password123')
-        handleLogin(response)
-      } catch (err: any) {
-        alert('Quick Login Failed: ' + err.message)
-      }
+    // role is something like 'arief', 'sinta', etc. from the new homepage
+    const roleMap: Record<string, string> = {
+      // Direct Main Roles
+      'arief': 'arief',
+      'investment_officer': 'arief',
+      'sinta': 'sinta',
+      'portfolio_monitor': 'sinta',
+      'hendra': 'hendra',
+      'finance_officer': 'hendra',
+      'reza': 'reza',
+      'admin': 'reza',
+      
+      // Homepage Aliases & External Roles
+      'investasi_mikro': 'investor_micro',
+      'investor_micro': 'investor_micro',
+      'investasi_enterprise': 'investor_enterprise',
+      'investor_enterprise': 'investor_enterprise',
+      'muzakki': 'muzakki',
+      'munfiq': 'munfiq',
+      'mutashadiq': 'mutashadiq',
+      'wakif': 'wakif',
+      'mustahiq': 'mustahiq',
+      'project_owner': 'project_owner',
+      'investment': 'arief',
+      'finance': 'hendra'
     }
-  }
+    
+    // In demo mode, just set the store user directly
+    const tRole = roleMap[role.toLowerCase()] || 'arief'
+    const nameMap: Record<string, string> = {
+      'arief': 'Arief Wijaksana',
+      'sinta': 'Sinta Portfolio',
+      'hendra': 'Hendra Finance',
+      'reza': 'Reza Admin',
+      'investor_micro': 'Budi (Micro Investor)',
+      'investor_enterprise': 'Citra (Corp Investor)',
+      'muzakki': 'Sholeh (Zakat Giver)',
+      'wakif': 'Hassan (Wakif)',
+      'mustahiq': 'Maimunah (Recipient)',
+      'project_owner': 'Mitra Tani Sejahtera'
+    }
 
-  const handleLogout = () => {
-    setUser(null)
-    setToken(null)
-    setCurrentView('home')
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    setCurrentUser({
+      id: Math.random().toString(36).substr(2, 9),
+      name: nameMap[tRole] || `Demo ${tRole.toUpperCase()}`,
+      role: tRole,
+      kycVerified: !['mustahiq'].includes(tRole)
+    })
+    setCurrentView('dashboard')
   }
 
   if (isInitializing) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-slate-900">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-white font-medium">ACO Platform Initializing...</p>
+      <div className="h-screen w-full flex items-center justify-center bg-slate-950">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(37,99,235,0.3)]"></div>
+          <p className="text-white font-black uppercase tracking-[0.3em] text-xs italic">ACO Engine v2.0 Initializing</p>
         </div>
       </div>
     )
@@ -163,39 +174,7 @@ function App() {
             }}
           />
         )}
-        {currentView === 'projects' && (
-          <ProjectsPage 
-            onBack={() => setCurrentView('home')}
-            onLoginClick={() => setCurrentView('login')}
-            onViewDetail={(id) => {
-              setSelectedProjectId(id)
-              setCurrentView('project-details')
-            }}
-          />
-        )}
-        {currentView === 'project-details' && selectedProjectId && (
-          <ProjectDetailsPage 
-            projectId={selectedProjectId}
-            onBack={() => setCurrentView('projects')}
-            onInvestClick={() => {
-              if (user) {
-                setCurrentView('dashboard')
-              } else {
-                setCurrentView('login')
-              }
-            }}
-          />
-        )}
-        {currentView === 'zis-projects' && (
-          <ZisProjectsPage 
-            onBack={() => setCurrentView('home')}
-            onDonationClick={() => setCurrentView('login')}
-            onViewDetail={(id) => {
-              setSelectedProjectId(id)
-              setCurrentView('project-details')
-            }}
-          />
-        )}
+        
         {currentView === 'login' && (
           <BeautifulLogin 
             onLogin={handleLogin} 
@@ -203,10 +182,22 @@ function App() {
             onBack={() => setCurrentView('home')} 
           />
         )}
-        {currentView === 'dashboard' && user && (
-          <UniversalDashboard 
-            user={user} 
-            onLogout={handleLogout} 
+
+        {currentView === 'dashboard' && currentUser && (
+          <RoleBasedLayout />
+        )}
+
+        {/* Existing views fallbacks if needed, but the new RoleBasedLayout handles internal modules */}
+        {currentView === 'projects' && (
+          <HomePage 
+            onLoginClick={() => setCurrentView('login')} 
+            onQuickLoginClick={handleQuickLogin}
+            onViewProjects={() => setCurrentView('projects')}
+            onViewZisProjects={() => setCurrentView('zis-projects')}
+            onViewDetail={(id) => {
+              setSelectedProjectId(id)
+              setCurrentView('project-details')
+            }}
           />
         )}
       </div>
