@@ -84,9 +84,11 @@ Konten statis; setiap step card berisi ikon, nomor urut, judul, dan deskripsi si
 
 | Elemen | Tipe | Behaviour |
 |---|---|---|
-| Grid proyek | Card grid, maksimal 6 card | Hanya proyek dengan flag "Tampilkan di Homepage" = Ya yang dikonfigurasi Admin di P-AO-04 |
-| Struktur card | — | Sama dengan card di P-EX-01: thumbnail, nama proyek, kategori badge, progress bar pendanaan, target dana, jenis partisipasi badge |
-| Urutan card | — | Mengikuti urutan manual yang ditetapkan Admin |
+| Filter tipe proyek | Checkbox group | Dua checkbox: "Komersial" dan "Sosial"; logika filter mengikuti BL-5.5; default: keduanya kosong (tampil semua) |
+| Grid proyek | Card grid, maksimal 6 card | Hanya proyek dengan flag "Tampilkan di Homepage" = Ya yang dikonfigurasi Admin di P-AO-04; filter tipe proyek diterapkan terlebih dahulu, kemudian 6 card pertama dari hasil filter ditampilkan mengikuti urutan manual Admin |
+| Struktur card | — | Sama dengan card di P-EX-01: thumbnail, nama proyek, kategori badge, progress bar pendanaan, target dana, jenis partisipasi badge, indikator rasio komersial/sosial |
+| Urutan card | — | Mengikuti urutan manual yang ditetapkan Admin setelah filter diterapkan |
+| Pesan jika hasil filter kosong | Teks | "Tidak ada proyek unggulan yang sesuai filter." ditampilkan di area grid; tombol "Lihat Semua Proyek" tetap tampil |
 | Klik card | — | Navigasi ke P-EX-02 (`/browse/[projectSlug]`) |
 | Tombol "Lihat Semua Proyek" | Button secondary | Navigasi ke `/browse` |
 | Fallback jika tidak ada proyek dipilih admin | — | Section ini tidak dirender sama sekali |
@@ -250,9 +252,10 @@ Penjelasan lebih detail dibandingkan Section Cara Kerja di homepage.
 | Tab "Investasi" / "Wakaf Uang" / "Semua" | Tab | Filter catalog berdasarkan jenis partisipasi; default "Semua"; dapat diaktifkan via query param: `?tab=investasi` atau `?tab=wakaf` (digunakan oleh CTA di P-PUB-00) |
 | Search bar | Input teks | Pencarian berdasarkan nama proyek atau keyword; real-time atau on-submit |
 | Filter kategori | Dropdown | Properti / Logistik / UMKM / Wakaf Produktif / Sosial / dll. |
+| Filter tipe proyek | Checkbox group | Dua checkbox: "Komersial" dan "Sosial"; logika filter mengikuti BL-5.5: hanya satu dicentang = tampilkan proyek murni tipe tersebut; keduanya dicentang = tampilkan proyek campuran; keduanya kosong = tampilkan semua; default: keduanya kosong |
 | Filter progress pendanaan | Dropdown | Semua / Masih Tersedia / Hampir Penuh (>80%) |
 | Sort | Dropdown | Terbaru / Terlama / Progress Tertinggi / Target Dana Terbesar |
-| Grid proyek | Card grid | Setiap card: thumbnail (jika ada), nama proyek, breadcrumb singkat (jika sub-proyek), kategori badge, progress bar pendanaan, target dana, jenis partisipasi badge |
+| Grid proyek | Card grid | Setiap card: thumbnail (jika ada), nama proyek, breadcrumb singkat (jika sub-proyek), kategori badge, progress bar pendanaan, target dana, jenis partisipasi badge, indikator rasio komersial/sosial |
 | Progress bar | Bar | Menampilkan % dana terkumpul dari target; warna berubah saat mendekati penuh |
 | Breadcrumb pada card | Teks | Nama parent ditampilkan sebagai plain text (tidak link) jika parent tertutup untuk publik |
 | Klik card | — | Navigasi ke P-EX-02 |
@@ -273,6 +276,7 @@ Penjelasan lebih detail dibandingkan Section Cara Kerja di homepage.
 | Breadcrumb | Teks/navigasi | Level di atas yang terbuka publik = link aktif; level yang tertutup = plain text tidak dapat diklik |
 | Nama proyek | Heading | |
 | Badge kategori & jenis partisipasi | Badge | |
+| Indikator rasio komersial/sosial | Bar split + teks | Bar horizontal dua warna (hijau = komersial, amber = sosial) dengan label "Komersial X% · Sosial Y%"; diambil dari nilai yang diinput Arief |
 | Deskripsi proyek | Teks panjang | |
 | Progress pendanaan | Bar + angka | Dana terkumpul / Target dana + persentase |
 | Section "Skema Partisipasi" | Teks | Menampilkan field Skema Partisipasi yang diinput Arief |

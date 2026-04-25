@@ -203,6 +203,7 @@ Konvensi dokumen:
 |---|---|---|
 | Toggle "Terbuka untuk Investasi Uang" | Toggle Ya/Tidak | Default: Tidak; jika diubah ke Ya, field Skema Partisipasi menjadi wajib |
 | Toggle "Terbuka untuk Wakaf Uang" | Toggle Ya/Tidak | Default: Tidak; jika diubah ke Ya, field Skema Partisipasi menjadi wajib |
+| Field "Rasio Komersial (%)" | Input angka + slider | Wajib; bilangan bulat 0–100; nilai 100 = murni komersial, nilai 0 = murni sosial; sistem menampilkan label dinamis: "Komersial: X% · Sosial: Y%" di samping input secara real-time; sistem menolak nilai di luar rentang 0–100 |
 | Field Target Dana | Input angka | Muncul jika salah satu toggle = Ya; wajib; format Rupiah |
 | Field Batas Kepemilikan per Investor | Input angka (%) | Opsional; jika kosong = tidak ada batas |
 | Field Porsi Fee ACO | Input angka (%) | Wajib jika toggle Investasi = Ya; validasi: 1–10%; sistem menolak di luar rentang |

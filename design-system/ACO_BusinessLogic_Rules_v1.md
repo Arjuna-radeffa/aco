@@ -223,6 +223,27 @@ Jika tidak dikonfigurasi, tidak ada batas (satu investor boleh mendanai hingga 1
 
 ---
 
+**BL-5.5 — Rasio komersial vs sosial per proyek**
+Setiap proyek memiliki atribut rasio yang menyatakan seberapa besar porsi komersial (berorientasi return finansial) dibanding porsi sosial (berorientasi dampak/wakaf) dari proyek tersebut.
+- Nilai dinyatakan sebagai **persentase komersial** (0–100%); porsi sosial = 100% dikurangi porsi komersial.
+- Nilai 100% = proyek murni komersial; nilai 0% = proyek murni sosial; nilai di antaranya = proyek campuran (hybrid).
+- Dikonfigurasi oleh Arief saat membuat atau mengedit proyek; wajib diisi sebelum proyek dapat diaktifkan.
+- Validasi sistem: hanya menerima bilangan bulat 0–100.
+
+Rasio ini digunakan sebagai basis filter di catalog publik (P-EX-01) dengan logika berikut:
+
+| Filter "Komersial" | Filter "Sosial" | Proyek yang ditampilkan |
+|---|---|---|
+| ✓ | ✗ | Hanya proyek dengan rasio komersial = 100% |
+| ✗ | ✓ | Hanya proyek dengan rasio komersial = 0% |
+| ✓ | ✓ | Hanya proyek dengan 0% < rasio komersial < 100% (campuran) |
+| ✗ | ✗ | Semua proyek (tidak ada filter aktif) |
+
+`DIKUNCI: logika filter dan validasi rentang 0–100`
+`CONFIGURABLE: nilai aktual per proyek oleh Arief`
+
+---
+
 ## Area 6 — KYC & Akun Pengguna
 
 **BL-6.1 — Dokumen wajib KYC**
@@ -298,6 +319,7 @@ Tidak ada aturan syariah tambahan yang dikuatkan di level sistem untuk fase MVP.
 | Perilaku periode profit nihil | Arief | Default: hangus |
 | Mekanisme pengembalian pokok | Arief | Per proyek |
 | Batas kepemilikan investor per proyek | Arief | Default: tidak ada batas |
+| Rasio komersial vs sosial per proyek | Arief | Bilangan bulat 0–100%; wajib diisi sebelum aktivasi |
 | Flag partisipasi per node proyek | Arief | Per node, independen |
 | Porsi fee nazir wakaf | Arief | Dalam rentang 0%–10% |
 | Threshold kesehatan proyek | Admin/Superadmin | Berlaku global atau per kategori |
