@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonivita — User Stories & Acceptance Criteria</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2D5016;
+    --moss: #4A7C2F;
+    --sage: #7BA05B;
+    --mint: #C8E6B4;
+    --cream: #FAF6EE;
+    --parchment: #F2EAD8;
+    --terracotta: #C1622A;
+    --amber: #D4873A;
+    --gold: #E8B84B;
+    --warm-brown: #6B4C2A;
+    --text-dark: #1E2A14;
+    --text-body: #3A4A2C;
+    --text-muted: #6A7A5C;
+    --border: #D6E8C4;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-body);
+    line-height: 1.8;
+    font-size: 15px;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--forest);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 80%, rgba(74,124,47,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 20%, rgba(200,230,180,0.15) 0%, transparent 55%);
+  }
+  .cover-badge {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(232,184,75,0.4);
+    padding: 6px 20px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .cover-leaf { font-size: 64px; margin-bottom: 20px; position: relative; }
+  .cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(48px, 7vw, 80px);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1.05;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .cover h1 span { color: var(--gold); font-style: italic; }
+  .cover-sub {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .cover-doc-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mint);
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 36px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+  }
+  .cover-meta-item { text-align: center; color: rgba(255,255,255,0.55); font-size: 12px; letter-spacing: 1px; }
+  .cover-meta-item strong { display: block; color: var(--mint); font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .cover-wave {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 80px; background: var(--cream);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 40px; }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--forest);
+    color: white;
+    padding: 28px 40px;
+  }
+  .stats-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; padding: 8px 20px; }
+  .stat-item .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-item .label { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+
+  /* ── TABLE OF CONTENTS ── */
+  .toc {
+    background: var(--parchment);
+    border-left: 4px solid var(--sage);
+    padding: 40px 48px;
+    margin: 60px auto;
+    max-width: 900px;
+    border-radius: 0 12px 12px 0;
+  }
+  .toc h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--forest);
+    margin-bottom: 28px;
+  }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .toc-epic { margin-bottom: 4px; }
+  .toc-epic-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 8px;
+  }
+  .toc-epic ul { list-style: none; padding: 0; }
+  .toc-epic ul li {
+    font-size: 13px;
+    color: var(--text-body);
+    padding: 4px 0;
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .toc-epic ul li span { color: var(--text-muted); font-size: 11px; display: block; }
+
+  /* ── EPIC HEADER ── */
+  .epic-header {
+    padding: 60px 0 0;
+  }
+  .epic-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--forest);
+    color: var(--gold);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .epic-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 3.5vw, 34px);
+    font-weight: 700;
+    color: var(--forest);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .epic-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    max-width: 640px;
+    line-height: 1.7;
+  }
+
+  /* ── USER STORY CARD ── */
+  .us-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(45,80,22,0.05);
+  }
+  .us-header {
+    padding: 22px 28px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .us-id {
+    background: var(--forest);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .us-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--forest);
+    line-height: 1.3;
+  }
+  .us-body { padding: 22px 28px; }
+
+  /* ── USER STORY STATEMENT ── */
+  .us-statement {
+    background: var(--parchment);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+    font-family: 'Lora', serif;
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--text-body);
+    border-left: 3px solid var(--sage);
+  }
+  .us-statement .role { color: var(--forest); font-weight: 600; }
+  .us-statement .action { color: var(--warm-brown); }
+  .us-statement .benefit { color: var(--moss); }
+
+  /* ── ACCEPTANCE CRITERIA ── */
+  .ac-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ac-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .ac-list { list-style: none; padding: 0; }
+  .ac-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .ac-item:last-child { border-bottom: none; }
+  .ac-num {
+    background: var(--mint);
+    color: var(--forest);
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .ac-text {
+    font-size: 14px;
+    color: var(--text-body);
+    line-height: 1.65;
+  }
+  .ac-text strong { color: var(--forest); }
+  .ac-text em { color: var(--warm-brown); font-style: italic; }
+  .ac-text code {
+    background: var(--parchment);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: var(--terracotta);
+  }
+
+  /* ── PRIORITY & ROLE BADGES ── */
+  .us-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .badge-mvp { background: var(--mint); color: var(--forest); }
+  .badge-post { background: #FFE8CC; color: var(--warm-brown); }
+  .badge-v2 { background: #E8D5F0; color: #5A2D7A; }
+  .badge-role { background: var(--parchment); color: var(--text-muted); border: 1px solid var(--border); }
+
+  /* ── SECTION DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 16px;
+    margin: 48px 0 36px;
+  }
+  .divider span {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted); white-space: nowrap;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── NOTE BOX ── */
+  .note-box {
+    background: var(--parchment);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 16px 0 28px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .note-box strong { color: var(--forest); }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 32px 0 48px;
+    padding: 20px 24px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .legend-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); width: 100%; margin-bottom: 4px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-body); }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    background: var(--forest);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 40px;
+    font-size: 13px;
+    margin-top: 80px;
+  }
+  .doc-footer strong { color: var(--gold); }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 20px; }
+    .toc-grid { grid-template-columns: 1fr; }
+    .us-header { flex-direction: column; gap: 8px; }
+    .stats-inner { gap: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-badge">Dokumen Pengembangan Produk</div>
+  <div class="cover-leaf">🌿</div>
+  <h1>Harmo<span>nivita</span></h1>
+  <p class="cover-sub">Portal Komunitas Kesehatan Holistik & Klinik Mitra</p>
+  <p class="cover-doc-title">User Stories & Acceptance Criteria</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><strong>Versi</strong>1.0 — April 2025</div>
+    <div class="cover-meta-item"><strong>Bahasa</strong>Indonesia</div>
+    <div class="cover-meta-item"><strong>Status</strong>Draft untuk Review</div>
+    <div class="cover-meta-item"><strong>Referensi</strong>Narrative Story v1.0</div>
+  </div>
+  <div class="cover-wave"></div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item"><span class="num">7</span><span class="label">Epic</span></div>
+    <div class="stat-item"><span class="num">28</span><span class="label">User Stories</span></div>
+    <div class="stat-item"><span class="num">143</span><span class="label">Acceptance Criteria</span></div>
+    <div class="stat-item"><span class="num">5</span><span class="label">Aktor Sistem</span></div>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>🗂 Daftar Epic & User Story</h2>
+  <div class="toc-grid">
+    <div>
+      <div class="toc-epic">
+        <div class="toc-epic-title">Epic 1 · Portal Publik</div>
+        <ul>
+          <li>US-001 Melihat Artikel Kesehatan</li>
+          <li>US-002 Melihat Video YouTube</li>
+          <li>US-003 Melihat Kalender Event</li>
+          <li>US-004 Melihat Peta Klinik</li>
+        </ul>
+      </div>
+      <div class="toc-epic" style="margin-top:20px;">
+        <div class="toc-epic-title">Epic 2 · Registrasi & Autentikasi</div>
+        <ul>
+          <li>US-005 Registrasi Member via QR Code</li>
+          <li>US-006 Login & Autentikasi Member</li>
+          <li>US-007 Perpanjangan Keanggotaan</li>
+        </ul>
+      </div>
+      <div class="toc-epic" style="margin-top:20px;">
+        <div class="toc-epic-title">Epic 3 · Dasbor Member</div>
+        <ul>
+          <li>US-008 Melihat Dasbor Pribadi</li>
+          <li>US-009 Melihat Riwayat Pengobatan</li>
+          <li>US-010 Melihat Riwayat Obat</li>
+        </ul>
+      </div>
+      <div class="toc-epic" style="margin-top:20px;">
+        <div class="toc-epic-title">Epic 4 · Program Referral</div>
+        <ul>
+          <li>US-011 Melihat & Membagikan Kode Referral</li>
+          <li>US-012 Melacak Referral & Komisi</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="toc-epic">
+        <div class="toc-epic-title">Epic 5 · Event & Pelatihan</div>
+        <ul>
+          <li>US-013 Registrasi Event (Member)</li>
+          <li>US-014 Registrasi Event (Non-Member)</li>
+          <li>US-015 Absensi Event oleh Admin</li>
+        </ul>
+      </div>
+      <div class="toc-epic" style="margin-top:20px;">
+        <div class="toc-epic-title">Epic 6 · Admin Cabang</div>
+        <ul>
+          <li>US-016 Mencari & Verifikasi Member</li>
+          <li>US-017 Input Kunjungan Member</li>
+          <li>US-018 Input Resep Obat</li>
+          <li>US-019 Jadwal Kontrol & Trigger Reminder</li>
+          <li>US-020 Input Transaksi Klinik</li>
+          <li>US-021 Laporan Kunjungan Cabang</li>
+        </ul>
+      </div>
+      <div class="toc-epic" style="margin-top:20px;">
+        <div class="toc-epic-title">Epic 7 · Admin Pusat</div>
+        <ul>
+          <li>US-022 Manajemen Konten (CMS)</li>
+          <li>US-023 Manajemen Member</li>
+          <li>US-024 Manajemen Klinik & Mitra</li>
+          <li>US-025 Manajemen Event</li>
+          <li>US-026 Manajemen Referral & Payout</li>
+          <li>US-027 Manajemen Sponsor & Iklan</li>
+          <li>US-028 Laporan Konsolidasi</li>
+          <li>US-029 WA Blast ke Member</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="container">
+  <div class="legend">
+    <div class="legend-title">Keterangan Prioritas</div>
+    <div class="legend-item"><span class="badge badge-mvp">MVP</span> Wajib ada di Fase 1 — pondasi sistem</div>
+    <div class="legend-item"><span class="badge badge-post">Post-MVP</span> Dibangun di Fase 2 — growth & monetisasi</div>
+    <div class="legend-item"><span class="badge badge-v2">v2</span> Fase 3 — scale, engagement & ekspansi</div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════ EPIC 1 ════ -->
+<div class="container">
+  <div class="epic-header">
+    <div class="epic-pill">🌐 Epic 1</div>
+    <h2>Portal Publik</h2>
+    <p class="epic-desc">Halaman-halaman yang dapat diakses oleh siapapun tanpa login — artikel kesehatan, video, kalender event, dan peta klinik. Ini adalah wajah pertama Harmonivita yang dilihat publik dan calon member.</p>
+  </div>
+
+  <!-- US-001 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-001</div>
+      <div class="us-title">Melihat & Membaca Artikel Kesehatan</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">pengunjung portal</span>, saya ingin <span class="action">menelusuri dan membaca artikel kesehatan yang diterbitkan Harmonivita</span>, sehingga <span class="benefit">saya mendapatkan informasi kesehatan yang terpercaya tanpa perlu membuat akun terlebih dahulu</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Halaman daftar artikel dapat diakses tanpa login dari menu navigasi utama portal.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Setiap artikel ditampilkan sebagai kartu yang memuat: gambar thumbnail, judul, kategori, tanggal publikasi, nama penulis, dan ringkasan 2–3 kalimat.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Mengklik kartu artikel membuka halaman detail artikel dengan konten lengkap (teks, gambar, dan format rich-text).</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Daftar artikel mendukung paginasi atau <em>infinite scroll</em> — menampilkan minimal 9 artikel per halaman.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Tersedia filter berdasarkan kategori (misal: pola makan, kesehatan ibu & anak, manajemen stres, literasi obat) yang dapat dipilih pengunjung.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Terdapat fungsi pencarian artikel berdasarkan kata kunci di judul atau isi artikel.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Artikel yang berstatus <em>draft</em> tidak tampil di portal publik — hanya artikel berstatus <em>published</em> yang ditampilkan.</div></li>
+        <li class="ac-item"><div class="ac-num">8</div><div class="ac-text">Halaman artikel responsif dan dapat dibaca dengan nyaman di perangkat mobile.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">👤 Pengunjung</span>
+        <span class="badge badge-role">📦 M1 · Portal Publik</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-002 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-002</div>
+      <div class="us-title">Melihat Video YouTube Harmonivita</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">pengunjung portal</span>, saya ingin <span class="action">melihat video kesehatan terbaru dari channel YouTube Harmonivita langsung di portal</span>, sehingga <span class="benefit">saya bisa menikmati konten video tanpa harus berpindah ke aplikasi YouTube</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Seksi video tersedia di halaman utama portal dan halaman konten, dapat diakses tanpa login.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text"><strong>[MVP]</strong> Video ditampilkan sebagai embed YouTube statis (playlist atau ID video yang dikurasi admin). Minimal 6 video ditampilkan.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Setiap video menampilkan thumbnail, judul, dan tombol play yang mengaktifkan video dalam lightbox atau embed inline.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Mengklik video memutar video langsung di portal tanpa redirect ke YouTube (menggunakan YouTube iframe embed).</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text"><strong>[Post-MVP]</strong> Feed diperbarui otomatis via YouTube Data API — video baru dari channel Harmonivita muncul tanpa intervensi admin manual.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">👤 Pengunjung</span>
+        <span class="badge badge-role">📦 M1 · Portal Publik</span>
+        <span class="badge badge-role">🔗 M5 · YouTube API</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-003 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-003</div>
+      <div class="us-title">Melihat Kalender Event Pelatihan & Coaching</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">pengunjung portal</span>, saya ingin <span class="action">melihat daftar event pelatihan dan coaching yang akan datang beserta informasi harga</span>, sehingga <span class="benefit">saya bisa merencanakan kehadiran dan mempertimbangkan keuntungan menjadi member</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Halaman kalender event dapat diakses tanpa login dari navigasi utama portal.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Setiap event menampilkan: nama event, tanggal & waktu, lokasi, kapasitas/kuota tersisa, dan harga umum.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Harga member <strong>tidak ditampilkan</strong> kepada pengunjung yang belum login — sebagai gantinya, ditampilkan teks ajakan: <em>"Login sebagai member untuk lihat harga spesial"</em>.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Event yang sudah melewati tanggal pelaksanaan tidak ditampilkan di halaman utama kalender (dipindahkan ke tab "Arsip Event").</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Event dengan kuota habis menampilkan label <em>"Sold Out"</em> dan tombol registrasi dinonaktifkan.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Mengklik event membuka halaman detail dengan deskripsi lengkap, pembicara/narasumber, dan tombol registrasi.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-post">Post-MVP</span>
+        <span class="badge badge-role">👤 Pengunjung</span>
+        <span class="badge badge-role">📦 M1 · Portal Publik</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-004 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-004</div>
+      <div class="us-title">Melihat Peta Klinik & Klinik Mitra</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">pengunjung atau member</span>, saya ingin <span class="action">melihat lokasi klinik Harmonivita dan klinik mitra di peta interaktif</span>, sehingga <span class="benefit">saya bisa menemukan klinik terdekat untuk berobat dan memanfaatkan benefit keanggotaan</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Peta interaktif berbasis Google Maps ditampilkan di halaman Peta Klinik tanpa memerlukan login.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Klinik Harmonivita ditandai dengan pin berwarna hijau/merah, klinik mitra ditandai dengan pin berwarna abu-abu/biru — keduanya dapat dibedakan secara visual.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Mengklik pin klinik memunculkan popup info yang memuat: nama klinik, alamat lengkap, jam operasional, nomor kontak/WA, daftar dokter & spesialisasi, dan layanan tersedia.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Popup klinik mitra menampilkan label <em>"Mitra Harmonivita"</em> dan keterangan bahwa konsultasi gratis member berlaku di klinik tersebut.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Tersedia filter untuk menampilkan: semua klinik, hanya klinik Harmonivita, atau hanya klinik mitra.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Tersedia kotak pencarian berdasarkan nama kota atau wilayah yang memindahkan pusat peta ke area tersebut.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Tombol <em>"Terdekat dari Saya"</em> meminta izin geolokasi browser dan menampilkan klinik-klinik yang paling dekat dari posisi pengguna.</div></li>
+        <li class="ac-item"><div class="ac-num">8</div><div class="ac-text">Klinik yang dinonaktifkan oleh Admin Pusat tidak muncul di peta publik.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">👤 Pengunjung</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">📦 M1 · Portal Publik</span>
+        <span class="badge badge-role">🔗 Google Maps API</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════ EPIC 2 ════ -->
+<div class="container">
+  <div class="epic-header">
+    <div class="epic-pill">🔑 Epic 2</div>
+    <h2>Registrasi & Autentikasi Member</h2>
+    <p class="epic-desc">Alur pendaftaran member baru via QR Code, proses login ke portal, dan mekanisme perpanjangan keanggotaan tahunan. Ini adalah pintu masuk utama ekosistem Harmonivita.</p>
+  </div>
+
+  <!-- US-005 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-005</div>
+      <div class="us-title">Registrasi Member via QR Code</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">calon member</span>, saya ingin <span class="action">mendaftar sebagai member Harmonivita melalui QR code yang saya temukan di Instagram atau poster klinik</span>, sehingga <span class="benefit">saya bisa segera menikmati manfaat keanggotaan termasuk konsultasi gratis dan akses rekam medis digital</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">QR code yang dipindai mengarahkan ke halaman landing pendaftaran di portal dengan parameter UTM yang terbawa secara otomatis (contoh: <code>?utm_source=instagram&utm_campaign=member_reg</code>).</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Halaman landing menampilkan benefit keanggotaan secara jelas: buku kesehatan gratis (senilai Rp60.000), konsultasi dokter gratis sepanjang tahun, akses riwayat medis digital, notifikasi WA, dan harga spesial event.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Formulir pendaftaran memuat field: <strong>nama lengkap</strong> (wajib), <strong>tanggal lahir</strong> (wajib), <strong>nomor WhatsApp</strong> (wajib, divalidasi format), <strong>email</strong> (wajib, divalidasi format), <strong>alamat domisili</strong> (wajib), dan <strong>kode referral</strong> (opsional).</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Jika QR code berasal dari referral member tertentu, field kode referral otomatis terisi dan terkunci — tidak dapat diubah calon member.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Sistem menyimpan parameter sumber registrasi (UTM source) di database bersamaan dengan data member, untuk keperluan laporan konversi Admin Pusat.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Setelah formulir terisi valid, pengguna diarahkan ke halaman pembayaran dengan nominal <strong>Rp200.000/tahun</strong> yang ditampilkan jelas.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Payment gateway mendukung minimal: QRIS, transfer bank virtual account, dan dompet digital (GoPay/OVO/ShopeePay).</div></li>
+        <li class="ac-item"><div class="ac-num">8</div><div class="ac-text">Setelah pembayaran berhasil dikonfirmasi, status keanggotaan langsung diaktifkan secara otomatis oleh sistem — tanpa perlu verifikasi manual.</div></li>
+        <li class="ac-item"><div class="ac-num">9</div><div class="ac-text">Member baru menerima pesan WA selamat datang beserta link aktivasi akun dalam waktu maksimal 5 menit setelah pembayaran berhasil.</div></li>
+        <li class="ac-item"><div class="ac-num">10</div><div class="ac-text">Member baru menerima email konfirmasi yang memuat: ringkasan benefit, tanggal kadaluarsa keanggotaan, dan informasi cara pengambilan buku kesehatan di klinik terdekat.</div></li>
+        <li class="ac-item"><div class="ac-num">11</div><div class="ac-text">Masa berlaku keanggotaan dihitung tepat 12 bulan dari tanggal pembayaran berhasil dikonfirmasi.</div></li>
+        <li class="ac-item"><div class="ac-num">12</div><div class="ac-text">Sistem mencegah pendaftaran ganda — jika nomor WA atau email sudah terdaftar, sistem menampilkan pesan error dan mengarahkan ke halaman login atau pemulihan akun.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🆕 Calon Member</span>
+        <span class="badge badge-role">📦 M1 · Portal Publik</span>
+        <span class="badge badge-role">🔗 M5 · Payment Gateway</span>
+        <span class="badge badge-role">🔗 M5 · WhatsApp API</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-006 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-006</div>
+      <div class="us-title">Login & Autentikasi Member ke Portal</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">member terdaftar</span>, saya ingin <span class="action">login ke portal Harmonivita menggunakan email atau nomor WhatsApp saya</span>, sehingga <span class="benefit">saya bisa mengakses dasbor pribadi, riwayat kesehatan, dan semua fitur khusus member</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Tombol <em>"Login"</em> tersedia di header portal dan dapat diakses dari semua halaman publik.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Login dilakukan menggunakan <strong>email atau nomor WhatsApp</strong> + password.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Tersedia fitur <em>"Lupa Password"</em> yang mengirimkan link reset password ke email terdaftar, atau OTP 6 digit ke nomor WA terdaftar.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Setelah login berhasil, member diarahkan ke halaman dasbor pribadi.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Jika kredensial salah, sistem menampilkan pesan error yang jelas tanpa menyebutkan field mana yang salah (demi keamanan).</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Setelah 5 kali percobaan login gagal, akun dikunci sementara selama 15 menit — dan member menerima notifikasi WA tentang aktivitas mencurigakan.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Member dengan keanggotaan <em>expired</em> masih bisa login namun diarahkan ke halaman notifikasi perpanjangan — akses ke fitur member diblokir hingga diperpanjang.</div></li>
+        <li class="ac-item"><div class="ac-num">8</div><div class="ac-text">Sesi login dipertahankan selama 7 hari (dengan opsi <em>"Ingat saya"</em>) atau hingga member logout secara manual.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">📦 M2 · Member Portal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-007 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-007</div>
+      <div class="us-title">Perpanjangan Keanggotaan Tahunan</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">member yang masa keanggotaannya akan segera habis</span>, saya ingin <span class="action">menerima pengingat tepat waktu dan dapat memperpanjang keanggotaan dengan mudah</span>, sehingga <span class="benefit">saya tidak kehilangan akses ke benefit member secara tiba-tiba</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Sistem secara otomatis mengirim notifikasi WA reminder perpanjangan pada <strong>H-30, H-14, dan H-1</strong> sebelum tanggal kadaluarsa keanggotaan.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Setiap pesan WA reminder memuat: nama member, tanggal kadaluarsa, harga perpanjangan (Rp200.000/tahun), dan link langsung ke halaman pembayaran perpanjangan.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Halaman perpanjangan menampilkan status keanggotaan saat ini, tanggal kadaluarsa, dan preview benefit yang akan terus dinikmati setelah perpanjangan.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Proses pembayaran perpanjangan menggunakan payment gateway yang sama dengan pendaftaran awal (QRIS, VA, dompet digital).</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Setelah pembayaran perpanjangan berhasil, masa aktif langsung diperpanjang 12 bulan dari tanggal kadaluarsa sebelumnya (bukan dari tanggal pembayaran) — sehingga member tidak kehilangan hari tersisa.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Member menerima konfirmasi WA dan email setelah perpanjangan berhasil, memuat tanggal kadaluarsa yang baru.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Admin Pusat dapat melakukan perpanjangan darurat secara manual melalui panel admin, dengan wajib mengisi catatan alasan perpanjangan.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M2 · Member Portal</span>
+        <span class="badge badge-role">🔗 M5 · WhatsApp API</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════ EPIC 3 ════ -->
+<div class="container">
+  <div class="epic-header">
+    <div class="epic-pill">👤 Epic 3</div>
+    <h2>Dasbor Member</h2>
+    <p class="epic-desc">Ruang pribadi member di portal — dasbor ringkasan, riwayat pengobatan, dan riwayat obat. Inilah core value proposition yang membuat keanggotaan Harmonivita terasa bermakna.</p>
+  </div>
+
+  <!-- US-008 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-008</div>
+      <div class="us-title">Melihat Dasbor Pribadi Member</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">member yang sudah login</span>, saya ingin <span class="action">melihat ringkasan informasi keanggotaan dan aktivitas terbaru saya di dasbor</span>, sehingga <span class="benefit">saya bisa memantau status dan rencana kesehatan saya dalam satu tampilan yang mudah dipahami</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Dasbor hanya dapat diakses oleh member yang telah login dan keanggotaannya aktif.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Dasbor menampilkan: <strong>nama member</strong>, <strong>status keanggotaan</strong> (Aktif / Akan Berakhir / Expired), dan <strong>tanggal kadaluarsa keanggotaan</strong>.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Dasbor menampilkan kartu <em>"Kunjungan Terakhir"</em> berisi: tanggal kunjungan, nama dokter, nama klinik. Jika belum pernah kunjungan, ditampilkan ajakan untuk kunjungan pertama.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Dasbor menampilkan <strong>saldo komisi referral</strong> yang terkumpul dan jumlah total referral berhasil.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Jika ada jadwal kontrol yang akan datang, dasbor menampilkan kartu pengingat dengan tanggal dan nama klinik.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Tersedia shortcut navigasi cepat ke: Riwayat Pengobatan, Riwayat Obat, Program Referral, dan Event Terdaftar.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Jika keanggotaan akan berakhir dalam ≤30 hari, tampil banner peringatan dengan tombol perpanjangan langsung dari dasbor.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">📦 M2 · Member Portal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-009 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-009</div>
+      <div class="us-title">Melihat Riwayat Pengobatan</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">member aktif</span>, saya ingin <span class="action">mengakses riwayat lengkap setiap kunjungan saya ke klinik Harmonivita maupun klinik mitra</span>, sehingga <span class="benefit">saya memiliki catatan medis pribadi yang terpusat dan bisa dikonsultasikan ke dokter manapun</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Halaman riwayat pengobatan hanya dapat diakses oleh member yang bersangkutan — member tidak dapat melihat riwayat member lain.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Daftar kunjungan ditampilkan secara kronologis terbalik — kunjungan terbaru muncul paling atas.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Setiap entri kunjungan menampilkan: tanggal kunjungan, nama dokter, nama klinik, keluhan utama, diagnosa, dan catatan klinis.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Member <strong>tidak dapat mengedit atau menghapus</strong> catatan kunjungan — data hanya bisa dimodifikasi oleh Admin Cabang yang menginput.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Tersedia filter pencarian berdasarkan: rentang tanggal dan nama klinik.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Jika member belum memiliki riwayat kunjungan, ditampilkan halaman kosong yang informatif dengan panduan cara menggunakan benefit konsultasi gratis.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">📦 M2 · Member Portal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-010 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-010</div>
+      <div class="us-title">Melihat Riwayat Obat yang Diresepkan</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">member aktif</span>, saya ingin <span class="action">melihat daftar semua obat yang pernah diresepkan dokter kepada saya beserta dosis dan durasinya</span>, sehingga <span class="benefit">saya bisa menginformasikan riwayat obat kepada dokter baru tanpa harus mengingat semua dari memori</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Halaman riwayat obat hanya dapat diakses oleh member yang bersangkutan.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Setiap entri obat menampilkan: nama obat, dosis, frekuensi konsumsi (misal: 3x sehari), durasi (misal: 5 hari), dan nama klinik penerbit resep.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Setiap entri obat terhubung dengan entri kunjungan yang bersesuaian — tersedia link <em>"Lihat detail kunjungan"</em>.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Member tidak dapat mengedit atau menghapus data obat.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Riwayat obat dapat difilter berdasarkan rentang tanggal.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">📦 M2 · Member Portal</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════ EPIC 4 ════ -->
+<div class="container">
+  <div class="epic-header">
+    <div class="epic-pill">🎯 Epic 4</div>
+    <h2>Program Referral</h2>
+    <p class="epic-desc">Sistem viral growth berbasis komisi — member mendapat kode unik untuk mengundang orang lain bergabung dan mendapat komisi dari setiap registrasi yang berhasil.</p>
+  </div>
+
+  <!-- US-011 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-011</div>
+      <div class="us-title">Melihat & Membagikan Kode Referral Unik</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">member aktif</span>, saya ingin <span class="action">melihat kode referral unik saya dan membagikannya dengan mudah via WhatsApp atau media sosial</span>, sehingga <span class="benefit">saya bisa mengundang kenalan bergabung ke Harmonivita dan mendapatkan komisi dari setiap pendaftar yang berhasil</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Setiap member mendapat kode referral unik yang digenerate otomatis saat pendaftaran selesai — kode tidak bisa sama antar member.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Kode referral ditampilkan secara menonjol di dasbor member pada kartu <em>"Program Referral"</em>.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Tersedia tombol <strong>"Salin Kode"</strong> yang menyalin kode ke clipboard dengan konfirmasi visual (misal: teks berubah menjadi "Tersalin ✓").</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Tersedia tombol <strong>"Bagikan via WhatsApp"</strong> yang membuka WA dengan pesan template yang sudah terisi: mengandung kode referral dan link pendaftaran langsung.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Tersedia link pendaftaran unik yang mengandung kode referral member (misal: <code>harmonivita.id/daftar?ref=DINDA2024</code>) — bisa dikopi dan dibagikan di media sosial lain.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">📦 M2 · Member Portal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-012 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-012</div>
+      <div class="us-title">Melacak Referral & Saldo Komisi</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">member aktif yang aktif mereferensikan</span>, saya ingin <span class="action">melihat daftar member yang berhasil bergabung lewat kode saya dan memantau akumulasi komisi saya</span>, sehingga <span class="benefit">saya tahu seberapa besar kontribusi referral saya dan kapan saya bisa mencairkan komisi</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Halaman referral menampilkan <strong>total member yang berhasil bergabung</strong> via kode referral saya.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Daftar referral memuat: nama depan + inisial nama belakang member yang direferensikan, tanggal bergabung, dan status komisi (<em>Pending / Dikreditkan</em>).</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Komisi dikreditkan ke saldo hanya setelah pembayaran member baru dikonfirmasi (bukan sekadar mengisi formulir).</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Dasbor referral menampilkan <strong>total saldo komisi</strong> yang terkumpul dan belum dicairkan.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Tersedia histori pencairan komisi sebelumnya: tanggal, jumlah yang dicairkan, dan metode pencairan.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text"><strong>[Post-MVP]</strong> Member dapat mengajukan request pencairan komisi ke rekening bank atau e-wallet dari dasbor referral, dengan syarat minimal saldo yang ditentukan Admin Pusat.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">📦 M2 · Member Portal</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════ EPIC 5 ════ -->
+<div class="container">
+  <div class="epic-header">
+    <div class="epic-pill">🎫 Epic 5</div>
+    <h2>Event & Pelatihan</h2>
+    <p class="epic-desc">Registrasi event dengan sistem harga diferensial (member vs non-member), tiket digital berbasis QR, dan absensi hari-H oleh admin event.</p>
+  </div>
+
+  <!-- US-013 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-013</div>
+      <div class="us-title">Registrasi Event sebagai Member</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">member aktif Harmonivita</span>, saya ingin <span class="action">mendaftar event pelatihan atau coaching dengan harga khusus member</span>, sehingga <span class="benefit">saya bisa menghadiri event berkualitas dengan biaya yang lebih terjangkau sebagai apresiasi keanggotaan saya</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Ketika member aktif yang sudah login membuka halaman detail event, sistem menampilkan <strong>harga member</strong> secara otomatis (bukan harga umum).</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Harga member hanya ditampilkan jika sistem memverifikasi status keanggotaan aktif (tidak expired) saat halaman dimuat.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Member dapat menyelesaikan registrasi dan pembayaran langsung dari halaman event.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Setelah pembayaran berhasil, sistem mengirim <strong>tiket digital</strong> via WA dan email yang memuat: nama peserta, nama event, tanggal & lokasi, dan QR code unik untuk absensi hari-H.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Tiket yang dibeli member juga muncul di halaman <em>"Event Terdaftar"</em> di dasbor member.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Sistem memblokir registrasi ketika kuota event penuh — tombol daftar dinonaktifkan dan label <em>"Sold Out"</em> ditampilkan.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-post">Post-MVP</span>
+        <span class="badge badge-role">💚 Member</span>
+        <span class="badge badge-role">📦 M1 · Portal Publik</span>
+        <span class="badge badge-role">📦 M2 · Member Portal</span>
+        <span class="badge badge-role">🔗 M5 · Payment Gateway</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-014 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-014</div>
+      <div class="us-title">Registrasi Event sebagai Non-Member</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">pengunjung yang belum menjadi member</span>, saya ingin <span class="action">mendaftar event pelatihan Harmonivita dengan harga umum</span>, sehingga <span class="benefit">saya tetap bisa menghadiri event sambil mendapat gambaran manfaat bergabung sebagai member</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Pengunjung yang belum login atau bukan member melihat <strong>harga umum</strong> pada halaman detail event.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Ditampilkan perbandingan harga: <em>"Harga Umum: RpXXX.000 | Harga Member: RpYYY.000"</em> disertai ajakan untuk mendaftar keanggotaan.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Pengunjung dapat mendaftar event tanpa menjadi member — cukup mengisi: nama lengkap, nomor WhatsApp, dan email.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Pada halaman pembayaran, tersedia opsi <em>"Daftar Member Sekaligus"</em> dengan bundle harga yang menarik.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Setelah pembayaran berhasil, tiket digital dikirim via WA dan email yang berisi QR code absensi.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-post">Post-MVP</span>
+        <span class="badge badge-role">👤 Pengunjung</span>
+        <span class="badge badge-role">📦 M1 · Portal Publik</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-015 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-015</div>
+      <div class="us-title">Absensi Peserta Event oleh Admin (Hari-H)</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">admin event Harmonivita</span>, saya ingin <span class="action">menscan tiket QR code peserta saat hari pelaksanaan event</span>, sehingga <span class="benefit">kehadiran setiap peserta tercatat akurat dan laporan peserta hadir tersedia secara real-time</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin event dapat membuka fitur scan QR dari browser perangkat mobile tanpa perlu install aplikasi terpisah.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Setelah scan berhasil, sistem menampilkan: nama peserta, status (Member / Non-Member), nomor tiket, dan konfirmasi bahwa kehadiran berhasil dicatat.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Sistem menolak scan tiket yang sama lebih dari satu kali — ditampilkan pesan error <em>"Tiket ini sudah digunakan"</em> beserta waktu scan pertama.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Jika QR code tidak valid (tiket palsu atau bukan untuk event ini), sistem menampilkan pesan error <em>"Tiket tidak valid untuk event ini"</em>.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Laporan kehadiran yang memuat daftar peserta hadir dan tidak hadir dapat diakses admin dari dasbor admin pusat setelah event selesai.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-post">Post-MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════ EPIC 6 ════ -->
+<div class="container">
+  <div class="epic-header">
+    <div class="epic-pill">🏥 Epic 6</div>
+    <h2>Admin Cabang</h2>
+    <p class="epic-desc">Modul kerja harian staf klinik — pencarian member, pencatatan kunjungan & resep, penjadwalan kontrol dengan trigger notifikasi WA, serta rekap transaksi klinik.</p>
+  </div>
+
+  <!-- US-016 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-016</div>
+      <div class="us-title">Mencari & Memverifikasi Member di Klinik</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">admin cabang</span>, saya ingin <span class="action">mencari member berdasarkan nama atau nomor HP dan memverifikasi status keanggotaannya sebelum konsultasi dimulai</span>, sehingga <span class="benefit">dokter bisa langsung melihat riwayat kesehatan pasien dan memulai konsultasi dengan konteks yang lengkap</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Modul Admin Cabang hanya dapat diakses setelah login dengan akun admin cabang yang terdaftar.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Kolom pencarian mendukung input berupa: nama lengkap (parsial) atau nomor WhatsApp/HP.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Hasil pencarian menampilkan: nama member, status keanggotaan (Aktif / Expired), dan tanggal kadaluarsa.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Mengklik nama member membuka profil yang menampilkan riwayat kunjungan <strong>hanya di klinik admin tersebut</strong> — riwayat klinik lain tidak tampil.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Admin cabang tidak dapat melihat data finansial member (saldo referral, histori pembayaran keanggotaan).</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Jika member tidak ditemukan, ditampilkan opsi untuk mendaftarkan member baru atau memberikan layanan sebagai pasien non-member (dengan catatan).</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🏥 Admin Cabang</span>
+        <span class="badge badge-role">📦 M3 · Admin Cabang</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-017 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-017</div>
+      <div class="us-title">Input Kunjungan Member</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">admin cabang</span>, saya ingin <span class="action">mencatat kunjungan member setelah sesi konsultasi selesai</span>, sehingga <span class="benefit">riwayat medis member terdokumentasi secara digital dan dapat diakses member kapan saja dari portal mereka</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin cabang dapat membuat entri kunjungan baru dari halaman profil member yang ditemukan.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Form input kunjungan memuat field: <strong>tanggal kunjungan</strong> (default: hari ini, bisa diubah), <strong>nama dokter</strong> (pilih dari daftar dokter klinik atau isi manual), <strong>keluhan utama</strong>, <strong>diagnosa</strong>, dan <strong>catatan klinis</strong>.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Semua field kecuali catatan klinis bersifat wajib diisi — sistem tidak mengizinkan penyimpanan jika ada field wajib yang kosong.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Setelah disimpan, entri kunjungan langsung muncul di halaman Riwayat Pengobatan member di portal member.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Admin cabang dapat mengedit kunjungan yang diinput dalam rentang waktu <strong>24 jam</strong> setelah penyimpanan. Setelah itu, entri terkunci dan hanya Admin Pusat yang bisa memodifikasi.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Semua perubahan pada entri kunjungan dicatat di activity log: siapa yang mengubah, kapan, dan apa yang diubah.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🏥 Admin Cabang</span>
+        <span class="badge badge-role">📦 M3 · Admin Cabang</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-018 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-018</div>
+      <div class="us-title">Input Resep Obat</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">admin cabang</span>, saya ingin <span class="action">mencatat resep obat yang diberikan dokter untuk setiap kunjungan</span>, sehingga <span class="benefit">member memiliki riwayat obat yang lengkap dan dapat diinformasikan ke dokter lain bila diperlukan</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Input resep dilakukan dari dalam form kunjungan yang sedang dibuat atau dari halaman detail kunjungan yang sudah tersimpan.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Setiap item resep memuat: <strong>nama obat</strong> (pilih dari master list atau isi manual), <strong>dosis</strong> (misal: 500mg), <strong>frekuensi</strong> (misal: 3x sehari), <strong>durasi</strong> (misal: 5 hari).</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Admin dapat menambahkan lebih dari satu obat dalam satu kunjungan menggunakan tombol <em>"+ Tambah Obat"</em>.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Setiap item obat yang ditambahkan dapat dihapus sebelum disimpan.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Data obat yang tersimpan langsung muncul di halaman Riwayat Obat member di portal, terhubung dengan entri kunjungan bersesuaian.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Jika kunjungan tidak melibatkan resep obat, input resep bersifat opsional dan bisa dikosongkan.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🏥 Admin Cabang</span>
+        <span class="badge badge-role">📦 M3 · Admin Cabang</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-019 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-019</div>
+      <div class="us-title">Menjadwalkan Kontrol & Trigger Reminder WA Otomatis</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">admin cabang</span>, saya ingin <span class="action">menetapkan tanggal kontrol ulang member setelah kunjungan selesai dan memicu pengiriman reminder WA otomatis</span>, sehingga <span class="benefit">member tidak melewatkan jadwal kontrol penting yang direkomendasikan dokter</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Setelah input kunjungan, admin dapat mengisi field <em>"Jadwal Kontrol Berikutnya"</em> berupa date picker.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Tombol <em>"Simpan & Aktifkan Reminder WA"</em> tersedia — mengkliknya menyimpan kunjungan <strong>sekaligus</strong> menjadwalkan pengiriman notifikasi WA otomatis.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Sistem mengirim WA reminder pada <strong>H-3</strong> dari tanggal kontrol yang ditetapkan, ke nomor WhatsApp terdaftar member.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Pesan WA reminder memuat: nama member, tanggal kontrol, nama klinik, nomor kontak klinik, dan informasi untuk konfirmasi atau ubah jadwal.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Admin dapat mengubah atau membatalkan jadwal kontrol sebelum reminder terkirim, dari halaman detail kunjungan.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Log pengiriman reminder tersimpan di sistem: status (berhasil/gagal), waktu pengiriman, nomor tujuan. Admin cabang dapat melihat log ini.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Jika pengiriman WA gagal, sistem mengirim notifikasi ke email admin cabang agar dapat menghubungi member secara manual.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🏥 Admin Cabang</span>
+        <span class="badge badge-role">📦 M3 · Admin Cabang</span>
+        <span class="badge badge-role">🔗 M5 · WhatsApp API</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-020 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-020</div>
+      <div class="us-title">Input Transaksi Layanan Klinik</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">admin cabang</span>, saya ingin <span class="action">mencatat transaksi layanan berbayar di klinik (di luar konsultasi gratis member)</span>, sehingga <span class="benefit">ada rekap keuangan harian yang akurat untuk dilaporkan ke Admin Pusat</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin cabang dapat mencatat transaksi layanan dari modul <em>"Transaksi"</em> di panel admin cabang.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Form transaksi memuat: tanggal (default hari ini), jenis layanan (tindakan medis, penjualan obat, dll.), jumlah/nominal, dan nama member/pasien terkait (opsional).</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Admin cabang dapat melihat rekap transaksi harian dan bulanan untuk kliniknya sendiri saja.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Rekap transaksi dapat diekspor ke format PDF.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Transaksi yang sudah disimpan lebih dari 24 jam tidak dapat diedit atau dihapus oleh admin cabang — hanya Admin Pusat yang bisa melakukan koreksi.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🏥 Admin Cabang</span>
+        <span class="badge badge-role">📦 M3 · Admin Cabang</span>
+        <span class="badge badge-role">📦 M6 · Laporan & Audit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-021 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-021</div>
+      <div class="us-title">Melihat & Mengekspor Laporan Kunjungan Cabang</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">admin cabang</span>, saya ingin <span class="action">melihat rekap kunjungan harian dan bulanan di klinik saya dan mengekspornya ke PDF</span>, sehingga <span class="benefit">ada laporan operasional yang rapi untuk diserahkan ke manajemen atau Admin Pusat</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin cabang dapat mengakses laporan kunjungan dari menu laporan di panel admin cabang.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Laporan dapat difilter berdasarkan: hari ini, 7 hari terakhir, bulan berjalan, atau rentang tanggal kustom.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Laporan menampilkan: total kunjungan, jumlah member yang berkunjung, jumlah non-member, dan nama dokter yang bertugas.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Laporan hanya memuat data dari <strong>klinik admin tersebut</strong> — tidak ada data lintas klinik.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Tersedia tombol <em>"Ekspor PDF"</em> yang menghasilkan file laporan siap cetak.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🏥 Admin Cabang</span>
+        <span class="badge badge-role">📦 M3 · Admin Cabang</span>
+        <span class="badge badge-role">📦 M6 · Laporan & Audit</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════ EPIC 7 ════ -->
+<div class="container">
+  <div class="epic-header">
+    <div class="epic-pill">🛡 Epic 7</div>
+    <h2>Admin Pusat</h2>
+    <p class="epic-desc">Kendali penuh atas seluruh ekosistem Harmonivita — CMS konten, manajemen member, klinik mitra, event, referral & payout, sponsor, laporan konsolidasi, dan broadcast WA.</p>
+  </div>
+
+  <!-- US-022 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-022</div>
+      <div class="us-title">Manajemen Konten Portal (CMS Artikel)</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">Admin Pusat</span>, saya ingin <span class="action">membuat, mengedit, menjadwalkan, dan menghapus artikel di portal</span>, sehingga <span class="benefit">konten kesehatan yang ditampilkan ke publik selalu segar, relevan, dan terkurasi dengan baik</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin Pusat memiliki akses ke CMS artikel setelah login dengan akun admin pusat.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">CMS mendukung pembuatan artikel dengan field: judul, konten (rich-text editor dengan dukungan heading, bold, italic, gambar inline, dan list), gambar thumbnail, kategori, tag, dan nama penulis.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Artikel dapat disimpan sebagai <em>Draft</em> (tidak tampil di publik) atau <em>Published</em> (tampil langsung di portal).</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Admin dapat mengedit artikel yang sudah dipublikasikan — perubahan langsung tampil di portal tanpa delay.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Admin dapat menonaktifkan artikel (soft delete) — artikel tidak lagi tampil di portal namun data tetap tersimpan di database dan bisa dipulihkan.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Gambar dapat diupload langsung dari CMS (format JPG/PNG/WebP, maks 2MB per gambar).</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Semua aksi pada CMS (buat, edit, hapus) dicatat di activity log beserta timestamp dan nama admin yang melakukan aksi.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-023 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-023</div>
+      <div class="us-title">Manajemen Member</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">Admin Pusat</span>, saya ingin <span class="action">melihat, mencari, mengaktifkan, menangguhkan, dan mengekspor data seluruh member</span>, sehingga <span class="benefit">saya bisa memastikan semua member terlayani dengan baik dan menangani kasus khusus seperti keanggotaan bermasalah</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin Pusat dapat melihat daftar semua member dengan filter berdasarkan: status (Aktif / Expired / Suspended), wilayah/kota domisili, dan periode pendaftaran.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Pencarian member mendukung input: nama lengkap, email, atau nomor WhatsApp.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Admin dapat mengaktifkan keanggotaan member secara manual — misalnya setelah verifikasi pembayaran offline — dengan wajib mengisi catatan alasan.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Admin dapat menangguhkan (suspend) akun member dengan wajib mengisi alasan penangguhan — member yang di-suspend tidak dapat login ke portal.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Admin dapat melakukan perpanjangan keanggotaan darurat untuk member tertentu, dengan mengisi catatan alasan.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Admin dapat mengekspor data member ke format CSV yang memuat: nama, email, nomor WA, tanggal daftar, tanggal kadaluarsa, sumber registrasi (UTM), dan status.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Semua aksi admin pada data member (aktivasi, suspend, perpanjangan) tersimpan di activity log yang tidak bisa dihapus.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+        <span class="badge badge-role">📦 M6 · Laporan & Audit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-024 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-024</div>
+      <div class="us-title">Manajemen Klinik & Klinik Mitra</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">Admin Pusat</span>, saya ingin <span class="action">mendaftarkan klinik baru, mengelola data klinik yang ada, dan mengatur akun Admin Cabang per klinik</span>, sehingga <span class="benefit">jaringan klinik Harmonivita terpetakan dengan akurat dan setiap klinik memiliki admin yang berwenang</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin dapat menambahkan klinik baru dengan field: nama klinik, alamat lengkap, koordinat GPS (untuk pin peta), jam operasional per hari, nomor kontak/WA, tipe (Harmonivita / Mitra), dan daftar layanan.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Setelah klinik ditambahkan, pin langsung muncul di Peta Klinik pada portal publik.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Admin dapat mengedit semua informasi klinik yang sudah terdaftar — perubahan langsung terefleksi di peta publik.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Admin dapat menonaktifkan klinik — pin hilang dari peta publik namun data histori kunjungan tetap tersimpan.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Admin dapat membuat akun Admin Cabang baru yang terhubung ke klinik tertentu, dengan mengisi: nama, email, dan nomor WA admin cabang. Sistem mengirim email berisi kredensial awal ke admin cabang yang baru didaftarkan.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Klinik mitra dapat ditandai sebagai <em>"Terverifikasi"</em> oleh Admin Pusat — status ini tampil di popup peta publik.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-025 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-025</div>
+      <div class="us-title">Manajemen Event & QR Code Event</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">Admin Pusat</span>, saya ingin <span class="action">membuat dan mengelola event pelatihan di portal lengkap dengan QR code pendaftaran yang unik per event</span>, sehingga <span class="benefit">event terpublikasi dengan benar, peserta bisa mendaftar dengan mudah, dan kehadiran dapat dikelola secara digital</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin dapat membuat event baru dengan field: judul, deskripsi, tanggal & waktu, lokasi, kuota peserta, harga member, harga umum, dan gambar banner.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Sistem secara otomatis meng-generate QR code unik untuk setiap event yang dibuat — QR code berbeda dari QR pendaftaran member.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Admin dapat mengunduh QR code event dalam format gambar (PNG) untuk disebarkan di Instagram dan media cetak.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Admin dapat mengedit detail event selama pendaftaran masih berjalan dan event belum berlangsung.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Sistem otomatis menutup pendaftaran ketika kuota terpenuhi, atau admin dapat menutup pendaftaran secara manual.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Admin dapat melihat daftar peserta terdaftar per event, beserta status pembayaran dan status member/non-member.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Laporan kehadiran event dapat diunduh dalam format CSV atau PDF setelah event selesai berlangsung.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-post">Post-MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-026 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-026</div>
+      <div class="us-title">Manajemen Referral & Proses Payout Komisi</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">Admin Pusat</span>, saya ingin <span class="action">memantau semua transaksi referral dan memproses permintaan pencairan komisi dari member</span>, sehingga <span class="benefit">member yang aktif mereferensikan mendapat komisi secara tepat waktu dan transparan</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin dapat melihat daftar semua transaksi referral yang berhasil: siapa yang mereferensikan, siapa yang didaftarkan, tanggal, dan status komisi (Pending / Dikreditkan / Dicairkan).</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Admin dapat mengatur besaran komisi referral (nominal tetap atau persentase dari Rp200.000) melalui halaman Pengaturan Sistem — perubahan berlaku untuk referral baru, tidak retroaktif.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Admin dapat melihat total komisi terakumulasi per member dan daftar request pencairan yang masuk.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text"><strong>[MVP]</strong> Payout diproses secara manual oleh admin: admin menandai request sebagai <em>"Diproses"</em> dan melakukan transfer manual ke rekening member. Setelah transfer, admin mengkonfirmasi payout di sistem.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Setelah payout dikonfirmasi admin, status komisi member berubah menjadi <em>"Dicairkan"</em> dan member menerima notifikasi WA berisi nominal dan tanggal pencairan.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text"><strong>[v2]</strong> Payout otomatis via disbursement API (Xendit/Flip) — request dari member diproses dan ditransfer secara otomatis tanpa intervensi manual admin.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-027 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-027</div>
+      <div class="us-title">Manajemen Sponsor & Slot Iklan</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">Admin Pusat</span>, saya ingin <span class="action">mengelola konten sponsor dari perusahaan farmasi di portal — termasuk banner iklan dan artikel sponsored — dengan kontrol penuh atas penandaan dan periode tayang</span>, sehingga <span class="benefit">revenue dari sponsorship dapat dioptimalkan tanpa mengorbankan kepercayaan dan integritas konten Harmonivita</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin dapat membuat slot iklan dengan konfigurasi: nama slot, posisi penempatan (misal: header beranda, sidebar artikel, halaman event), dan dimensi banner.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Admin dapat mengunggah materi banner (JPG/PNG/GIF) dan menetapkan: sponsor, URL tujuan klik, tanggal mulai tayang, dan tanggal berakhir tayang.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Setiap konten sponsor (banner maupun artikel) <strong>wajib</strong> ditandai dengan label <em>"Iklan"</em> atau <em>"Sponsored Content"</em> yang tidak dapat disembunyikan atau dihapus oleh siapapun.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Artikel sponsored harus melewati proses <em>review</em> oleh tim medis Harmonivita sebelum dapat dipublikasikan — tersedia workflow: Draft → In Review → Approved → Published.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Setelah tanggal berakhir tayang terlewati, iklan otomatis tidak lagi ditampilkan di portal tanpa perlu intervensi manual admin.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Admin dapat melihat statistik penayangan dasar per slot iklan: jumlah tayangan (impressions).</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-post">Post-MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-028 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-028</div>
+      <div class="us-title">Laporan Konsolidasi & Analitik Bisnis</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">Admin Pusat</span>, saya ingin <span class="action">mengakses laporan konsolidasi yang mencakup data member, revenue, referral, dan kunjungan klinik dalam satu dashboard</span>, sehingga <span class="benefit">saya bisa memantau performa bisnis Harmonivita secara menyeluruh dan membuat keputusan berbasis data</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Dashboard laporan menampilkan KPI utama: total member aktif saat ini, member baru per periode, revenue total (membership + event + sponsor), dan total komisi referral yang didistribusikan.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Semua laporan dapat difilter berdasarkan periode: hari ini, 7 hari terakhir, bulan berjalan, bulan sebelumnya, atau rentang tanggal kustom.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Laporan sumber registrasi menampilkan breakdown member baru berdasarkan UTM source (Instagram, poster klinik, referral member, direct) — dalam bentuk tabel dan visualisasi grafik.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Laporan kunjungan per cabang menampilkan total kunjungan per klinik, bisa dibandingkan antar klinik dalam periode yang sama.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Semua laporan dapat diekspor ke format PDF (untuk presentasi) dan CSV/Excel (untuk analisis lebih lanjut).</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Activity log semua admin (pusat dan cabang) tersedia di halaman Audit Log yang hanya dapat diakses Admin Pusat dan Super Admin — log tidak dapat diubah atau dihapus.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-mvp">MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+        <span class="badge badge-role">📦 M6 · Laporan & Audit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- US-029 -->
+  <div class="us-card">
+    <div class="us-header">
+      <div class="us-id">US-029</div>
+      <div class="us-title">WA Blast Tersegmentasi ke Member</div>
+    </div>
+    <div class="us-body">
+      <div class="us-statement">
+        Sebagai <span class="role">Admin Pusat</span>, saya ingin <span class="action">mengirim broadcast pesan WhatsApp ke segmen member tertentu</span>, sehingga <span class="benefit">komunikasi ke member bisa dilakukan secara targeted dan relevan tanpa mengirim pesan yang tidak perlu ke semua member</span>.
+      </div>
+      <div class="ac-label">Acceptance Criteria</div>
+      <ul class="ac-list">
+        <li class="ac-item"><div class="ac-num">1</div><div class="ac-text">Admin dapat menyusun pesan WA blast melalui form di panel admin — mendukung teks dan opsional satu gambar lampiran.</div></li>
+        <li class="ac-item"><div class="ac-num">2</div><div class="ac-text">Admin dapat memilih segmen penerima: <em>Semua Member</em>, <em>Member Aktif</em>, <em>Member Expired (reminder perpanjangan)</em>, atau <em>Member berdasarkan kota/wilayah domisili</em>.</div></li>
+        <li class="ac-item"><div class="ac-num">3</div><div class="ac-text">Sebelum dikirim, sistem menampilkan estimasi jumlah penerima berdasarkan segmen yang dipilih.</div></li>
+        <li class="ac-item"><div class="ac-num">4</div><div class="ac-text">Admin harus mengklik tombol konfirmasi dua langkah (<em>"Kirim Sekarang"</em> → dialog konfirmasi → <em>"Ya, Kirim"</em>) sebelum blast benar-benar terkirim.</div></li>
+        <li class="ac-item"><div class="ac-num">5</div><div class="ac-text">Sistem membatasi pengiriman blast ke nomor yang sama maksimal <strong>1 kali per 24 jam</strong> — member yang sudah menerima pesan hari ini tidak akan menerima blast kedua di hari yang sama.</div></li>
+        <li class="ac-item"><div class="ac-num">6</div><div class="ac-text">Histori blast tersimpan di sistem dan dapat dilihat admin: tanggal pengiriman, isi pesan, segmen target, dan jumlah penerima berhasil/gagal.</div></li>
+        <li class="ac-item"><div class="ac-num">7</div><div class="ac-text">Pesan WA sponsor (jika ada) wajib mendapat persetujuan member terlebih dahulu (consent) — sistem hanya mengirim ke member yang telah menyetujui menerima komunikasi dari mitra.</div></li>
+      </ul>
+      <div class="us-meta">
+        <span class="badge badge-post">Post-MVP</span>
+        <span class="badge badge-role">🛡 Admin Pusat</span>
+        <span class="badge badge-role">📦 M4 · Admin Pusat</span>
+        <span class="badge badge-role">🔗 M5 · WhatsApp API</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <p>🌿 <strong>Harmonivita — User Stories & Acceptance Criteria</strong></p>
+  <p style="margin-top:8px; font-size:12px;">Dokumen ini turunan dari Narrative Story v1.0. Semua keputusan teknis detail mengikuti hasil konfirmasi pertanyaan terbuka di Narrative Story.<br>Besaran komisi referral, mekanisme payout, dan konfigurasi WA API perlu dikonfirmasi sebelum development dimulai.</p>
+  <p style="margin-top:16px; font-size:12px; opacity:0.5;">Dibuat April 2025 · Aragoya × Harmonivita · v1.0 · 29 User Stories · 143 Acceptance Criteria</p>
+</div>
+
+</body>
+</html>
