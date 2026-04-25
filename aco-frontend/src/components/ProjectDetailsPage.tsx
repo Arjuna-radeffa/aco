@@ -559,55 +559,38 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
                    </div>
                 </div>
 
-                {showGuestForm ? (
-                  <div className="border border-indigo-100 bg-indigo-50/30 p-6 rounded-[2rem] animate-in fade-in slide-in-from-top-4 space-y-4 mb-8">
-                     <div className="flex justify-between items-center mb-2">
-                        <h5 className="font-black italic uppercase text-indigo-900">
-                           {selectedSubNode ? 'Tujuan Alokasi' : 'Guest Checkout'}
-                        </h5>
-                        <button onClick={() => {
-                           setShowGuestForm(false);
-                           setSelectedSubNode(null);
-                        }} className="text-indigo-400 hover:text-indigo-900"><ArrowLeft size={16} /></button>
-                     </div>
+                <div className="space-y-4">
+                  {/* Invest button: Shown if project has commercial allocation */}
+                  {project.metadata.allocation.commercial > 0 && (
+                    <button 
+                      onClick={() => onInvestClick(selectedSubNode?.name)}
+                      className="w-full py-5 bg-slate-900 text-white font-black text-lg rounded-2xl hover:bg-indigo-600 hover:shadow-2xl hover:shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group"
+                    >
+                      INVESTASI SEKARANG <TrendingUp className="group-hover:translate-y-[-2px] transition-transform" size={20} />
+                    </button>
+                  )}
 
-                     {selectedSubNode && (
-                        <div className="p-3 bg-white rounded-xl border border-indigo-100 flex items-center justify-between">
-                           <div>
-                              <p className="text-[8px] font-black uppercase text-indigo-500 tracking-widest">Unit Re-Selection</p>
-                              <p className="text-xs font-bold text-slate-900">{selectedSubNode.name}</p>
-                           </div>
-                           <span className="text-[8px] font-black px-2 py-1 bg-indigo-50 text-indigo-600 rounded uppercase">{selectedSubNode.type}</span>
-                        </div>
-                     )}
+                  {/* Waqf button: Shown if project has social allocation */}
+                  {project.metadata.allocation.social > 0 && (
+                    <button 
+                      onClick={() => onWaqfClick?.(selectedSubNode?.name)}
+                      className="w-full py-5 bg-emerald-600 text-white font-black text-lg rounded-2xl hover:bg-emerald-500 hover:shadow-2xl hover:shadow-emerald-200 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group"
+                    >
+                      WAKAF UANG <Heart className="group-hover:scale-110 transition-transform" size={20} />
+                    </button>
+                  )}
 
-                     <div>
-                        <label className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-1">Nama (Opsional)</label>
-                        <input type="text" placeholder="Hamba Allah" className="w-full bg-white border border-indigo-100 py-3 px-4 rounded-xl text-sm font-bold focus:outline-none focus:border-indigo-500" />
-                     </div>
-                     <div>
-                        <label className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-1">Nominal</label>
-                        <div className="relative">
-                          <span className="absolute left-4 top-3 font-bold text-slate-400">Rp</span>
-                          <input type="number" placeholder="10.000.000" className="w-full bg-white border border-indigo-100 py-3 pl-12 pr-4 rounded-xl text-sm font-black focus:outline-none focus:border-indigo-500" />
-                        </div>
-                     </div>
-                     <button 
-                       onClick={() => alert(`Alokasi ke ${selectedSubNode?.name || 'Proyek Utama'} Berhasil!`)}
-                       className="w-full py-4 mt-2 bg-indigo-600 text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
-                     >
-                        Bayar via QRIS <ArrowRight size={16} />
-                     </button>
-                  </div>
-                ) : (
-                  <button 
-                    onClick={() => setShowGuestForm(true)}
-                    className="w-full py-6 bg-slate-900 text-white font-black text-xl rounded-2xl hover:bg-indigo-600 hover:shadow-2xl hover:shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group"
-                  >
-                    {selectedSubNode ? 'LANJUT ALOKASI' : 'SALURKAN AMANAH'} <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-                  </button>
-                )}
-                
+                  {selectedSubNode && (
+                    <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-between">
+                       <div>
+                          <p className="text-[8px] font-black uppercase text-indigo-500 tracking-widest">Unit Re-Selection</p>
+                          <p className="text-xs font-bold text-slate-900">{selectedSubNode.name}</p>
+                       </div>
+                       <button onClick={() => setSelectedSubNode(null)} className="text-[10px] font-black text-indigo-600 hover:underline">BATAL</button>
+                    </div>
+                  )}
+                </div>
+
                 <p className="mt-8 text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] leading-loose">
                   Trust · Accuracy · Synergy
                 </p>
