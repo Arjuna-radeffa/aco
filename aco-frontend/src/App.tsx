@@ -97,7 +97,6 @@ function App() {
   }
 
   const handleQuickLogin = async (role: string) => {
-    // role is something like 'arief', 'sinta', etc. from the new homepage
     const roleMap: Record<string, string> = {
       // Direct Main Roles
       'arief': 'arief',
@@ -114,10 +113,13 @@ function App() {
       'investor_micro': 'investor_micro',
       'investasi_enterprise': 'investor_enterprise',
       'investor_enterprise': 'investor_enterprise',
-      'muzakki': 'muzakki',
-      'munfiq': 'munfiq',
-      'mutashadiq': 'mutashadiq',
-      'wakif': 'wakif',
+      // Unified Funder Role mapping
+      'muzakki': 'funder',
+      'munfiq': 'funder',
+      'mutashadiq': 'funder',
+      'wakif': 'funder',
+      'funder': 'funder',
+      
       'mustahiq': 'mustahiq',
       'project_owner': 'project_owner',
       'investment': 'arief',
@@ -133,8 +135,7 @@ function App() {
       'reza': 'Reza Admin',
       'investor_micro': 'Budi (Micro Investor)',
       'investor_enterprise': 'Citra (Corp Investor)',
-      'muzakki': 'Sholeh (Zakat Giver)',
-      'wakif': 'Hassan (Wakif)',
+      'funder': 'Sholeh (Universal Funder)',
       'mustahiq': 'Maimunah (Recipient)',
       'project_owner': 'Mitra Tani Sejahtera'
     }
@@ -198,6 +199,14 @@ function App() {
               setSelectedProjectId(id)
               setCurrentView('project-details')
             }}
+          />
+        )}
+        
+        {currentView === 'project-details' && selectedProjectId && (
+          <ProjectDetailsPage 
+            projectId={selectedProjectId} 
+            onBack={() => setCurrentView('home')} 
+            onInvestClick={() => setCurrentView('login')} 
           />
         )}
       </div>

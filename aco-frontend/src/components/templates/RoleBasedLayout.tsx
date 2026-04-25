@@ -102,18 +102,12 @@ export const RoleBasedLayout: React.FC = () => {
     }
 
     // EXTERNAL ROLES
-    if (['investor_micro', 'investor_enterprise'].includes(role)) {
+    if (['investor_micro', 'investor_enterprise', 'funder'].includes(role)) {
         return [
-          { id: 'overview', icon: <LayoutGrid size={20} />, label: 'My Portfolio' },
+          { id: 'overview', icon: <Heart size={20} />, label: 'Universal Hub' },
           { id: 'ledger', icon: <FileText size={20} />, label: 'Investment Ledger' },
-          { id: 'market', icon: <Search size={20} />, label: 'Explore Market' },
-        ];
-    }
-    if (['muzakki', 'munfiq', 'mutashadiq', 'wakif'].includes(role)) {
-        return [
-          { id: 'overview', icon: <LayoutGrid size={20} />, label: 'Donation Hub' },
-          { id: 'impact', icon: <Heart size={20} />, label: 'Impact Tracking' },
-          { id: 'market', icon: <PlusSquare size={20} />, label: 'Donate Now' },
+          { id: 'impact', icon: <ShieldCheck size={20} />, label: 'Philanthropy Impact' },
+          { id: 'market', icon: <Search size={20} />, label: 'Explore Catalog' },
         ];
     }
     if (['mustahiq'].includes(role)) {
@@ -158,7 +152,7 @@ export const RoleBasedLayout: React.FC = () => {
     }
 
     // EXTERNAL RENDERING
-    if (['investor_micro', 'investor_enterprise', 'muzakki', 'munfiq', 'mutashadiq', 'wakif'].includes(role)) {
+    if (['investor_micro', 'investor_enterprise', 'funder'].includes(role)) {
         if (activeTab === 'ledger') return <InvestmentPortfolio />;
         if (activeTab === 'impact') return <DonationTracking />;
         return <ExternalDashboard />;
@@ -267,10 +261,8 @@ export const RoleBasedLayout: React.FC = () => {
                 <option value="investor_micro">Investor: Micro</option>
                 <option value="investor_enterprise">Investor: Enterprise</option>
               </optgroup>
-              <optgroup label="External Philanthropy">
-                <option value="muzakki">Donor: Muzakki</option>
-                <option value="wakif">Donor: Wakif</option>
-                <option value="munfiq">Donor: Munfiq</option>
+              <optgroup label="External Philanthropy & Investment">
+                <option value="funder">Universal Funder (Wakif/Muzakki/Investor)</option>
               </optgroup>
               <optgroup label="Partners & Benefits">
                 <option value="project_owner">Mitra: Owner</option>

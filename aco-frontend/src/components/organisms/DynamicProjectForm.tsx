@@ -134,7 +134,7 @@ export const DynamicProjectForm: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* US-IO-01 v3.1 Revision: Node-level Participation Opportunities */}
+        {/* US-IO-01 v3.1/v3.2 Revision: Node-level Participation Opportunities (Complete Asset Classes) */}
         <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-4">
           <div className="flex items-start gap-3 mb-4">
             <UserCheck className="text-slate-400 mt-1" size={20} />
@@ -143,20 +143,34 @@ export const DynamicProjectForm: React.FC = () => {
               <p className="text-[10px] font-medium text-slate-500">Konfigurasi ini bersifat independen per node (tidak diwariskan dari parent).</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid lg:grid-cols-2 gap-4">
             <label className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-blue-300 transition-colors group">
               <div>
-                <p className="text-[10px] font-black uppercase text-slate-900 dark:text-white">Terbuka untuk Investasi</p>
-                <p className="text-[9px] text-slate-400">Izinkan skema bagi hasil</p>
+                <p className="text-[10px] font-black uppercase text-slate-900 dark:text-white">Investasi Dana</p>
+                <p className="text-[9px] text-slate-400">Izinkan skema bagi hasil/profit share</p>
               </div>
               <input type="checkbox" className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-300" />
             </label>
-            <label className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-blue-300 transition-colors group">
+            <label className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-indigo-300 transition-colors group">
               <div>
-                <p className="text-[10px] font-black uppercase text-slate-900 dark:text-white">Terbuka untuk Wakaf Uang</p>
-                <p className="text-[9px] text-slate-400">Izinkan donasi produktif</p>
+                <p className="text-[10px] font-black uppercase text-slate-900 dark:text-white">Wakaf Dana (Uang)</p>
+                <p className="text-[9px] text-slate-400">Wakaf tunai produktif (Cash Waqf)</p>
+              </div>
+              <input type="checkbox" className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500 border-slate-300" />
+            </label>
+            <label className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-emerald-300 transition-colors group">
+              <div>
+                <p className="text-[10px] font-black uppercase text-slate-900 dark:text-white">Wakaf Aset Bergerak</p>
+                <p className="text-[9px] text-slate-400">Kendaraan, Mesin, Barang Modal</p>
               </div>
               <input type="checkbox" className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 border-slate-300" />
+            </label>
+            <label className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer hover:border-purple-300 transition-colors group">
+              <div>
+                <p className="text-[10px] font-black uppercase text-slate-900 dark:text-white">Wakaf Aset T. Bergerak</p>
+                <p className="text-[9px] text-slate-400">Tanah, Gedung, Properti SHM</p>
+              </div>
+              <input type="checkbox" className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 border-slate-300" />
             </label>
           </div>
         </div>

@@ -57,8 +57,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
 
   const roles = [
     { title: 'Investor', description: 'Kelola portofolio investasi Anda dengan transparansi penuh', roles: ['Investasi Mikro', 'Investasi Enterprise'], color: 'from-blue-600 to-cyan-600' },
-    { title: 'Filantropi', description: 'Penyalur Zakat, Infaq, dan Shadaqah dengan terpercaya', roles: ['Muzakki', 'Munfiq', 'Mutashadiq'], color: 'from-emerald-600 to-teal-600' },
-    { title: 'Wakaf', description: 'Kelola aset wakaf produktif untuk generasi mendatang', roles: ['Wakif'], color: 'from-purple-600 to-pink-600' },
+    { title: 'Universal Funder', description: 'Integrasi donasi ZIS, wakaf aset/dana, dan investasi dalam satu ekosistem', roles: ['Funder'], color: 'from-emerald-600 to-indigo-600' },
     { title: 'Officer', description: 'Kelola dan awasi operasional ACO Platform', roles: ['Finance', 'Investment', 'Portfolio Monitor'], color: 'from-amber-600 to-orange-600' }
   ];
 
@@ -231,12 +230,17 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
             ))}
           </div>
 
-          <div className="mt-12 text-center">
-            <button 
-              onClick={() => onViewZisProjects()} 
-              className="px-10 py-5 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200"
-            >
-              Lihat Proyek ZIS
+          <div className="mt-16 bg-white p-8 rounded-3xl border border-emerald-100 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 max-w-4xl mx-auto">
+            <div className="text-left">
+              <h4 className="text-xl font-black italic text-slate-900">Donasi Cepat Tanpa Login</h4>
+              <p className="text-sm font-medium text-slate-500 mt-1">Salurkan zakat/infaq seketika via QRIS atau Virtual Account</p>
+            </div>
+            <div className="flex w-full md:w-auto relative items-center">
+              <span className="absolute left-4 text-slate-400 font-bold">Rp</span>
+              <input type="number" placeholder="50.000" className="w-full md:w-64 pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-black text-slate-900 focus:outline-none focus:border-emerald-500" />
+            </div>
+            <button className="w-full md:w-auto px-8 py-4 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200 whitespace-nowrap">
+              Bayar Sekarang
             </button>
           </div>
         </div>
@@ -306,6 +310,94 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick, onQuickLoginClick, on
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Complex Hierarchy Showcase - Wakaf Bogor */}
+      <section className="py-24 px-6 bg-slate-900 text-white overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-600/10 rounded-full blur-[150px] -mr-96 -mt-96"></div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-emerald-400 font-black uppercase tracking-widest text-sm mb-4">Showcase Hirarki Kompleks v3.2</h2>
+            <h3 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">Komplek Wakaf Terpadu Bogor</h3>
+            <p className="text-slate-400 mt-4 max-w-2xl mx-auto font-medium leading-relaxed">
+              Contoh struktur multi-node dimana aset komersial menopang aset sosial secara mandiri dalam satu payung wakaf besar.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center">
+            {/* Parent Node */}
+            <div className="bg-slate-800 border-2 border-emerald-500/50 p-8 rounded-3xl w-full max-w-md text-center relative z-20 shadow-2xl">
+               <div className="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">Root Parent (Tertutup)</div>
+               <h4 className="text-2xl font-black italic">Yayasan Wakaf Bogor Raya</h4>
+               <p className="text-sm text-slate-400 font-medium mt-2">Pusat kelola terpadu. Pendanaan di level ini sudah ditutup.</p>
+            </div>
+            
+            <div className="w-1 h-12 bg-slate-700"></div>
+            <div className="w-full max-w-4xl border-t-2 border-slate-700 relative">
+               <div className="w-1 h-12 bg-slate-700 absolute left-1/4 top-0"></div>
+               <div className="w-1 h-12 bg-slate-700 absolute right-1/4 top-0"></div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 w-full max-w-5xl mt-12">
+               {/* Commercial Wing */}
+               <div className="bg-white/5 border border-white/10 p-8 rounded-3xl hover:bg-white/10 transition-colors">
+                  <div className="flex justify-between items-start mb-6">
+                     <div>
+                        <h5 className="text-xl font-black italic text-blue-400">Pilar Komersial</h5>
+                        <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1">Investasi Terbuka</p>
+                     </div>
+                     <Building2 className="text-blue-500/50" size={32} />
+                  </div>
+                  <div className="space-y-4">
+                     <div onClick={() => onViewDetail('3')} className="p-4 bg-slate-800 rounded-2xl flex justify-between items-center group cursor-pointer hover:border-blue-500 border border-transparent transition-all">
+                        <div>
+                           <p className="font-bold text-white group-hover:text-blue-400 transition-colors">RS Harapan Bunda</p>
+                           <p className="text-[10px] text-slate-400">Target: Rp 12M</p>
+                        </div>
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase rounded">Investasi</span>
+                     </div>
+                     <div onClick={() => onViewDetail('4')} className="p-4 bg-slate-800 rounded-2xl flex justify-between items-center group cursor-pointer hover:border-blue-500 border border-transparent transition-all">
+                        <div>
+                           <p className="font-bold text-white group-hover:text-blue-400 transition-colors">Perumahan Asri Cluster</p>
+                           <p className="text-[10px] text-slate-400">Target: Rp 45M</p>
+                        </div>
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase rounded">Investasi</span>
+                     </div>
+                  </div>
+               </div>
+
+               {/* Social Wing */}
+               <div className="bg-white/5 border border-white/10 p-8 rounded-3xl hover:bg-white/10 transition-colors">
+                  <div className="flex justify-between items-start mb-6">
+                     <div>
+                        <h5 className="text-xl font-black italic text-emerald-400">Pilar Sosial</h5>
+                        <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mt-1">Wakaf Terbuka</p>
+                     </div>
+                     <Heart className="text-emerald-500/50" size={32} />
+                  </div>
+                  <div className="space-y-4">
+                     <div onClick={() => onViewDetail('1')} className="p-4 bg-slate-800 rounded-2xl flex justify-between items-center group cursor-pointer hover:border-emerald-500 border border-transparent transition-all">
+                        <div>
+                           <p className="font-bold text-white group-hover:text-emerald-400 transition-colors">Masjid Raya Al-Muhajirin</p>
+                           <p className="text-[10px] text-slate-400">Target Wakaf: Rp 5M</p>
+                        </div>
+                        <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase rounded">W. Dana</span>
+                     </div>
+                     <div onClick={() => onViewDetail('2')} className="p-4 bg-slate-800 rounded-2xl flex justify-between items-center group cursor-pointer hover:border-emerald-500 border border-transparent transition-all">
+                        <div>
+                           <p className="font-bold text-white group-hover:text-emerald-400 transition-colors">Taman Bermain Anak</p>
+                           <p className="text-[10px] text-slate-400">Kebutuhan Eskavator</p>
+                        </div>
+                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-[9px] font-black uppercase rounded">W. Aset</span>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <p className="text-sm font-bold italic text-slate-500 mt-12 text-center max-w-2xl">
+               *Sesuai spesifikasi v3.2, pengunjung bisa menyalurkan wakaf spesifik ke "Taman Bermain Anak" meskipun yayasan induk ("Yayasan Wakaf Bogor Raya") sudah ditutup pendanaannya.
+            </p>
           </div>
         </div>
       </section>

@@ -7,12 +7,9 @@ export const mockUsers: User[] = [
   { id: '4', name: 'Reza Admin', role: 'reza' },
   { id: '5', name: 'Budi (Micro Investor)', role: 'investor_micro' },
   { id: '6', name: 'Citra (Corp Investor)', role: 'investor_enterprise' },
-  { id: '7', name: 'Sholeh (Zakat Giver)', role: 'muzakki' },
-  { id: '8', name: 'Hassan (Wakif Asset)', role: 'wakif' },
+  { id: '7', name: 'Sholeh (Universal Funder)', role: 'funder' },
   { id: '9', name: 'Maimunah (Recipient)', role: 'mustahiq' },
   { id: '10', name: 'Mitra Tani Sejahtera', role: 'project_owner' },
-  { id: '11', name: 'Ahmad (Munfiq)', role: 'munfiq' },
-  { id: '12', name: 'Zaid (Mutashadiq)', role: 'mutashadiq' },
 ];
 
 export const mockProjects: Project[] = [

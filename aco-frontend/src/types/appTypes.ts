@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   name: string;
-  role: 'arief' | 'sinta' | 'hendra' | 'reza' | 'investor_micro' | 'investor_enterprise' | 'muzakki' | 'wakif' | 'munfiq' | 'mutashadiq' | 'mustahiq' | 'project_owner';
+  role: 'arief' | 'sinta' | 'hendra' | 'reza' | 'investor_micro' | 'investor_enterprise' | 'funder' | 'mustahiq' | 'project_owner';
   avatar?: string;
   kycVerified?: boolean;
 }

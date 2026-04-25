@@ -20,7 +20,8 @@ import {
   CheckCircle2,
   PieChart,
   MapPin,
-  ArrowRight
+  ArrowRight,
+  Activity
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Project } from '../types/projectTypes';
@@ -36,12 +37,13 @@ interface ProjectDetailsPageProps {
 const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBack, onInvestClick }) => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'financial' | 'impact' | 'docs'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'financial' | 'impact' | 'docs' | 'updates' | 'subprojects'>('overview');
+  const [showGuestForm, setShowGuestForm] = useState(false);
+  const [selectedSubNode, setSelectedSubNode] = useState<{name: string, type: string} | null>(null);
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        // Try to find in mock data first for 'special' demo projects
         const mockProject = mockProjects.find(p => p.id === projectId);
         if (mockProject) {
           setProject(mockProject);
@@ -49,14 +51,10 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
           return;
         }
 
-        // Otherwise, fetch from real API
         const data = await api.get('/projects/' + projectId);
         if (data) {
-          // Merge with a default structure to ensure it matches the Project interface
-          // as the backend might not have all the new metadata fields yet.
           const enrichedProject: Project = {
             ...data,
-            // Fallbacks for missing fields in the real database
             metadata: data.metadata || {
               landStatus: "Commercial",
               fundingType: "Equity",
@@ -76,7 +74,6 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
         }
       } catch (err) {
         console.error('Failed to fetch project details:', err);
-        // Fallback to mock data if API fails completely
         const mockProject = mockProjects.find(p => p.id === projectId);
         if (mockProject) {
           setProject(mockProject);
@@ -113,7 +110,6 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Sticky Top Nav */}
       <nav className="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <button onClick={onBack} className="group flex items-center gap-3 text-slate-600 hover:text-indigo-600 transition-all font-bold uppercase tracking-widest text-[10px]">
@@ -137,10 +133,7 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid lg:grid-cols-12 gap-12">
           
-          {/* LEFT CONTENT */}
           <div className="lg:col-span-8 space-y-12">
-            
-            {/* Hero Image Section */}
             <div className="relative rounded-[3rem] overflow-hidden shadow-2xl h-[32rem] group">
               <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"></div>
@@ -163,13 +156,14 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
               </div>
             </div>
 
-            {/* TAB NAVIGATION */}
             <div className="flex gap-2 p-1.5 bg-white rounded-2xl border border-slate-200 shadow-sm sticky top-24 z-40 overflow-x-auto no-scrollbar">
               {[
                 { id: 'overview', label: 'Ringkasan Proyek', icon: Info },
+                { id: 'subprojects', label: 'Pilih Sub-Proyek', icon: Target },
                 { id: 'financial', label: 'Proyeksi Finansial', icon: TrendingUp },
                 { id: 'impact', label: 'Dampak Sosial', icon: Heart },
-                { id: 'docs', label: 'Dokumen & Legal', icon: FileText }
+                { id: 'docs', label: 'Dokumen & Legal', icon: FileText },
+                { id: 'updates', label: 'Updates & Donatur', icon: Activity }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -185,12 +179,10 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
               ))}
             </div>
 
-            {/* TAB CONTENT */}
             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
               
               {activeTab === 'overview' && (
                 <div className="space-y-12">
-                   {/* Description Card */}
                    <div className="bg-white rounded-[2.5rem] p-12 border border-slate-200 shadow-sm">
                       <h3 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">Detail Akad & Deskripsi</h3>
                       <p className="text-slate-600 leading-relaxed text-lg mb-10">
@@ -221,7 +213,6 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
                       </div>
                    </div>
 
-                   {/* Milestones Card */}
                    <div className="bg-white rounded-[2.5rem] p-12 border border-slate-200 shadow-sm">
                       <h3 className="text-2xl font-black text-slate-900 mb-10 tracking-tight">Timeline & Milestone</h3>
                       <div className="space-y-10 relative">
@@ -242,6 +233,102 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
                             </div>
                           </div>
                         ))}
+                      </div>
+                   </div>
+                </div>
+              )}
+
+              {activeTab === 'subprojects' && (
+                <div className="space-y-12">
+                   <div className="bg-white rounded-[2.5rem] p-12 border border-slate-200 shadow-sm relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                      <h3 className="text-2xl font-black text-slate-900 mb-2 tracking-tight relative z-10">Struktur Kompleks (Pilih Unit Alokasi)</h3>
+                      <p className="text-sm font-medium text-slate-500 mb-8 relative z-10">Silakan pilih unit spesifik di bawah ini untuk mengalokasikan investasi/wakaf Anda secara langsung.</p>
+                      
+                      <div className="grid md:grid-cols-2 gap-8 relative z-10">
+                         <div className="space-y-6">
+                            <h4 className="text-xs font-black uppercase text-indigo-600 tracking-widest px-4 flex items-center gap-2">
+                               <Building2 size={16} /> Pilar Komersial
+                            </h4>
+                            {[
+                               { name: 'RS Harapan Bunda', type: 'Investasi', target: 'Rp 5.0M', icon: Building2 },
+                               { name: 'Perumahan Asri', type: 'Investasi', target: 'Rp 3.5M', icon: Landmark }
+                            ].map((item) => (
+                               <button 
+                                 key={item.name}
+                                 onClick={() => {
+                                    setSelectedSubNode({ name: item.name, type: item.type });
+                                    setShowGuestForm(true);
+                                 }}
+                                 className={`w-full p-8 text-left border-[2px] rounded-[2.5rem] transition-all group relative overflow-hidden ${
+                                    selectedSubNode?.name === item.name 
+                                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-2xl shadow-indigo-200 scale-[1.02]' 
+                                    : 'bg-white border-slate-100 hover:border-indigo-200 hover:shadow-xl text-slate-900'
+                                 }`}
+                               >
+                                  <div className="flex justify-between items-start">
+                                     <div className="relative z-10">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${selectedSubNode?.name === item.name ? 'bg-white/20' : 'bg-indigo-50 text-indigo-600'}`}>
+                                           <item.icon size={24} />
+                                        </div>
+                                        <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${selectedSubNode?.name === item.name ? 'text-indigo-200' : 'text-indigo-500'}`}>{item.type}</p>
+                                        <h5 className="text-xl font-black italic tracking-tight">{item.name}</h5>
+                                     </div>
+                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedSubNode?.name === item.name ? 'bg-indigo-500' : 'bg-slate-50 text-slate-300'}`}>
+                                        <ArrowRight size={20} className={selectedSubNode?.name === item.name ? 'text-white' : 'group-hover:translate-x-1 transition-transform'} />
+                                     </div>
+                                  </div>
+                                  <div className="mt-8 flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                                     <span className={selectedSubNode?.name === item.name ? 'text-indigo-100' : 'text-slate-400'}>Target: {item.target}</span>
+                                     <span className={`px-4 py-2 rounded-full ${selectedSubNode?.name === item.name ? 'bg-white text-indigo-600' : 'bg-indigo-600 text-white opacity-0 group-hover:opacity-100 transition-opacity'}`}>
+                                        Pilih Unit
+                                     </span>
+                                  </div>
+                               </button>
+                            ))}
+                         </div>
+
+                         <div className="space-y-6">
+                            <h4 className="text-xs font-black uppercase text-emerald-600 tracking-widest px-4 flex items-center gap-2">
+                               <Heart size={16} /> Pilar Sosial
+                            </h4>
+                            {[
+                               { name: 'Masjid Raya Integrasi', type: 'Wakaf Dana', target: 'Rp 2.5M', icon: Landmark },
+                               { name: 'Taman Bermain Anak', type: 'Wakaf Aset', target: 'Rp 1.0M', icon: Heart }
+                            ].map((item) => (
+                               <button 
+                                 key={item.name}
+                                 onClick={() => {
+                                    setSelectedSubNode({ name: item.name, type: item.type });
+                                    setShowGuestForm(true);
+                                 }}
+                                 className={`w-full p-8 text-left border-[2px] rounded-[2.5rem] transition-all group relative overflow-hidden ${
+                                    selectedSubNode?.name === item.name 
+                                    ? 'bg-emerald-600 border-emerald-600 text-white shadow-2xl shadow-emerald-200 scale-[1.02]' 
+                                    : 'bg-white border-slate-100 hover:border-emerald-200 hover:shadow-xl text-slate-900'
+                                 }`}
+                               >
+                                  <div className="flex justify-between items-start">
+                                     <div className="relative z-10">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${selectedSubNode?.name === item.name ? 'bg-white/20' : 'bg-emerald-50 text-emerald-600'}`}>
+                                           <item.icon size={24} />
+                                        </div>
+                                        <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${selectedSubNode?.name === item.name ? 'text-emerald-200' : 'text-emerald-500'}`}>{item.type}</p>
+                                        <h5 className="text-xl font-black italic tracking-tight">{item.name}</h5>
+                                     </div>
+                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedSubNode?.name === item.name ? 'bg-emerald-500' : 'bg-slate-50 text-slate-300'}`}>
+                                        <ArrowRight size={20} className={selectedSubNode?.name === item.name ? 'text-white' : 'group-hover:translate-x-1 transition-transform'} />
+                                     </div>
+                                  </div>
+                                  <div className="mt-8 flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                                     <span className={selectedSubNode?.name === item.name ? 'text-emerald-100' : 'text-slate-400'}>Target: {item.target}</span>
+                                     <span className={`px-4 py-2 rounded-full ${selectedSubNode?.name === item.name ? 'bg-white text-emerald-600' : 'bg-emerald-600 text-white opacity-0 group-hover:opacity-100 transition-opacity'}`}>
+                                        Pilih Unit
+                                     </span>
+                                  </div>
+                               </button>
+                            ))}
+                         </div>
                       </div>
                    </div>
                 </div>
@@ -381,10 +468,61 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
                 </div>
               )}
 
+              {activeTab === 'updates' && (
+                <div className="grid md:grid-cols-2 gap-12">
+                   <div className="bg-white rounded-[2.5rem] p-12 border border-slate-200 shadow-sm">
+                      <h3 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">Kabar & Progress</h3>
+                      <div className="space-y-8 relative">
+                         <div className="absolute left-6 top-2 bottom-0 w-0.5 bg-slate-100"></div>
+                         {[
+                           { title: 'Pengecoran Pondasi Tahap 2', date: 'Hari ini, 14:30 WIB', type: 'progress' },
+                           { title: 'Pengajuan RAB Material Disetujui', date: 'Kemarin, 09:00 WIB', type: 'admin' },
+                           { title: 'Tender Vendor Logistik Selesai', date: '3 Hari Lalu', type: 'progress' },
+                           { title: 'Pembebasan Lahan 100% Clear', date: 'Minggu Lalu', type: 'progress' }
+                         ].map((u, i) => (
+                           <div key={i} className="flex gap-6 relative">
+                              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 z-10 shadow-sm ${u.type === 'progress' ? 'bg-indigo-50 text-indigo-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                                 {u.type === 'progress' ? <Building2 size={20} /> : <CheckCircle2 size={20} />}
+                              </div>
+                              <div>
+                                 <h4 className="text-sm font-bold text-slate-900 mb-1">{u.title}</h4>
+                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{u.date}</p>
+                              </div>
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+
+                   <div className="bg-white rounded-[2.5rem] p-12 border border-slate-200 shadow-sm">
+                      <h3 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">Daftar Kontributor</h3>
+                      <div className="space-y-6">
+                         {[
+                           { name: 'Ham*** ***', t: 'Wakaf Dana', val: 'Rp 5.000.000', time: '5 Menit yang lalu' },
+                           { name: 'Suh***', t: 'Investasi', val: 'Rp 10.000.000', time: '1 Jam yang lalu' },
+                           { name: 'Hamba Allah', t: 'Wakaf', val: 'Rp 50.000', time: '3 Jam yang lalu' },
+                           { name: 'Ind*** ***', t: 'Investasi', val: 'Rp 25.000.000', time: 'Kemarin' },
+                           { name: 'Hamba Allah', t: 'Infaq', val: 'Rp 1.000.000', time: 'Kemarin' },
+                         ].map((d, i) => (
+                           <div key={i} className="flex justify-between items-center border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                              <div className="flex gap-4 items-center">
+                                 <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
+                                    <Users size={16} />
+                                 </div>
+                                 <div>
+                                    <p className="text-sm font-black italic uppercase text-slate-800">{d.name}</p>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{d.t} • {d.time}</p>
+                                 </div>
+                              </div>
+                              <p className="text-sm font-black text-slate-900">{d.val}</p>
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* RIGHT SIDEBAR (Sticky Action) */}
           <div className="lg:col-span-4 space-y-8">
              <div className="bg-white rounded-[3rem] border border-slate-200 p-10 shadow-xl sticky top-28 z-30">
                 <div className="mb-10">
@@ -420,12 +558,54 @@ const ProjectDetailsPage: React.FC<ProjectDetailsPageProps> = ({ projectId, onBa
                    </div>
                 </div>
 
-                <button 
-                  onClick={onInvestClick}
-                  className="w-full py-6 bg-slate-900 text-white font-black text-xl rounded-2xl hover:bg-indigo-600 hover:shadow-2xl hover:shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group"
-                >
-                  SALURKAN AMANAH <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-                </button>
+                {showGuestForm ? (
+                  <div className="border border-indigo-100 bg-indigo-50/30 p-6 rounded-[2rem] animate-in fade-in slide-in-from-top-4 space-y-4 mb-8">
+                     <div className="flex justify-between items-center mb-2">
+                        <h5 className="font-black italic uppercase text-indigo-900">
+                           {selectedSubNode ? 'Tujuan Alokasi' : 'Guest Checkout'}
+                        </h5>
+                        <button onClick={() => {
+                           setShowGuestForm(false);
+                           setSelectedSubNode(null);
+                        }} className="text-indigo-400 hover:text-indigo-900"><ArrowLeft size={16} /></button>
+                     </div>
+
+                     {selectedSubNode && (
+                        <div className="p-3 bg-white rounded-xl border border-indigo-100 flex items-center justify-between">
+                           <div>
+                              <p className="text-[8px] font-black uppercase text-indigo-500 tracking-widest">Unit Re-Selection</p>
+                              <p className="text-xs font-bold text-slate-900">{selectedSubNode.name}</p>
+                           </div>
+                           <span className="text-[8px] font-black px-2 py-1 bg-indigo-50 text-indigo-600 rounded uppercase">{selectedSubNode.type}</span>
+                        </div>
+                     )}
+
+                     <div>
+                        <label className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-1">Nama (Opsional)</label>
+                        <input type="text" placeholder="Hamba Allah" className="w-full bg-white border border-indigo-100 py-3 px-4 rounded-xl text-sm font-bold focus:outline-none focus:border-indigo-500" />
+                     </div>
+                     <div>
+                        <label className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-1">Nominal</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-3 font-bold text-slate-400">Rp</span>
+                          <input type="number" placeholder="10.000.000" className="w-full bg-white border border-indigo-100 py-3 pl-12 pr-4 rounded-xl text-sm font-black focus:outline-none focus:border-indigo-500" />
+                        </div>
+                     </div>
+                     <button 
+                       onClick={() => alert(`Alokasi ke ${selectedSubNode?.name || 'Proyek Utama'} Berhasil!`)}
+                       className="w-full py-4 mt-2 bg-indigo-600 text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+                     >
+                        Bayar via QRIS <ArrowRight size={16} />
+                     </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => setShowGuestForm(true)}
+                    className="w-full py-6 bg-slate-900 text-white font-black text-xl rounded-2xl hover:bg-indigo-600 hover:shadow-2xl hover:shadow-indigo-200 transition-all active:scale-[0.98] flex items-center justify-center gap-4 group"
+                  >
+                    {selectedSubNode ? 'LANJUT ALOKASI' : 'SALURKAN AMANAH'} <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+                  </button>
+                )}
                 
                 <p className="mt-8 text-[9px] text-center text-slate-400 font-black uppercase tracking-[0.3em] leading-loose">
                   Trust · Accuracy · Synergy

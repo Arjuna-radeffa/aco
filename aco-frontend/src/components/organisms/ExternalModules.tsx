@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GlassCard } from '../atoms/GlassCard';
 import { StatusIndicator } from '../atoms/StatusIndicator';
 import { MonitoringChart } from './MonitoringChart';
@@ -17,7 +17,8 @@ import {
   ShieldCheck,
   Search,
   Filter,
-  PlusSquare
+  PlusSquare,
+  X
 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
@@ -25,10 +26,11 @@ import { useStore } from '../../store/useStore';
 
 const DashboardCards: React.FC<{ role: string }> = ({ role }) => {
   const cards = [
-    { label: 'Total Investasi Aktif', val: 'Rp 450.000.000', icon: <Wallet size={20} />, color: 'text-blue-600', show: role.includes('invest') },
-    { label: 'Estimasi Bagi Hasil Q2', val: 'Rp 14.250.000', icon: <TrendingUp size={20} />, color: 'text-emerald-600', show: role.includes('invest') },
-    { label: 'Total Wakaf Uang', val: 'Rp 25.000.000', icon: <Heart size={20} />, color: 'text-indigo-600', show: role.includes('wakif') },
-    { label: 'Zakat & Infaq Terbayar', val: 'Rp 8.500.000', icon: <Activity size={20} />, color: 'text-amber-600', show: ['muzakki', 'munfiq', 'mutashadiq'].some(r => role.includes(r)) },
+    { label: 'Investasi Dana', val: 'Rp 450.000.000', icon: <Wallet size={20} />, color: 'text-blue-600', show: role.includes('invest') || role === 'funder' },
+    { label: 'Wakaf Dana (Uang)', val: 'Rp 25.000.000', icon: <Heart size={20} />, color: 'text-indigo-600', show: role.includes('wakif') || role === 'funder' },
+    { label: 'Wakaf Aset T. Bergerak', val: '2 Properti SHM', icon: <Heart size={20} />, color: 'text-purple-600', show: role === 'funder' },
+    { label: 'Wakaf Aset Bergerak', val: '5 Armada Logistik', icon: <Heart size={20} />, color: 'text-emerald-600', show: role === 'funder' },
+    { label: 'Zakat & Infaq Terbayar', val: 'Rp 8.500.000', icon: <Activity size={20} />, color: 'text-amber-600', show: ['muzakki', 'munfiq', 'mutashadiq', 'funder'].some(r => role.includes(r)) },
     { label: 'Partisipasi Aktif', val: '12 Proyek', icon: <PieChartIcon size={20} />, color: 'text-slate-900', show: true },
   ].filter(c => c.show);
 
@@ -56,6 +58,162 @@ export const ExternalDashboard: React.FC = () => {
   const currentUser = useStore((state: any) => state.currentUser);
   const projects = useStore((state: any) => state.projects);
   const role = currentUser?.role?.toLowerCase() || '';
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [showForm, setShowForm] = useState<string | null>(null);
+
+  if (selectedProject) {
+    return (
+      <div className="space-y-10 animate-in fade-in slide-in-from-right-8 duration-700">
+        <div className="flex items-center gap-4">
+           <button onClick={() => setSelectedProject(null)} className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-400">
+              <ChevronRight size={20} className="rotate-180" />
+           </button>
+           <div>
+              <h1 className="text-3xl font-black italic tracking-tighter uppercase text-slate-900 dark:text-white">{selectedProject.title}</h1>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Context: {selectedProject.parent} (Tertutup) › {selectedProject.title} (Terbuka)</p>
+           </div>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+           <div className="lg:col-span-2 space-y-6">
+              <GlassCard className="p-8 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-slate-400">Project Overview</h4>
+                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Proyek ini bertujuan untuk mempercepat target operasional dan pencapaian impact metrics di lapangan. Node ini berstatus <span className="font-bold text-blue-600 dark:text-blue-400">Terbuka Untuk Partisipasi Publik</span> berdasarkan konfigurasi v3.2 dari pusat.
+                 </p>
+                 <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                       <p className="text-[9px] font-black uppercase text-slate-400 mb-1">Target Pendanaan</p>
+                       <p className="text-xl font-black italic text-slate-900 dark:text-white">{selectedProject.target}</p>
+                    </div>
+                    <div>
+                       <p className="text-[9px] font-black uppercase text-slate-400 mb-1">Durasi / Tenor</p>
+                       <p className="text-xl font-black italic text-slate-900 dark:text-white">24 Bulan</p>
+                    </div>
+                    <div>
+                       <p className="text-[9px] font-black uppercase text-slate-400 mb-1">Bagi Hasil</p>
+                       <p className="text-xl font-black italic text-emerald-600 dark:text-emerald-500">12% / thn</p>
+                    </div>
+                    <div>
+                       <p className="text-[9px] font-black uppercase text-slate-400 mb-1">Skor Kesehatan</p>
+                       <div className="mt-1"><StatusIndicator status={selectedProject.status as any} /></div>
+                    </div>
+                 </div>
+              </GlassCard>
+
+              <GlassCard className="p-0 border-0 bg-transparent shadow-none">
+                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-slate-400">Peluang Partisipasi Eksternal</h4>
+                 {showForm ? (
+                    <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-300">
+                       <div className="flex justify-between items-center mb-6">
+                          <h5 className="font-black italic text-lg uppercase text-slate-900 dark:text-white">Form {showForm === 'invest' ? 'Investasi' : 'Penyaluran Wakaf'}</h5>
+                          <button onClick={() => setShowForm(null)} className="text-slate-400 hover:text-slate-900"><X size={20} /></button>
+                       </div>
+                       <div className="space-y-4">
+                          <div>
+                             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Nama (Opsional)</label>
+                             <input type="text" placeholder="Hamba Allah" className="w-full bg-white dark:bg-slate-900 border border-slate-200 py-3 px-4 rounded-xl text-sm font-bold focus:outline-none focus:border-blue-500" />
+                          </div>
+                          <div>
+                             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Nominal</label>
+                             <div className="relative">
+                               <span className="absolute left-4 top-3 font-bold text-slate-400">Rp</span>
+                               <input type="number" placeholder="50.000" className="w-full bg-white dark:bg-slate-900 border border-slate-200 py-3 pl-12 pr-4 rounded-xl text-sm font-black focus:outline-none focus:border-blue-500" />
+                             </div>
+                          </div>
+                          <button className={`w-full py-4 text-white font-black uppercase tracking-widest rounded-xl shadow-xl transition-all ${showForm === 'invest' ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30'}`}>
+                             Konfirmasi & Lanjut Pembayaran
+                          </button>
+                       </div>
+                    </div>
+                 ) : (
+                 <div className="grid md:grid-cols-2 gap-4">
+                    {selectedProject.openForInvest && (
+                       <button onClick={() => setShowForm('invest')} className="p-6 bg-blue-600 hover:bg-blue-500 text-white rounded-3xl transition-all text-left group border border-blue-500">
+                          <Wallet size={24} className="mb-4 opacity-50 group-hover:opacity-100 transition-all group-hover:scale-110" />
+                          <h5 className="text-lg font-black uppercase italic">Investasi Dana</h5>
+                          <p className="text-[10px] font-medium opacity-80 mt-1">Gabung sekarang untuk skema bagi hasil</p>
+                       </button>
+                    )}
+                    {(selectedProject.openForWaqf || selectedProject.wAsetBergerak || selectedProject.wAsetTakBergerak) && (
+                       <button onClick={() => setShowForm('wakaf')} className="p-6 bg-indigo-600 hover:bg-indigo-500 text-white rounded-3xl transition-all text-left group border border-indigo-500">
+                          <Heart size={24} className="mb-4 opacity-50 group-hover:opacity-100 transition-all group-hover:scale-110" />
+                          <h5 className="text-lg font-black uppercase italic">Salurkan Wakaf</h5>
+                          <p className="text-[10px] font-medium opacity-80 mt-1">Tersedia untuk dana tunai & aset</p>
+                       </button>
+                    )}
+                 </div>
+                 )}
+              </GlassCard>
+
+              {/* Progress & Donatur Grid */}
+              <div className="grid md:grid-cols-2 gap-6">
+                 <GlassCard className="p-6 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                    <h5 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-slate-400">Kabar Progress Terbaru</h5>
+                    <div className="space-y-4">
+                       <div className="flex gap-4">
+                          <div className="w-1.5 h-1.5 mt-1.5 rounded-full bg-blue-500 shrink-0 animate-pulse"></div>
+                          <div>
+                             <p className="text-xs font-bold text-slate-900 dark:text-white">Pengecoran Pondasi Tahap 2</p>
+                             <p className="text-[9px] font-medium text-slate-500 mt-0.5">Hari ini, 14:30 WIB</p>
+                          </div>
+                       </div>
+                       <div className="flex gap-4">
+                          <div className="w-1.5 h-1.5 mt-1.5 rounded-full bg-slate-300 shrink-0"></div>
+                          <div>
+                             <p className="text-xs font-bold text-slate-900 dark:text-white">Pengajuan RAB Material</p>
+                             <p className="text-[9px] font-medium text-slate-500 mt-0.5">Kemarin, 09:00 WIB</p>
+                          </div>
+                       </div>
+                       <div className="flex gap-4">
+                          <div className="w-1.5 h-1.5 mt-1.5 rounded-full bg-slate-300 shrink-0"></div>
+                          <div>
+                             <p className="text-xs font-bold text-slate-900 dark:text-white">Tender Vendor Logistik</p>
+                             <p className="text-[9px] font-medium text-slate-500 mt-0.5">3 Hari Lalu</p>
+                          </div>
+                       </div>
+                    </div>
+                 </GlassCard>
+
+                 <GlassCard className="p-6 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                    <h5 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 text-slate-400">Daftar Kontributor</h5>
+                    <div className="space-y-4">
+                       {[
+                         { name: 'Ham*** ***', t: 'Wakaf Dana', val: 'Rp 5.000.000' },
+                         { name: 'Suh***', t: 'Investasi', val: 'Rp 10.000.000' },
+                         { name: 'Hamba Allah', t: 'Wakaf', val: 'Rp 50.000' },
+                         { name: 'Ind*** ***', t: 'Investasi', val: 'Rp 25.000.000' },
+                       ].map((d, i) => (
+                         <div key={i} className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2 last:border-0 last:pb-0">
+                            <div>
+                               <p className="text-xs font-black italic uppercase text-slate-700 dark:text-slate-300">{d.name}</p>
+                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{d.t}</p>
+                            </div>
+                            <p className="text-xs font-black text-slate-900 dark:text-white">{d.val}</p>
+                         </div>
+                       ))}
+                    </div>
+                 </GlassCard>
+              </div>
+           </div>
+           
+           <div className="space-y-8">
+              <GlassCard className="p-8 bg-slate-900 text-white border-0 shadow-2xl shadow-blue-500/20">
+                 <h5 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 italic opacity-50">Legal & Documents</h5>
+                 <div className="space-y-3">
+                    <button className="w-full py-4 bg-white/10 hover:bg-white text-[10px] font-black uppercase tracking-widest text-white hover:text-slate-900 rounded-2xl transition-all flex items-center justify-center gap-3">
+                       <FileText size={16} /> Prospektus v3.2
+                    </button>
+                    <button className="w-full py-4 bg-white/10 hover:bg-white text-[10px] font-black uppercase tracking-widest text-white hover:text-slate-900 rounded-2xl transition-all flex items-center justify-center gap-3">
+                       <ShieldCheck size={16} /> Izin BWI
+                    </button>
+                 </div>
+              </GlassCard>
+           </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -82,37 +240,48 @@ export const ExternalDashboard: React.FC = () => {
              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 italic">Available Catalog (v3.1)</h3>
              <button className="text-[9px] font-black uppercase text-blue-600 dark:text-blue-400 hover:tracking-[0.2em] transition-all">Explore Marketplace</button>
           </div>
-          <div className="space-y-4">
-             {/* Mocking sub-node expansion based on v3.1 Patch Notes */}
+           <div className="space-y-4">
+             {/* Mocking sub-node expansion based on v3.2 Patch Notes */}
+             {/* If openForWaqf or openForInvestment is true, show action. If both false, Do Not Show in catalog (as per v3.2). 
+                 Breadcrumbs simply reflect string paths. */}
              {[
-               { parent: 'Lumbung Pangan Berkah', title: 'Pabrik Penggilingan (Tahap 2)', status: 'healthy', openForWaqf: true, target: 'Rp 500M' },
-               { parent: 'Logistik Pantura Express', title: 'Armada Truk Dingin', status: 'at_risk', openForWaqf: false, target: 'Rp 200M' },
-               ...projects.slice(0, 1).map((p:any) => ({ parent: 'Root Node', title: p.title, status: p.status, openForWaqf: true, target: 'Multy' }))
+               { id: '1', parent: 'Lumbung Pangan Berkah', title: 'Pabrik Penggilingan (Tahap 2)', status: 'healthy', openForWaqf: true, wAsetTakBergerak: true, wAsetBergerak: false, openForInvest: false, target: 'Rp 500M' },
+               { id: '2', parent: 'Logistik Pantura Express', title: 'Armada Truk Dingin', status: 'at_risk', openForWaqf: false, wAsetTakBergerak: false, wAsetBergerak: true, openForInvest: true, target: 'Rp 200M' },
+               { id: '3', parent: 'Root Node', title: projects[0]?.title || 'Agri Tech Pilot', status: projects[0]?.status || 'healthy', openForWaqf: true, wAsetTakBergerak: true, wAsetBergerak: true, openForInvest: true, target: 'Multy' }
              ].map((p: any, idx: number) => (
-              <GlassCard key={idx} className="p-6 flex justify-between items-center hover:border-blue-300 dark:hover:border-blue-500 transition-all cursor-pointer group bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
+              <GlassCard 
+                key={idx} 
+                onClick={() => setSelectedProject(p)} 
+                className="p-6 flex justify-between items-center hover:border-blue-300 dark:hover:border-blue-500 transition-all cursor-pointer group bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800"
+              >
                 <div className="flex items-center gap-6">
                    <div className="w-14 h-14 rounded-2xl bg-slate-900 dark:bg-blue-600 text-white flex items-center justify-center font-black italic text-xl">
                       {p.title[0]}
                    </div>
                    <div>
                       <h4 className="text-sm font-black italic text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase">{p.title}</h4>
-                      <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Context: {p.parent} › {p.title}</p>
+                      <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Context: {p.parent} (Tertutup) › {p.title} (Terbuka)</p>
                    </div>
                 </div>
                 <div className="flex items-center gap-10">
                    <div className="text-right hidden md:block">
-                      <p className="text-[8px] font-black uppercase text-slate-400 dark:text-slate-600 mb-1">Status</p>
-                      <StatusIndicator status={p.status as any} />
+                      <p className="text-[8px] font-black uppercase text-slate-400 dark:text-slate-600 mb-1">Dapat Menerima</p>
+                      <div className="flex gap-2">
+                          {p.openForWaqf && <span className="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[8px] font-black uppercase">W. Dana</span>}
+                         {p.wAsetBergerak && <span className="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase">W. A. Bergerak</span>}
+                         {p.wAsetTakBergerak && <span className="px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-[8px] font-black uppercase">W. A. Tetap</span>}
+                         {p.openForInvest && <span className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[8px] font-black uppercase">Invest. Dana</span>}
+                      </div>
                    </div>
                    <div className="text-right">
                       <p className="text-[8px] font-black uppercase text-slate-400 dark:text-slate-600 mb-1">Target</p>
-                      <p className="text-xs font-black italic text-emerald-600 dark:text-emerald-400">{p.target}</p>
+                      <p className="text-xs font-black italic text-slate-900 dark:text-white">{p.target}</p>
                    </div>
                    <ChevronRight size={18} className="text-slate-300 dark:text-slate-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 transform group-hover:translate-x-1 transition-all" />
                 </div>
               </GlassCard>
             ))}
-          </div>
+           </div>
         </div>
 
         <div className="space-y-8">
