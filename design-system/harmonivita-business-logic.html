@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonivita — Business Logic</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2D5016;
+    --moss: #4A7C2F;
+    --sage: #7BA05B;
+    --mint: #C8E6B4;
+    --cream: #FAF6EE;
+    --parchment: #F2EAD8;
+    --terracotta: #C1622A;
+    --amber: #D4873A;
+    --gold: #E8B84B;
+    --warm-brown: #6B4C2A;
+    --text-dark: #1E2A14;
+    --text-body: #3A4A2C;
+    --text-muted: #6A7A5C;
+    --border: #D6E8C4;
+    --white: #ffffff;
+    --red: #C0392B;
+    --red-light: #FDECEA;
+    --blue: #2471A3;
+    --blue-light: #EBF5FB;
+    --purple: #7D3C98;
+    --purple-light: #F5EEF8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-body); line-height: 1.8; }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh; background: var(--forest);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 60px 40px; position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 20% 80%, rgba(74,124,47,.4) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 60% at 80% 20%, rgba(200,230,180,.15) 0%, transparent 55%);
+  }
+  .cover-badge { font-size:11px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:var(--gold); border:1px solid rgba(232,184,75,.4); padding:6px 20px; border-radius:20px; margin-bottom:40px; position:relative; }
+  .cover-leaf { font-size:64px; margin-bottom:20px; position:relative; }
+  .cover h1 { font-family:'Playfair Display',serif; font-size:clamp(46px,7vw,78px); font-weight:700; color:#fff; letter-spacing:-1px; line-height:1.05; margin-bottom:12px; position:relative; }
+  .cover h1 span { color:var(--gold); font-style:italic; }
+  .cover-sub { font-family:'Lora',serif; font-size:17px; color:rgba(255,255,255,.7); font-style:italic; margin-bottom:12px; position:relative; }
+  .cover-doc-title { font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--mint); margin-bottom:48px; position:relative; }
+  .cover-meta { display:flex; gap:36px; flex-wrap:wrap; justify-content:center; position:relative; }
+  .cover-meta-item { text-align:center; color:rgba(255,255,255,.55); font-size:12px; letter-spacing:1px; }
+  .cover-meta-item strong { display:block; color:var(--mint); font-size:13px; font-weight:500; margin-bottom:2px; }
+  .cover-wave { position:absolute; bottom:0; left:0; right:0; height:80px; background:var(--cream); clip-path:ellipse(55% 100% at 50% 100%); }
+
+  /* ── DECISIONS BANNER ── */
+  .decisions-banner { background:var(--forest); padding:40px; }
+  .decisions-inner { max-width:960px; margin:0 auto; }
+  .decisions-inner h3 { font-family:'Playfair Display',serif; font-size:18px; color:var(--gold); margin-bottom:20px; }
+  .decisions-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
+  .decision-item { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:14px 18px; }
+  .decision-item .d-label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+  .decision-item .d-value { font-size:13px; color:rgba(255,255,255,.9); line-height:1.5; }
+  .decision-item .d-value code { background:rgba(232,184,75,.15); color:var(--gold); padding:1px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:12px; }
+
+  /* ── LAYOUT ── */
+  .container { max-width:960px; margin:0 auto; padding:0 40px; }
+
+  /* ── TOC ── */
+  .toc { background:var(--parchment); border-left:4px solid var(--sage); padding:40px 48px; margin:60px auto; max-width:960px; border-radius:0 12px 12px 0; }
+  .toc h2 { font-family:'Playfair Display',serif; font-size:20px; color:var(--forest); margin-bottom:24px; }
+  .toc-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .toc-section { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--terracotta); margin-bottom:8px; }
+  .toc ul { list-style:none; padding:0; }
+  .toc ul li { font-size:13px; color:var(--text-body); padding:4px 0 4px 16px; border-left:2px solid var(--border); margin-bottom:3px; }
+  .toc ul li span { color:var(--text-muted); font-size:11px; display:block; }
+
+  /* ── DOMAIN HEADER ── */
+  .domain { padding:72px 0 0; }
+  .domain-pill { display:inline-flex; align-items:center; gap:8px; background:var(--forest); color:var(--gold); padding:8px 20px; border-radius:30px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:14px; }
+  .domain h2 { font-family:'Playfair Display',serif; font-size:clamp(24px,3.5vw,32px); font-weight:700; color:var(--forest); margin-bottom:8px; line-height:1.2; }
+  .domain-desc { font-size:14px; color:var(--text-muted); margin-bottom:36px; max-width:680px; line-height:1.7; }
+
+  /* ── SECTION DIVIDER ── */
+  .divider { display:flex; align-items:center; gap:14px; margin:44px 0 28px; }
+  .divider span { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); white-space:nowrap; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── STATE MACHINE ── */
+  .state-machine { margin:28px 0 36px; overflow-x:auto; }
+  .sm-flow { display:flex; align-items:center; gap:0; flex-wrap:nowrap; padding:8px 0; min-width:max-content; }
+  .sm-state { border-radius:10px; padding:14px 20px; text-align:center; min-width:120px; flex-shrink:0; }
+  .sm-state .s-label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+  .sm-state .s-name { font-size:14px; font-weight:700; }
+  .sm-state .s-desc { font-size:11px; margin-top:4px; }
+  .sm-state.s-start { background:var(--parchment); border:2px solid var(--border); }
+  .sm-state.s-start .s-label { color:var(--text-muted); }
+  .sm-state.s-start .s-name { color:var(--text-body); }
+  .sm-state.s-pending { background:#FEF9E7; border:2px solid #F9E79F; }
+  .sm-state.s-pending .s-label { color:#B7950B; }
+  .sm-state.s-pending .s-name { color:#7D6608; }
+  .sm-state.s-active { background:#EAFAF1; border:2px solid #A9DFBF; }
+  .sm-state.s-active .s-label { color:var(--moss); }
+  .sm-state.s-active .s-name { color:var(--forest); }
+  .sm-state.s-expired { background:#FEF0E7; border:2px solid #FAD7A0; }
+  .sm-state.s-expired .s-label { color:var(--amber); }
+  .sm-state.s-expired .s-name { color:var(--warm-brown); }
+  .sm-state.s-suspended { background:var(--red-light); border:2px solid #F5B7B1; }
+  .sm-state.s-suspended .s-label { color:var(--red); }
+  .sm-state.s-suspended .s-name { color:var(--red); }
+  .sm-arrow { flex-shrink:0; width:60px; display:flex; flex-direction:column; align-items:center; position:relative; }
+  .sm-arrow::before { content:''; position:absolute; top:50%; left:8px; right:8px; height:2px; background:var(--sage); transform:translateY(-50%); }
+  .sm-arrow .arrow-label { font-size:10px; color:var(--text-muted); white-space:nowrap; margin-bottom:18px; position:relative; z-index:1; background:var(--cream); padding:0 4px; }
+  .sm-arrow .arrow-head { font-size:16px; color:var(--sage); position:relative; z-index:1; background:var(--cream); }
+
+  /* ── RULE CARD ── */
+  .rule-card { background:var(--white); border:1px solid var(--border); border-radius:14px; margin-bottom:20px; overflow:hidden; box-shadow:0 2px 10px rgba(45,80,22,.04); }
+  .rule-header { padding:18px 24px 14px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:14px; }
+  .rule-id { background:var(--forest); color:var(--gold); font-size:11px; font-weight:700; letter-spacing:.5px; padding:4px 11px; border-radius:20px; white-space:nowrap; flex-shrink:0; font-family:'JetBrains Mono',monospace; margin-top:2px; }
+  .rule-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--forest); line-height:1.3; }
+  .rule-body { padding:20px 24px; }
+  .rule-list { list-style:none; padding:0; }
+  .rule-item { display:flex; gap:12px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--border); }
+  .rule-item:last-child { border-bottom:none; }
+  .rule-bullet { width:22px; height:22px; background:var(--mint); color:var(--forest); font-size:11px; font-weight:700; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+  .rule-text { font-size:14px; color:var(--text-body); line-height:1.65; }
+  .rule-text strong { color:var(--forest); }
+  .rule-text em { color:var(--warm-brown); }
+  .rule-text code { background:var(--parchment); padding:1px 7px; border-radius:4px; font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--terracotta); }
+
+  /* ── FORMULA BOX ── */
+  .formula-box { background:var(--forest); border-radius:10px; padding:20px 24px; margin:16px 0; }
+  .formula-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+  .formula { font-family:'JetBrains Mono',monospace; font-size:14px; color:#A8D5A2; line-height:1.8; }
+  .formula .f-var { color:var(--gold); }
+  .formula .f-op { color:rgba(255,255,255,.5); }
+  .formula .f-comment { color:rgba(255,255,255,.35); font-size:12px; }
+  .formula .f-result { color:white; font-weight:500; }
+
+  /* ── ALERT BOX ── */
+  .alert { border-radius:10px; padding:16px 20px; margin:16px 0; display:flex; gap:12px; align-items:flex-start; }
+  .alert-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+  .alert-text { font-size:13px; line-height:1.65; }
+  .alert-text strong { font-weight:700; }
+  .alert.warning { background:#FEF9E7; border:1px solid #F9E79F; color:var(--warm-brown); }
+  .alert.warning .alert-text strong { color:#7D6608; }
+  .alert.danger { background:var(--red-light); border:1px solid #F5B7B1; color:var(--red); }
+  .alert.danger .alert-text strong { color:var(--red); }
+  .alert.info { background:var(--blue-light); border:1px solid #AED6F1; color:var(--blue); }
+  .alert.info .alert-text strong { color:var(--blue); }
+  .alert.note { background:var(--parchment); border:1px solid var(--border); color:var(--text-muted); }
+  .alert.note .alert-text strong { color:var(--forest); }
+
+  /* ── ACL TABLE ── */
+  .acl-table { width:100%; border-collapse:collapse; margin:24px 0; font-size:13px; overflow-x:auto; display:block; }
+  .acl-table thead tr { background:var(--forest); color:white; }
+  .acl-table thead th { padding:12px 14px; text-align:left; font-weight:500; white-space:nowrap; }
+  .acl-table tbody tr { border-bottom:1px solid var(--border); }
+  .acl-table tbody tr:nth-child(even) { background:var(--parchment); }
+  .acl-table td { padding:11px 14px; vertical-align:middle; line-height:1.5; }
+  .acl-table td:first-child { font-weight:600; color:var(--forest); white-space:nowrap; }
+  .perm-yes { color:var(--moss); font-weight:700; font-size:15px; text-align:center; }
+  .perm-no { color:#CCC; font-size:15px; text-align:center; }
+  .perm-ro { color:var(--amber); font-weight:700; font-size:11px; text-align:center; }
+  .perm-cond { color:var(--blue); font-weight:700; font-size:11px; text-align:center; }
+
+  /* ── NOTIFICATION TABLE ── */
+  .notif-table { width:100%; border-collapse:collapse; margin:24px 0; font-size:13px; }
+  .notif-table thead tr { background:var(--forest); color:white; }
+  .notif-table thead th { padding:12px 16px; text-align:left; font-weight:500; }
+  .notif-table tbody tr { border-bottom:1px solid var(--border); }
+  .notif-table tbody tr:nth-child(even) { background:var(--parchment); }
+  .notif-table td { padding:12px 16px; vertical-align:top; line-height:1.6; }
+  .notif-table td:first-child { font-weight:600; color:var(--forest); white-space:nowrap; }
+  .channel-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+  .ch-wa { background:#DCF8C6; color:#075E54; }
+  .ch-email { background:var(--blue-light); color:var(--blue); }
+  .ch-both { background:var(--mint); color:var(--forest); }
+
+  /* ── EDGE CASE ── */
+  .edge-cases { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:28px 0; }
+  .edge-card { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .edge-card .ec-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--terracotta); margin-bottom:8px; }
+  .edge-card h4 { font-size:14px; font-weight:700; color:var(--forest); margin-bottom:8px; line-height:1.4; }
+  .edge-card p { font-size:13px; color:var(--text-muted); line-height:1.6; }
+  .edge-card p strong { color:var(--text-body); }
+
+  /* ── ASSUMPTION TABLE ── */
+  .assumption-table { width:100%; border-collapse:collapse; margin:24px 0; font-size:13px; }
+  .assumption-table thead tr { background:var(--amber); color:white; }
+  .assumption-table thead th { padding:12px 16px; text-align:left; font-weight:500; }
+  .assumption-table tbody tr { border-bottom:1px solid var(--border); }
+  .assumption-table tbody tr:nth-child(even) { background:#FEF9E7; }
+  .assumption-table td { padding:11px 16px; vertical-align:top; line-height:1.6; }
+  .assumption-table td:first-child { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--terracotta); white-space:nowrap; font-weight:500; }
+
+  /* ── FOOTER ── */
+  .doc-footer { background:var(--forest); color:rgba(255,255,255,.6); text-align:center; padding:40px; font-size:13px; margin-top:80px; }
+  .doc-footer strong { color:var(--gold); }
+
+  @media (max-width:640px) {
+    .container { padding:0 20px; }
+    .toc-grid, .edge-cases { grid-template-columns:1fr; }
+    .decisions-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="cover-badge">Dokumen Pengembangan Produk</div>
+  <div class="cover-leaf">🌿</div>
+  <h1>Harmo<span>nivita</span></h1>
+  <p class="cover-sub">Portal Komunitas Kesehatan Holistik & Klinik Mitra</p>
+  <p class="cover-doc-title">Business Logic — Aturan Bisnis & Logika Domain</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><strong>Versi</strong>1.0 — April 2025</div>
+    <div class="cover-meta-item"><strong>Referensi</strong>Narrative Story + User Stories v1.0</div>
+    <div class="cover-meta-item"><strong>Status</strong>Draft Final</div>
+  </div>
+  <div class="cover-wave"></div>
+</div>
+
+<!-- ══ DECISIONS BANNER ══ -->
+<div class="decisions-banner">
+  <div class="decisions-inner">
+    <h3>✦ Keputusan Bisnis yang Dikonfirmasi</h3>
+    <div class="decisions-grid">
+      <div class="decision-item">
+        <div class="d-label">Komisi Referral</div>
+        <div class="d-value">Single-level. Besaran dikonfigurasi Admin Pusat via <code>COMMISSION_RATE</code>. Rekomendasi awal: <code>Rp20.000</code> per referral berhasil.</div>
+      </div>
+      <div class="decision-item">
+        <div class="d-label">Konsultasi Gratis</div>
+        <div class="d-value">Unlimited sepanjang tahun keanggotaan aktif — tidak ada batas jumlah kunjungan.</div>
+      </div>
+      <div class="decision-item">
+        <div class="d-label">Pencairan Komisi</div>
+        <div class="d-value">Member memilih saat request: transfer ke rekening/e-wallet <em>atau</em> kredit perpanjangan keanggotaan.</div>
+      </div>
+      <div class="decision-item">
+        <div class="d-label">Admin Klinik Mitra</div>
+        <div class="d-value">Klinik mitra memiliki akun Admin Cabang sendiri di sistem (asumsi — perlu konfirmasi final).</div>
+      </div>
+      <div class="decision-item">
+        <div class="d-label">Grace Period</div>
+        <div class="d-value">Tidak ada — keanggotaan langsung expired tepat di tanggal jatuh tempo.</div>
+      </div>
+      <div class="decision-item">
+        <div class="d-label">Akses Setelah Expired</div>
+        <div class="d-value">Riwayat medis tetap bisa dilihat (read-only). Semua fitur lain dikunci hingga perpanjangan.</div>
+      </div>
+      <div class="decision-item">
+        <div class="d-label">Refund Policy</div>
+        <div class="d-value">Non-refundable — tidak ada pengembalian dana dalam kondisi apapun setelah pembayaran berhasil.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOC ══ -->
+<div class="toc">
+  <h2>🗂 Daftar Domain Business Logic</h2>
+  <div class="toc-grid">
+    <div>
+      <div class="toc-section">BL-MEM · Keanggotaan Member</div>
+      <ul>
+        <li>State machine status member</li>
+        <li>Aturan registrasi & pencegahan duplikat</li>
+        <li>Logika perpanjangan keanggotaan</li>
+        <li>Akses berdasarkan status</li>
+        <li>Kebijakan refund</li>
+      </ul>
+      <div class="toc-section" style="margin-top:18px;">BL-REF · Program Referral</div>
+      <ul>
+        <li>State machine komisi</li>
+        <li>Aturan kelayakan & validasi</li>
+        <li>Kalkulasi & pengkreditan komisi</li>
+        <li>Alur pencairan (rekening / kredit)</li>
+        <li>Edge cases referral</li>
+      </ul>
+      <div class="toc-section" style="margin-top:18px;">BL-VIS · Kunjungan & Konsultasi</div>
+      <ul>
+        <li>Eligibilitas konsultasi gratis</li>
+        <li>Aturan input & edit kunjungan</li>
+        <li>Scoping data per klinik</li>
+      </ul>
+    </div>
+    <div>
+      <div class="toc-section">BL-EVT · Event & Tiket</div>
+      <ul>
+        <li>Penentuan & validasi harga member</li>
+        <li>Manajemen kuota (FIFO)</li>
+        <li>Lifecycle tiket digital</li>
+      </ul>
+      <div class="toc-section" style="margin-top:18px;">BL-SPO · Konten & Sponsor</div>
+      <ul>
+        <li>Workflow review artikel sponsor</li>
+        <li>Aturan label wajib "Sponsored"</li>
+        <li>Auto-expiry penayangan iklan</li>
+      </ul>
+      <div class="toc-section" style="margin-top:18px;">BL-NOT · Notifikasi & Reminder</div>
+      <ul>
+        <li>Trigger & jadwal notifikasi WA</li>
+        <li>Aturan WA blast tersegmentasi</li>
+        <li>Fallback & retry logic</li>
+      </ul>
+      <div class="toc-section" style="margin-top:18px;">BL-ACL · Hak Akses & Audit</div>
+      <ul>
+        <li>Access control matrix lengkap</li>
+        <li>Data scoping Admin Cabang</li>
+        <li>Aturan activity log</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ BL-MEM ══════════════════ -->
+<div class="domain container">
+  <div class="domain-pill">BL-MEM</div>
+  <h2>Keanggotaan Member</h2>
+  <p class="domain-desc">Mendefinisikan seluruh lifecycle member — dari registrasi, status aktif, expired, suspended — beserta aturan perpanjangan, hak akses per status, dan kebijakan non-refund.</p>
+
+  <div class="divider"><span>State Machine — Status Member</span></div>
+
+  <div class="state-machine">
+    <div class="sm-flow">
+      <div class="sm-state s-start">
+        <div class="s-label">Awal</div>
+        <div class="s-name">UNREGISTERED</div>
+        <div class="s-desc">Belum daftar</div>
+      </div>
+      <div class="sm-arrow">
+        <div class="arrow-label">Isi form</div>
+        <div class="arrow-head">→</div>
+      </div>
+      <div class="sm-state s-pending">
+        <div class="s-label">Status</div>
+        <div class="s-name">PENDING_PAYMENT</div>
+        <div class="s-desc">Menunggu bayar</div>
+      </div>
+      <div class="sm-arrow">
+        <div class="arrow-label">Bayar lunas</div>
+        <div class="arrow-head">→</div>
+      </div>
+      <div class="sm-state s-active">
+        <div class="s-label">Status</div>
+        <div class="s-name">ACTIVE</div>
+        <div class="s-desc">Keanggotaan berlaku</div>
+      </div>
+      <div class="sm-arrow">
+        <div class="arrow-label">Jatuh tempo</div>
+        <div class="arrow-head">→</div>
+      </div>
+      <div class="sm-state s-expired">
+        <div class="s-label">Status</div>
+        <div class="s-name">EXPIRED</div>
+        <div class="s-desc">Akses terbatas</div>
+      </div>
+    </div>
+  </div>
+  <div class="alert note">
+    <div class="alert-icon">ℹ️</div>
+    <div class="alert-text">Admin Pusat dapat mengubah status member dari/ke <strong>SUSPENDED</strong> dari status ACTIVE atau EXPIRED kapan saja, dengan wajib mencatat alasan. Status PENDING_PAYMENT yang tidak diselesaikan dalam 24 jam otomatis di-cancel oleh sistem.</div>
+  </div>
+
+  <div class="divider"><span>Aturan Registrasi</span></div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-MEM-01</div>
+      <div class="rule-title">Registrasi & Pencegahan Duplikat</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Satu <strong>nomor WhatsApp</strong> hanya boleh terdaftar sebagai satu akun member. Jika nomor WA sudah ada di sistem (status apapun), pendaftaran baru ditolak dan sistem menampilkan pesan: <em>"Nomor WhatsApp ini sudah terdaftar. Silakan login atau gunakan lupa password."</em></div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Satu <strong>alamat email</strong> hanya boleh terdaftar sebagai satu akun. Validasi dilakukan di server side, bukan hanya client-side.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Setelah formulir berhasil disubmit, sistem membuat record member berstatus <code>PENDING_PAYMENT</code> dan menyimpan parameter UTM source dari QR code asal.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Jika pembayaran tidak diselesaikan dalam <strong>24 jam</strong> setelah formulir disubmit, record PENDING_PAYMENT otomatis di-cancel oleh scheduled job — nomor WA dan email menjadi bebas untuk didaftarkan ulang.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Status member berubah ke <code>ACTIVE</code> hanya setelah <strong>konfirmasi pembayaran diterima dari payment gateway</strong> (webhook sukses). Admin tidak perlu melakukan aktivasi manual untuk registrasi online.</div></li>
+        <li class="rule-item"><div class="rule-bullet">6</div><div class="rule-text"><code>membership_start_date</code> = tanggal konfirmasi pembayaran. <code>membership_expiry_date</code> = <code>membership_start_date + 365 hari</code>.</div></li>
+      </ul>
+      <div class="formula-box">
+        <div class="formula-label">Formula Tanggal Keanggotaan</div>
+        <div class="formula">
+          <span class="f-result">membership_expiry_date</span> <span class="f-op">=</span> <span class="f-var">payment_confirmed_at</span> <span class="f-op">+</span> <span class="f-result">365 hari</span><br>
+          <span class="f-comment">// Contoh: bayar 15 April 2025 → expired 15 April 2026</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-MEM-02</div>
+      <div class="rule-title">Perpanjangan Keanggotaan</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Member dapat memperpanjang keanggotaan kapan saja — baik sebelum maupun sesudah expired.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text"><strong>Perpanjang sebelum expired:</strong> Tanggal kadaluarsa baru = <code>membership_expiry_date_lama + 365 hari</code>. Member tidak kehilangan sisa hari yang belum terpakai.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text"><strong>Perpanjang setelah expired:</strong> Tanggal kadaluarsa baru = <code>tanggal_pembayaran_perpanjangan + 365 hari</code>. Masa expired tidak dihitung mundur.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Harga perpanjangan sama dengan harga pendaftaran: <strong>Rp200.000/tahun</strong> — tidak ada diskon perpanjangan kecuali menggunakan kredit komisi referral.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Admin Pusat dapat melakukan perpanjangan manual (darurat) dengan mencatat alasan. Perpanjangan manual mengikuti aturan yang sama seperti perpanjangan mandiri.</div></li>
+      </ul>
+      <div class="formula-box">
+        <div class="formula-label">Formula Perpanjangan</div>
+        <div class="formula">
+          <span class="f-comment">// Kasus 1: Perpanjang SEBELUM expired</span><br>
+          <span class="f-result">expiry_baru</span> <span class="f-op">=</span> <span class="f-var">expiry_lama</span> <span class="f-op">+</span> <span class="f-result">365 hari</span><br><br>
+          <span class="f-comment">// Kasus 2: Perpanjang SETELAH expired</span><br>
+          <span class="f-result">expiry_baru</span> <span class="f-op">=</span> <span class="f-var">tanggal_bayar</span> <span class="f-op">+</span> <span class="f-result">365 hari</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-MEM-03</div>
+      <div class="rule-title">Hak Akses Berdasarkan Status Keanggotaan</div>
+    </div>
+    <div class="rule-body">
+      <table class="acl-table">
+        <thead>
+          <tr>
+            <th>Fitur</th>
+            <th>ACTIVE</th>
+            <th>EXPIRED</th>
+            <th>SUSPENDED</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Login ke portal</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✗</td></tr>
+          <tr><td>Dasbor member</td><td class="perm-yes">✓</td><td class="perm-cond">Banner</td><td class="perm-no">✗</td></tr>
+          <tr><td>Riwayat pengobatan</td><td class="perm-yes">✓</td><td class="perm-ro">READ ONLY</td><td class="perm-no">✗</td></tr>
+          <tr><td>Riwayat obat</td><td class="perm-yes">✓</td><td class="perm-ro">READ ONLY</td><td class="perm-no">✗</td></tr>
+          <tr><td>Konsultasi gratis di klinik</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-no">✗</td></tr>
+          <tr><td>Kode referral & dasbor komisi</td><td class="perm-yes">✓</td><td class="perm-ro">READ ONLY</td><td class="perm-no">✗</td></tr>
+          <tr><td>Withdraw komisi</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-no">✗</td></tr>
+          <tr><td>Harga event khusus member</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-no">✗</td></tr>
+          <tr><td>Perpanjangan keanggotaan</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✗</td></tr>
+          <tr><td>Notifikasi WA otomatis</td><td class="perm-yes">✓</td><td class="perm-cond">Hanya renewal</td><td class="perm-no">✗</td></tr>
+        </tbody>
+      </table>
+      <div class="alert warning">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-text"><strong>Tidak ada grace period.</strong> Tepat pukul 00:00 pada <code>membership_expiry_date</code>, status berubah otomatis ke EXPIRED dan akses terbatas langsung berlaku. Sistem menjalankan scheduled job harian untuk mengecek dan memperbarui status member yang expired.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-MEM-04</div>
+      <div class="rule-title">Kebijakan Refund & Pembatalan</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Keanggotaan bersifat <strong>non-refundable</strong> — tidak ada pengembalian dana dalam kondisi apapun setelah pembayaran dikonfirmasi berhasil.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Member yang di-suspend oleh Admin Pusat tidak mendapatkan refund atau kompensasi untuk sisa masa keanggotaan.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Jika terjadi kegagalan teknis dari sisi sistem (double charge, charge tanpa aktivasi), pengembalian dana dapat dilakukan secara manual oleh Admin Pusat sebagai pengecualian — bukan sebagai kebijakan umum.</div></li>
+      </ul>
+      <div class="alert danger">
+        <div class="alert-icon">🚫</div>
+        <div class="alert-text"><strong>Tidak ada pengecualian refund untuk alasan personal member</strong> (lupa daftar, sudah tidak butuh, pindah kota, dll). Kebijakan ini harus ditampilkan secara jelas di halaman checkout sebelum member mengkonfirmasi pembayaran.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ BL-REF ══════════════════ -->
+<div class="domain container">
+  <div class="domain-pill">BL-REF</div>
+  <h2>Program Referral & Komisi</h2>
+  <p class="domain-desc">Sistem single-level yang mengkonversi member aktif menjadi duta Harmonivita secara organik. Komisi dikreditkan setelah pembayaran referral berhasil, dan dapat dicairkan ke rekening atau dikonversi menjadi kredit perpanjangan.</p>
+
+  <div class="divider"><span>State Machine — Status Komisi</span></div>
+
+  <div class="state-machine">
+    <div class="sm-flow">
+      <div class="sm-state s-pending">
+        <div class="s-label">Status</div>
+        <div class="s-name">PENDING</div>
+        <div class="s-desc">Member baru daftar, belum bayar</div>
+      </div>
+      <div class="sm-arrow">
+        <div class="arrow-label">Pembayaran konfirm</div>
+        <div class="arrow-head">→</div>
+      </div>
+      <div class="sm-state s-active">
+        <div class="s-label">Status</div>
+        <div class="s-name">CREDITED</div>
+        <div class="s-desc">Masuk ke saldo referrer</div>
+      </div>
+      <div class="sm-arrow">
+        <div class="arrow-label">Request withdraw</div>
+        <div class="arrow-head">→</div>
+      </div>
+      <div class="sm-state s-pending">
+        <div class="s-label">Status</div>
+        <div class="s-name">WITHDRAWAL_PENDING</div>
+        <div class="s-desc">Admin proses payout</div>
+      </div>
+      <div class="sm-arrow">
+        <div class="arrow-label">Admin konfirmasi</div>
+        <div class="arrow-head">→</div>
+      </div>
+      <div class="sm-state s-start">
+        <div class="s-label">Status</div>
+        <div class="s-name">PAID_OUT</div>
+        <div class="s-desc">Komisi sudah dicairkan</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-REF-01</div>
+      <div class="rule-title">Aturan Kelayakan Referral</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Hanya <strong>member berstatus ACTIVE</strong> yang memiliki kode referral aktif yang dapat digunakan. Member EXPIRED atau SUSPENDED tidak menghasilkan komisi dari kode referral mereka.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Member <strong>tidak dapat menggunakan kode referralnya sendiri</strong> saat mendaftar. Sistem menolak secara otomatis jika kode referral dan email/WA pendaftar berasal dari akun yang sama.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Komisi hanya berlaku untuk <strong>member baru yang belum pernah terdaftar</strong> sebelumnya di sistem. Re-registrasi akun yang pernah ada (dengan email/WA yang sama) tidak menghasilkan komisi.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Validasi status ACTIVE referrer dilakukan <strong>pada saat pembayaran member baru dikonfirmasi</strong> (bukan saat kode diinput). Jika pada saat pembayaran dikonfirmasi referrer sudah EXPIRED, komisi tidak dikreditkan.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Sistem hanya mendukung <strong>single-level</strong> — tidak ada upline/downline. Tidak ada komisi dari referral-nya referral.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-REF-02</div>
+      <div class="rule-title">Kalkulasi & Pengkreditan Komisi</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text"><code>COMMISSION_RATE</code> adalah nilai yang dapat dikonfigurasi oleh Admin Pusat melalui halaman Pengaturan Sistem. Nilai default yang direkomendasikan: <strong>Rp20.000 per referral berhasil</strong> (10% dari Rp200.000).</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Komisi dikreditkan <strong>secara otomatis</strong> oleh sistem ke saldo referrer segera setelah webhook konfirmasi pembayaran member baru diterima dari payment gateway.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Perubahan <code>COMMISSION_RATE</code> oleh Admin Pusat hanya berlaku untuk referral yang terjadi <strong>setelah tanggal perubahan</strong> — tidak retroaktif terhadap komisi yang sudah dikreditkan.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Saldo komisi member <strong>tidak pernah hangus</strong> selama akun tidak di-suspend. Komisi yang sudah dikreditkan tetap tersimpan hingga dicairkan.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Jika referrer di-suspend setelah komisi dikreditkan, komisi yang sudah ada di saldo <strong>dibekukan</strong> dan tidak bisa dicairkan hingga status suspend dicabut oleh Admin Pusat.</div></li>
+      </ul>
+      <div class="formula-box">
+        <div class="formula-label">Formula Komisi</div>
+        <div class="formula">
+          <span class="f-result">komisi_per_referral</span> <span class="f-op">=</span> <span class="f-var">COMMISSION_RATE</span> <span class="f-comment">// (dikonfigurasi Admin, default Rp20.000)</span><br><br>
+          <span class="f-result">total_saldo_komisi</span> <span class="f-op">=</span> <span class="f-var">SUM</span><span class="f-op">(</span><span class="f-var">komisi_per_referral</span><span class="f-op">)</span> <span class="f-op">-</span> <span class="f-var">total_sudah_dicairkan</span><br><br>
+          <span class="f-comment">// Kondisi kredit perpanjangan:</span><br>
+          <span class="f-result">sisa_bayar</span> <span class="f-op">=</span> <span class="f-result">MAX</span><span class="f-op">(</span><span class="f-var">0</span><span class="f-op">,</span> <span class="f-result">Rp200.000</span> <span class="f-op">-</span> <span class="f-var">kredit_digunakan</span><span class="f-op">)</span><br>
+          <span class="f-comment">// Kredit > Rp200.000 → sisa kredit tetap di saldo member</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-REF-03</div>
+      <div class="rule-title">Alur Pencairan Komisi (Dua Opsi)</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text"><strong>Minimum saldo untuk request pencairan:</strong> <code>Rp50.000</code> (setara 2–3 referral dengan default rate). Nilai ini dapat dikonfigurasi Admin Pusat.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Saat mengajukan pencairan, member memilih salah satu metode: <strong>(A) Transfer ke rekening bank/e-wallet</strong> atau <strong>(B) Kredit perpanjangan keanggotaan</strong>.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text"><strong>Opsi A — Transfer Rekening/E-wallet:</strong> Member mengisi nomor rekening/e-wallet saat request. Admin Pusat memverifikasi dan melakukan transfer manual. Setelah transfer dikonfirmasi di sistem, status komisi berubah ke PAID_OUT dan member menerima notifikasi WA.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text"><strong>Opsi B — Kredit Perpanjangan:</strong> Komisi langsung dikonversi menjadi <code>renewal_credit</code> di akun member. Saat perpanjangan, sistem menggunakan kredit sebagai pengurang biaya. Jika kredit ≥ Rp200.000, perpanjangan gratis dan sisa kredit tetap di saldo. Jika kredit < Rp200.000, member membayar selisihnya via payment gateway.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Setelah komisi dikonversi ke kredit perpanjangan, <strong>tidak dapat diubah kembali</strong> menjadi transfer rekening.</div></li>
+        <li class="rule-item"><div class="rule-bullet">6</div><div class="rule-text">Hanya boleh ada <strong>satu request pencairan aktif</strong> per member pada satu waktu. Request baru tidak bisa diajukan selama request sebelumnya masih berstatus WITHDRAWAL_PENDING.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="divider"><span>Edge Cases Referral</span></div>
+  <div class="edge-cases">
+    <div class="edge-card">
+      <div class="ec-label">Edge Case</div>
+      <h4>Referrer expired saat member baru bayar</h4>
+      <p>Jika kode referral diinput saat formulir tapi referrer expired sebelum pembayaran dikonfirmasi → <strong>komisi tidak dikreditkan</strong>. Pendaftaran member baru tetap valid.</p>
+    </div>
+    <div class="edge-card">
+      <div class="ec-label">Edge Case</div>
+      <h4>Member baru membatalkan pembayaran</h4>
+      <p>Jika calon member dengan kode referral tidak menyelesaikan pembayaran dalam 24 jam → record dibatalkan, <strong>tidak ada komisi dikreditkan</strong>. Kode referral bisa digunakan lagi oleh orang lain.</p>
+    </div>
+    <div class="edge-card">
+      <div class="ec-label">Edge Case</div>
+      <h4>Referrer di-suspend sebelum komisi diproses</h4>
+      <p>Komisi yang sudah CREDITED sebelum suspend → <strong>dibekukan</strong>, tidak bisa dicairkan. Setelah suspend dicabut Admin Pusat, komisi aktif kembali dan bisa dicairkan.</p>
+    </div>
+    <div class="edge-card">
+      <div class="ec-label">Edge Case</div>
+      <h4>Kredit melebihi harga perpanjangan</h4>
+      <p>Member memiliki kredit Rp250.000, harga perpanjangan Rp200.000 → perpanjangan gratis, sisa kredit <strong>Rp50.000 tetap di saldo</strong> dan bisa digunakan untuk perpanjangan berikutnya atau dikonversi request baru.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ BL-VIS ══════════════════ -->
+<div class="domain container">
+  <div class="domain-pill">BL-VIS</div>
+  <h2>Kunjungan & Konsultasi</h2>
+  <p class="domain-desc">Aturan pencatatan kunjungan klinik oleh Admin Cabang, eligibilitas konsultasi gratis member, serta batasan akses dan edit data kunjungan.</p>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-VIS-01</div>
+      <div class="rule-title">Eligibilitas Konsultasi Gratis</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Member berstatus <strong>ACTIVE</strong> mendapatkan konsultasi dokter gratis <strong>tanpa batas jumlah</strong> sepanjang tahun keanggotaan berlaku — di semua klinik Harmonivita maupun klinik mitra yang terdaftar.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Gratis hanya berlaku untuk <strong>jasa konsultasi dokter</strong>. Tindakan medis, obat, dan layanan tambahan lainnya <strong>tetap dikenakan biaya</strong> terpisah sesuai tarif klinik.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Member berstatus <strong>EXPIRED atau SUSPENDED</strong> tidak mendapat konsultasi gratis — dikenakan tarif normal seperti pasien umum.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Admin Cabang <strong>wajib memverifikasi status member</strong> sebelum memberikan konsultasi gratis. Sistem menampilkan status secara jelas saat Admin Cabang mencari member.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Kunjungan member EXPIRED yang tetap datang ke klinik <strong>dapat dicatat</strong> oleh Admin Cabang, namun harus ditandai sebagai <em>"konsultasi berbayar"</em> — bukan konsultasi gratis.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-VIS-02</div>
+      <div class="rule-title">Input & Edit Data Kunjungan</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Hanya <strong>Admin Cabang yang terhubung ke klinik tersebut</strong> yang dapat menginput data kunjungan di klinik tersebut. Admin Cabang klinik A tidak dapat menginput data untuk klinik B.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Admin Cabang dapat <strong>mengedit</strong> kunjungan yang baru diinput dalam jendela waktu <strong>24 jam</strong> setelah waktu penyimpanan pertama (<code>created_at</code>).</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Setelah 24 jam, entri kunjungan <strong>terkunci otomatis</strong> — Admin Cabang tidak dapat mengubah apapun. Hanya Admin Pusat yang dapat melakukan koreksi dengan mencatat alasan.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Setiap perubahan data kunjungan (siapapun yang mengubah) dicatat di <strong>activity log</strong>: timestamp, nama editor, field yang diubah, nilai sebelum, nilai sesudah.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Member <strong>tidak dapat mengedit, menambah, atau menghapus</strong> catatan kunjungan miliknya sendiri — data bersifat read-only dari sisi member.</div></li>
+        <li class="rule-item"><div class="rule-bullet">6</div><div class="rule-text">Data kunjungan yang tampil di portal member adalah <strong>seluruh riwayat dari semua klinik</strong> yang pernah dikunjungi. Namun Admin Cabang masing-masing klinik hanya bisa melihat dan mengedit data kunjungan di kliniknya sendiri.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-VIS-03</div>
+      <div class="rule-title">Jadwal Kontrol & Trigger Notifikasi</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Jadwal kontrol adalah opsional — Admin Cabang mengisinya hanya jika dokter merekomendasikan kontrol ulang.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Jika jadwal kontrol diisi, sistem secara otomatis menjadwalkan pengiriman WA reminder kepada member pada <strong>H-3 dari tanggal kontrol</strong>.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Admin Cabang dapat mengubah atau membatalkan jadwal kontrol <strong>sebelum reminder WA terkirim</strong>. Setelah WA terkirim, perubahan jadwal tidak membatalkan WA yang sudah terkirim.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Satu kunjungan hanya memiliki <strong>satu jadwal kontrol aktif</strong>. Jika jadwal diperbarui, jadwal lama dihapus dan jadwal baru menggantikannya.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Jika keanggotaan member sudah EXPIRED pada saat reminder seharusnya dikirim, sistem <strong>tetap mengirimkan reminder</strong> — karena reminder kontrol adalah urusan medis, terpisah dari status keanggotaan.</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ BL-EVT ══════════════════ -->
+<div class="domain container">
+  <div class="domain-pill">BL-EVT</div>
+  <h2>Event & Tiket</h2>
+  <p class="domain-desc">Aturan penentuan harga diferensial member vs non-member, manajemen kuota FIFO, dan lifecycle tiket digital berbasis QR.</p>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-EVT-01</div>
+      <div class="rule-title">Penentuan & Validasi Harga Event</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Harga member dan harga umum per event ditetapkan secara individual oleh <strong>Admin Pusat</strong> saat membuat event. Tidak ada template harga global.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Validasi harga member dilakukan <strong>pada saat member membuka halaman registrasi event</strong>. Sistem memeriksa status keanggotaan di database secara real-time (bukan dari sesi/cache).</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Jika member registrasi dengan harga member, kemudian keanggotaannya expired sebelum hari event → <strong>harga member tetap berlaku</strong> karena pembayaran sudah dikonfirmasi. Tiket tidak dibatalkan.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Harga member <strong>tidak pernah ditampilkan</strong> kepada pengguna yang tidak login atau yang login tapi berstatus EXPIRED/SUSPENDED.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Refund tiket event mengikuti kebijakan per-event yang ditetapkan Admin Pusat saat pembuatan event. Admin dapat memilih: <em>non-refundable</em> atau <em>refundable hingga X hari sebelum event</em>.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-EVT-02</div>
+      <div class="rule-title">Manajemen Kuota (FIFO)</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Kuota event dikurangi <strong>pada saat pembayaran dikonfirmasi</strong> (bukan saat klik daftar). Peserta yang belum menyelesaikan pembayaran tidak menduduki slot kuota.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Sistem menggunakan prinsip <strong>First-In-First-Out (FIFO)</strong> — siapa lebih dulu menyelesaikan pembayaran, kuota diperoleh.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Ketika kuota terpenuhi, status event berubah ke <code>SOLD_OUT</code> secara otomatis. Tombol registrasi dinonaktifkan dan label "Sold Out" ditampilkan.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Admin Pusat dapat <strong>menambah kuota</strong> event yang sudah Sold Out — slot baru langsung bisa diregistrasi peserta.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Admin Pusat dapat menutup pendaftaran event secara manual sebelum kuota penuh (misal: batas tanggal pendaftaran).</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-EVT-03</div>
+      <div class="rule-title">Tiket Digital & Absensi QR</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Setiap registrasi event yang berhasil membayar menghasilkan <strong>satu tiket digital unik</strong> dengan QR code yang di-generate sistem. QR code berbeda untuk setiap registrasi.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Tiket dikirim via WA dan email dalam waktu <strong>maksimal 5 menit</strong> setelah pembayaran dikonfirmasi. Tiket juga tersimpan di halaman "Event Terdaftar" di dasbor member.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Satu QR code tiket hanya dapat di-scan <strong>satu kali</strong> pada hari H. Scan kedua menampilkan error beserta waktu scan pertama.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">QR code tiket memiliki <strong>masa berlaku</strong>: valid mulai H-1 hingga hari H event (untuk mengakomodasi check-in awal). Setelah hari H selesai, QR code tidak dapat di-scan lagi.</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ BL-SPO ══════════════════ -->
+<div class="domain container">
+  <div class="domain-pill">BL-SPO</div>
+  <h2>Konten & Sponsor</h2>
+  <p class="domain-desc">Workflow penayangan konten sponsor perusahaan farmasi dengan menjaga integritas dan transparansi — label wajib, review medis, dan auto-expiry.</p>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-SPO-01</div>
+      <div class="rule-title">Workflow Artikel Sponsored</div>
+    </div>
+    <div class="rule-body">
+      <div class="state-machine">
+        <div class="sm-flow">
+          <div class="sm-state s-start"><div class="s-label">Status</div><div class="s-name">DRAFT</div><div class="s-desc">Sponsor submit konten</div></div>
+          <div class="sm-arrow"><div class="arrow-label">Submit review</div><div class="arrow-head">→</div></div>
+          <div class="sm-state s-pending"><div class="s-label">Status</div><div class="s-name">IN_REVIEW</div><div class="s-desc">Tim medis memeriksa</div></div>
+          <div class="sm-arrow"><div class="arrow-label">Disetujui</div><div class="arrow-head">→</div></div>
+          <div class="sm-state s-active"><div class="s-label">Status</div><div class="s-name">PUBLISHED</div><div class="s-desc">Tayang di portal</div></div>
+          <div class="sm-arrow"><div class="arrow-label">Tanggal berakhir</div><div class="arrow-head">→</div></div>
+          <div class="sm-state s-expired"><div class="s-label">Status</div><div class="s-name">EXPIRED</div><div class="s-desc">Tidak ditampilkan</div></div>
+        </div>
+      </div>
+      <ul class="rule-list" style="margin-top:20px;">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Semua artikel sponsored wajib melewati status <code>IN_REVIEW</code> oleh tim medis Harmonivita sebelum dapat dipublikasikan. Artikel tidak dapat langsung diset ke PUBLISHED.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Jika review ditolak (<code>REJECTED</code>), Admin Pusat mengirim catatan penolakan ke pihak sponsor. Konten dapat direvisi dan disubmit ulang.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Label <strong>"Sponsored Content"</strong> atau <strong>"Iklan"</strong> harus tampil pada semua konten sponsor — artikel maupun banner. Label ini tidak dapat dihapus atau disembunyikan oleh siapapun di sistem, termasuk Super Admin.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Tepat pukul 00:00 pada tanggal berakhir, iklan/artikel secara otomatis tidak lagi ditampilkan di portal (<code>EXPIRED</code>) tanpa perlu intervensi admin.</div></li>
+        <li class="rule-item"><div class="rule-bullet">5</div><div class="rule-text">Banner iklan <strong>tidak memerlukan review medis</strong> — hanya moderasi Admin Pusat untuk memastikan konten tidak menyesatkan. Namun label "Iklan" tetap wajib.</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ BL-NOT ══════════════════ -->
+<div class="domain container">
+  <div class="domain-pill">BL-NOT</div>
+  <h2>Notifikasi & Reminder</h2>
+  <p class="domain-desc">Seluruh aturan pengiriman notifikasi otomatis sistem — reminder perpanjangan, jadwal kontrol, konfirmasi transaksi, dan WA blast dari Admin Pusat.</p>
+
+  <div class="divider"><span>Tabel Trigger Notifikasi Otomatis</span></div>
+
+  <table class="notif-table">
+    <thead>
+      <tr>
+        <th>Trigger</th>
+        <th>Kapan Dikirim</th>
+        <th>Channel</th>
+        <th>Penerima</th>
+        <th>Konten Inti</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Registrasi berhasil</td>
+        <td>Segera setelah pembayaran dikonfirmasi (maks. 5 menit)</td>
+        <td><span class="channel-badge ch-both">WA + Email</span></td>
+        <td>Member baru</td>
+        <td>Selamat datang, link aktivasi akun, info pengambilan buku kesehatan</td>
+      </tr>
+      <tr>
+        <td>Perpanjangan berhasil</td>
+        <td>Segera setelah pembayaran perpanjangan dikonfirmasi</td>
+        <td><span class="channel-badge ch-both">WA + Email</span></td>
+        <td>Member</td>
+        <td>Konfirmasi perpanjangan, tanggal kadaluarsa baru</td>
+      </tr>
+      <tr>
+        <td>Reminder perpanjangan H-30</td>
+        <td>30 hari sebelum expiry_date</td>
+        <td><span class="channel-badge ch-wa">WA</span></td>
+        <td>Member ACTIVE</td>
+        <td>Info kadaluarsa, link perpanjangan</td>
+      </tr>
+      <tr>
+        <td>Reminder perpanjangan H-14</td>
+        <td>14 hari sebelum expiry_date</td>
+        <td><span class="channel-badge ch-wa">WA</span></td>
+        <td>Member ACTIVE</td>
+        <td>Info kadaluarsa mendekat, link perpanjangan</td>
+      </tr>
+      <tr>
+        <td>Reminder perpanjangan H-1</td>
+        <td>1 hari sebelum expiry_date</td>
+        <td><span class="channel-badge ch-wa">WA</span></td>
+        <td>Member ACTIVE</td>
+        <td>Peringatan besok expired, link perpanjangan langsung</td>
+      </tr>
+      <tr>
+        <td>Reminder kontrol dokter</td>
+        <td>H-3 sebelum tanggal kontrol yang ditetapkan</td>
+        <td><span class="channel-badge ch-wa">WA</span></td>
+        <td>Member (status apapun)</td>
+        <td>Nama member, tanggal kontrol, nama klinik, nomor kontak klinik</td>
+      </tr>
+      <tr>
+        <td>Tiket event berhasil</td>
+        <td>Segera setelah pembayaran event dikonfirmasi</td>
+        <td><span class="channel-badge ch-both">WA + Email</span></td>
+        <td>Peserta event</td>
+        <td>Detail event, QR code tiket</td>
+      </tr>
+      <tr>
+        <td>Komisi dikreditkan</td>
+        <td>Segera setelah referral berhasil (webhook payment)</td>
+        <td><span class="channel-badge ch-wa">WA</span></td>
+        <td>Referrer</td>
+        <td>Nama member baru, jumlah komisi, total saldo terkini</td>
+      </tr>
+      <tr>
+        <td>Payout komisi selesai</td>
+        <td>Segera setelah Admin mengkonfirmasi transfer</td>
+        <td><span class="channel-badge ch-wa">WA</span></td>
+        <td>Member referrer</td>
+        <td>Jumlah yang dicairkan, metode, saldo tersisa</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-NOT-01</div>
+      <div class="rule-title">Aturan WA Blast dari Admin Pusat</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Sistem membatasi pengiriman pesan ke nomor yang sama maksimal <strong>1 pesan blast per 24 jam</strong>. Jika member sudah menerima blast hari ini, blast berikutnya hanya terkirim setelah 24 jam dari blast terakhir.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Batas frekuensi ini berlaku untuk <strong>WA blast manual saja</strong>. Notifikasi transaksional otomatis (registrasi, komisi, reminder) tidak dibatasi oleh aturan ini.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Sebelum blast dikirim, Admin melihat <strong>estimasi jumlah penerima</strong> berdasarkan segmen yang dipilih — setelah memperhitungkan pembatasan 24 jam.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Pesan blast sponsor (dari perusahaan farmasi) hanya dikirim ke member yang telah memberikan <strong>consent eksplisit</strong> menerima komunikasi mitra. Default consent: <em>tidak menerima</em> — member harus opt-in aktif.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-NOT-02</div>
+      <div class="rule-title">Fallback & Retry Notifikasi Gagal</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Jika pengiriman WA gagal (nomor tidak aktif, provider timeout), sistem melakukan <strong>1 kali retry</strong> setelah 15 menit.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Jika retry ke-2 juga gagal, sistem mengirim <strong>email fallback</strong> ke alamat email terdaftar member (untuk notifikasi transaksional kritis: registrasi, payout, tiket event).</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Untuk kegagalan reminder kontrol dokter, sistem mengirim <strong>notifikasi ke Admin Cabang klinik terkait</strong> via email agar dapat menghubungi member secara manual.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Semua status pengiriman (success/failed/retried) dicatat di <strong>log notifikasi</strong> yang dapat dilihat Admin Pusat.</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ BL-ACL ══════════════════ -->
+<div class="domain container">
+  <div class="domain-pill">BL-ACL</div>
+  <h2>Hak Akses & Audit</h2>
+  <p class="domain-desc">Matrix kontrol akses lengkap per aktor sistem, aturan data scoping Admin Cabang, dan ketentuan immutable activity log untuk kebutuhan audit.</p>
+
+  <div class="divider"><span>Access Control Matrix</span></div>
+
+  <table class="acl-table">
+    <thead>
+      <tr>
+        <th>Resource / Aksi</th>
+        <th>Pengunjung</th>
+        <th>Member Aktif</th>
+        <th>Member Expired</th>
+        <th>Admin Cabang</th>
+        <th>Admin Pusat</th>
+        <th>Super Admin</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="7" style="background:var(--parchment);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);padding:8px 14px;">Portal Publik</td></tr>
+      <tr><td>Artikel, video, peta klinik</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Kalender event (harga umum)</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Harga event khusus member</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+
+      <tr><td colspan="7" style="background:var(--parchment);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);padding:8px 14px;">Data Pribadi Member</td></tr>
+      <tr><td>Dasbor pribadi</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-cond">Terbatas</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Riwayat pengobatan (milik sendiri)</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-ro">READ ONLY</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Riwayat obat (milik sendiri)</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-ro">READ ONLY</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Edit/hapus data medis sendiri</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Kode & dasbor referral</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-ro">READ ONLY</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Request withdraw komisi</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+
+      <tr><td colspan="7" style="background:var(--parchment);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);padding:8px 14px;">Operasional Klinik</td></tr>
+      <tr><td>Cari & verifikasi member</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-cond">Klinik sendiri</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Input kunjungan baru</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-cond">Klinik sendiri</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Edit kunjungan (≤24 jam)</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-cond">Klinik sendiri</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Edit kunjungan (>24 jam)</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Input resep & jadwal kontrol</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-cond">Klinik sendiri</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Laporan kunjungan cabang</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-cond">Klinik sendiri</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+
+      <tr><td colspan="7" style="background:var(--parchment);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);padding:8px 14px;">Admin Pusat</td></tr>
+      <tr><td>CMS artikel & konten</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Manajemen & suspend member</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Manajemen klinik & mitra</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Approve payout komisi</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Manajemen sponsor & iklan</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Laporan konsolidasi semua klinik</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>WA blast tersegmentasi</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Konfigurasi COMMISSION_RATE</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Activity log & audit</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+      <tr><td>Konfigurasi sistem & role</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-yes">✓</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-ACL-01</div>
+      <div class="rule-title">Data Scoping Admin Cabang</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Setiap akun Admin Cabang di-<em>bind</em> ke <strong>satu klinik</strong> saat dibuat oleh Admin Pusat. Binding ini tidak dapat diubah oleh Admin Cabang sendiri.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Semua query data yang dilakukan Admin Cabang di backend <strong>otomatis difilter</strong> berdasarkan <code>clinic_id</code> yang terhubung ke akun — termasuk pencarian member, daftar kunjungan, dan laporan. Ini adalah filter di level server, bukan UI.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Admin Cabang dapat melihat <strong>data personal member</strong> (nama, nomor WA, status keanggotaan) yang diperlukan untuk verifikasi, namun <strong>tidak dapat melihat</strong>: saldo komisi referral, histori pembayaran keanggotaan, atau data kunjungan di klinik lain.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Percobaan mengakses endpoint data klinik lain (misal via manipulasi URL/API) menghasilkan response <strong>403 Forbidden</strong> dan dicatat di security log.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rule-card">
+    <div class="rule-header">
+      <div class="rule-id">BL-ACL-02</div>
+      <div class="rule-title">Activity Log & Audit Trail</div>
+    </div>
+    <div class="rule-body">
+      <ul class="rule-list">
+        <li class="rule-item"><div class="rule-bullet">1</div><div class="rule-text">Setiap aksi yang dilakukan oleh <strong>Admin Cabang dan Admin Pusat</strong> pada data sistem dicatat secara otomatis di activity log: <code>timestamp</code>, <code>actor_id</code>, <code>actor_role</code>, <code>action</code>, <code>resource_type</code>, <code>resource_id</code>, <code>old_value</code> (jika ada), <code>new_value</code>.</div></li>
+        <li class="rule-item"><div class="rule-bullet">2</div><div class="rule-text">Activity log bersifat <strong>immutable</strong> — tidak dapat diedit atau dihapus oleh siapapun, termasuk Super Admin. Log disimpan secara permanen.</div></li>
+        <li class="rule-item"><div class="rule-bullet">3</div><div class="rule-text">Aksi yang wajib dicatat meliputi: aktivasi/suspend member, edit data kunjungan, approve payout, perubahan COMMISSION_RATE, konfigurasi slot iklan, pembuatan akun Admin Cabang baru.</div></li>
+        <li class="rule-item"><div class="rule-bullet">4</div><div class="rule-text">Security log (percobaan akses tidak sah) dicatat terpisah dari activity log dan hanya dapat diakses Super Admin.</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ ASUMSI ══════════════════ -->
+<div class="domain container">
+  <div class="domain-pill">⚠️ Asumsi</div>
+  <h2>Nilai & Asumsi yang Perlu Dikonfirmasi</h2>
+  <p class="domain-desc">Business logic di atas menggunakan nilai-nilai berikut sebagai asumsi awal. Semua nilai bertanda <strong>ASUMSI</strong> harus dikonfirmasi sebelum development dimulai agar tidak ada perubahan arsitektur di tengah jalan.</p>
+
+  <div class="alert warning">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text"><strong>Perubahan pada nilai-nilai di bawah ini setelah development dimulai berpotensi memengaruhi skema database, logika kalkulasi, dan alur pembayaran.</strong> Konfirmasi sedini mungkin sangat disarankan.</div>
+  </div>
+
+  <table class="assumption-table">
+    <thead>
+      <tr>
+        <th>ID Variabel</th>
+        <th>Nilai Asumsi yang Digunakan</th>
+        <th>Catatan & Implikasi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>COMMISSION_RATE</td>
+        <td>Rp20.000 per referral berhasil (10% dari Rp200.000)</td>
+        <td>Harus dikonfirmasi. Nilai ini berdampak langsung ke ekspektasi member. Disarankan dikonfigurasi di panel admin, bukan hardcode.</td>
+      </tr>
+      <tr>
+        <td>MIN_WITHDRAWAL</td>
+        <td>Rp50.000 (minimum saldo untuk request pencairan)</td>
+        <td>Setara 2–3 referral dengan default rate. Jika terlalu tinggi, mengurangi motivasi member untuk refer. Perlu dikonfirmasi.</td>
+      </tr>
+      <tr>
+        <td>PENDING_PAYMENT_TTL</td>
+        <td>24 jam setelah formulir disubmit</td>
+        <td>Jika terlalu pendek, calon member yang lambat bayar kehilangan slot. Jika terlalu panjang, nomor WA/email tertahan lama. 24 jam adalah standar lazim.</td>
+      </tr>
+      <tr>
+        <td>EDIT_WINDOW_VISIT</td>
+        <td>24 jam setelah input kunjungan</td>
+        <td>Memberi ruang Admin Cabang koreksi kesalahan. Setelah itu hanya Admin Pusat yang bisa ubah. Bisa disesuaikan ke 48 jam jika diperlukan.</td>
+      </tr>
+      <tr>
+        <td>ADMIN_CABANG_PER_CLINIC</td>
+        <td>Satu akun Admin Cabang terhubung ke satu klinik</td>
+        <td>Asumsi ini mempengaruhi model data. Jika satu orang perlu handle dua klinik, diperlukan tabel relasi many-to-many.</td>
+      </tr>
+      <tr>
+        <td>KLINIK_MITRA_ADMIN</td>
+        <td>Klinik mitra memiliki akun Admin Cabang sendiri</td>
+        <td>Jika mitra tidak mau/mampu mengelola sistem, Harmonivita harus menyediakan Admin Cabang internal untuk input data mitra — berdampak ke kebutuhan SDM operasional.</td>
+      </tr>
+      <tr>
+        <td>WA_BLAST_MAX_PER_DAY</td>
+        <td>1 blast per member per 24 jam</td>
+        <td>Membatasi spam. Frekuensi ini terpisah dari notifikasi transaksional otomatis (registrasi, payout, dll).</td>
+      </tr>
+      <tr>
+        <td>QR_TICKET_VALIDITY</td>
+        <td>H-1 s/d hari H event</td>
+        <td>Mengakomodasi check-in awal. Bisa diperlebar ke H-3 jika event memerlukan pre-registration fisik.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <p>🌿 <strong>Harmonivita — Business Logic v1.0</strong></p>
+  <p style="margin-top:8px; font-size:12px;">Dokumen ini adalah rujukan logika bisnis untuk tim development. Semua nilai asumsi wajib dikonfirmasi sebelum sprint pertama dimulai.<br>Dokumen ini adalah bagian dari rangkaian: Narrative Story → User Stories → <strong>Business Logic</strong> → Technical Spec.</p>
+  <p style="margin-top:16px; font-size:12px; opacity:.5;">Dibuat April 2025 · Aragoya × Harmonivita · v1.0</p>
+</div>
+
+</body>
+</html>

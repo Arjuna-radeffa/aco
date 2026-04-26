@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonivita — Project Narrative Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2D5016;
+    --moss: #4A7C2F;
+    --sage: #7BA05B;
+    --mint: #C8E6B4;
+    --cream: #FAF6EE;
+    --parchment: #F2EAD8;
+    --terracotta: #C1622A;
+    --amber: #D4873A;
+    --gold: #E8B84B;
+    --warm-brown: #6B4C2A;
+    --text-dark: #1E2A14;
+    --text-body: #3A4A2C;
+    --text-muted: #6A7A5C;
+    --border: #D6E8C4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-body);
+    line-height: 1.8;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--forest);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 80%, rgba(74,124,47,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 20%, rgba(200,230,180,0.15) 0%, transparent 55%);
+  }
+  .cover-badge {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(232,184,75,0.4);
+    padding: 6px 20px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .cover-leaf {
+    font-size: 72px;
+    margin-bottom: 24px;
+    position: relative;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
+  }
+  .cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 8vw, 88px);
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -1px;
+    line-height: 1.05;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .cover h1 span {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .cover-tagline {
+    font-family: 'Lora', serif;
+    font-size: 18px;
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+  }
+  .cover-meta-item {
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .cover-meta-item strong {
+    display: block;
+    color: var(--mint);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .cover-wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: var(--cream);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ── DAFTAR ISI ── */
+  .toc {
+    background: var(--parchment);
+    border-left: 4px solid var(--sage);
+    padding: 40px 48px;
+    margin: 60px auto;
+    max-width: 860px;
+    border-radius: 0 12px 12px 0;
+  }
+  .toc h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--forest);
+    margin-bottom: 24px;
+  }
+  .toc ol {
+    padding-left: 20px;
+    columns: 2;
+    gap: 20px;
+  }
+  .toc li {
+    font-size: 14px;
+    color: var(--text-body);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .toc li span {
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  /* ── CHAPTER ── */
+  .chapter {
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--border);
+  }
+  .chapter:last-child { border-bottom: none; }
+
+  .chapter-number {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .chapter-number::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 60px;
+  }
+
+  .chapter h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 700;
+    color: var(--forest);
+    line-height: 1.2;
+    margin-bottom: 32px;
+  }
+
+  /* ── PERSONA CARD ── */
+  .persona-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin: 32px 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    align-items: start;
+    box-shadow: 0 2px 12px rgba(45,80,22,0.06);
+  }
+  .persona-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--mint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .persona-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--forest);
+    margin-bottom: 4px;
+  }
+  .persona-info .persona-role {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 10px;
+  }
+  .persona-info p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── STORY TEXT ── */
+  .story p {
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--text-body);
+    margin-bottom: 20px;
+  }
+  .story p:first-child::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--forest);
+    float: left;
+    line-height: 0.85;
+    margin-right: 8px;
+    margin-top: 6px;
+  }
+  .story em {
+    color: var(--warm-brown);
+    font-style: italic;
+  }
+  .story strong {
+    color: var(--forest);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* ── FLOW STEPS ── */
+  .flow-steps {
+    margin: 32px 0;
+    position: relative;
+  }
+  .flow-steps::before {
+    content: '';
+    position: absolute;
+    left: 21px;
+    top: 30px;
+    bottom: 30px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--mint), var(--sage));
+  }
+  .flow-step {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+    align-items: start;
+    position: relative;
+  }
+  .flow-step-num {
+    width: 44px;
+    height: 44px;
+    background: var(--forest);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 4px var(--cream);
+    position: relative;
+    z-index: 1;
+  }
+  .flow-step-content {
+    padding-top: 10px;
+  }
+  .flow-step-content h4 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 4px;
+  }
+  .flow-step-content p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: var(--forest);
+    color: white;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 32px 0;
+  }
+  .highlight-box h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .highlight-box ul {
+    list-style: none;
+    padding: 0;
+  }
+  .highlight-box ul li {
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    padding: 6px 0;
+    padding-left: 20px;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .highlight-box ul li:last-child { border-bottom: none; }
+  .highlight-box ul li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 10px;
+    top: 8px;
+  }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    background: var(--parchment);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 24px 0;
+  }
+  .info-box .info-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 10px;
+  }
+  .info-box p {
+    font-size: 14px;
+    color: var(--text-body);
+    line-height: 1.7;
+  }
+  .info-box ul {
+    padding-left: 18px;
+  }
+  .info-box ul li {
+    font-size: 14px;
+    color: var(--text-body);
+    line-height: 1.7;
+    margin-bottom: 4px;
+  }
+
+  /* ── REVENUE BOX ── */
+  .revenue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+  }
+  .revenue-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(45,80,22,0.05);
+  }
+  .revenue-card .icon { font-size: 32px; margin-bottom: 12px; }
+  .revenue-card h4 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 6px;
+  }
+  .revenue-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .revenue-card .amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--terracotta);
+    margin: 8px 0 4px;
+  }
+
+  /* ── SCOPE TABLE ── */
+  .scope-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 28px 0;
+    font-size: 14px;
+  }
+  .scope-table thead tr {
+    background: var(--forest);
+    color: white;
+  }
+  .scope-table thead th {
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .scope-table tbody tr {
+    border-bottom: 1px solid var(--border);
+  }
+  .scope-table tbody tr:nth-child(even) {
+    background: var(--parchment);
+  }
+  .scope-table td {
+    padding: 13px 18px;
+    color: var(--text-body);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .scope-table td:first-child {
+    font-weight: 600;
+    color: var(--forest);
+    white-space: nowrap;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-mvp { background: var(--mint); color: var(--forest); }
+  .badge-post { background: #FFE8CC; color: var(--warm-brown); }
+  .badge-v2 { background: #E8D5F0; color: #5A2D7A; }
+
+  /* ── REFERRAL DIAGRAM ── */
+  .referral-chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 32px 0;
+    overflow-x: auto;
+    padding: 8px 0;
+  }
+  .referral-node {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    text-align: center;
+    min-width: 130px;
+    flex-shrink: 0;
+  }
+  .referral-node .node-icon { font-size: 28px; margin-bottom: 6px; }
+  .referral-node h5 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 4px;
+  }
+  .referral-node p {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .referral-node.highlight {
+    background: var(--forest);
+    border-color: var(--forest);
+  }
+  .referral-node.highlight h5 { color: white; }
+  .referral-node.highlight p { color: var(--mint); }
+  .referral-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    text-align: center;
+    color: var(--sage);
+    font-size: 20px;
+    position: relative;
+  }
+  .referral-arrow::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--sage);
+    transform: translateY(-50%);
+  }
+  .commission-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--terracotta);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 48px 0 32px;
+  }
+  .section-divider span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── MAP MODULE ── */
+  .map-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .map-feature-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+  .map-feature-card .map-icon { font-size: 28px; margin-bottom: 10px; }
+  .map-feature-card h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 8px;
+  }
+  .map-feature-card ul {
+    padding-left: 16px;
+  }
+  .map-feature-card li {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    line-height: 1.5;
+  }
+
+  /* ── ARCH MODULE ── */
+  .arch-modules {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 28px 0;
+  }
+  .arch-module {
+    background: white;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--sage);
+    border-radius: 0 0 10px 10px;
+    padding: 18px;
+  }
+  .arch-module h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 8px;
+  }
+  .arch-module ul {
+    padding-left: 14px;
+  }
+  .arch-module li {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+
+  /* ── ROADMAP ── */
+  .roadmap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 32px 0;
+  }
+  .phase-card {
+    border-radius: 14px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .phase-card::before {
+    content: attr(data-phase);
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 72px;
+    font-weight: 700;
+    opacity: 0.07;
+    color: white;
+  }
+  .phase-1 { background: var(--forest); color: white; }
+  .phase-2 { background: var(--moss); color: white; }
+  .phase-3 { background: var(--sage); color: white; }
+  .phase-card .phase-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .phase-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    margin-bottom: 14px;
+  }
+  .phase-card ul { padding-left: 16px; }
+  .phase-card li { font-size: 13px; opacity: 0.88; margin-bottom: 5px; line-height: 1.5; }
+
+  /* ── ACTOR TABLE ── */
+  .actor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--mint);
+    color: var(--forest);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    background: var(--forest);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 40px;
+    font-size: 13px;
+  }
+  .doc-footer strong { color: var(--gold); }
+
+  @media (max-width: 640px) {
+    .container { padding: 0 20px; }
+    .toc ol { columns: 1; }
+    .arch-modules, .roadmap, .map-features { grid-template-columns: 1fr; }
+    .referral-chain { flex-direction: column; }
+    .referral-arrow { transform: rotate(90deg); }
+    .persona-card { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ COVER ══ -->
+<div class="cover">
+  <div class="cover-badge">Project Narrative Story · v1.0</div>
+  <div class="cover-leaf">🌿</div>
+  <h1>Harmo<span>nivita</span></h1>
+  <p class="cover-tagline">Portal Komunitas Kesehatan Holistik & Klinik Mitra</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><strong>Tipe Dokumen</strong>Narrative Story · Entry Point</div>
+    <div class="cover-meta-item"><strong>Versi</strong>1.0 — April 2025</div>
+    <div class="cover-meta-item"><strong>Bahasa</strong>Indonesia</div>
+    <div class="cover-meta-item"><strong>Status</strong>Draft untuk Review</div>
+  </div>
+  <div class="cover-wave"></div>
+</div>
+
+<!-- ══════════════════════════════════════ TOC ══ -->
+<div class="toc">
+  <h2>🗂 Daftar Isi</h2>
+  <ol>
+    <li>Tentang Harmonivita <span>— Latar Belakang & Visi</span></li>
+    <li>Portal & Konten Komunitas <span>— Artikel, Video, Sosmed</span></li>
+    <li>Bergabung Lewat QR Code <span>— Siti Rahayu, Calon Member</span></li>
+    <li>Kehidupan Sebagai Member <span>— Pak Bambang, Member Aktif</span></li>
+    <li>Program Referral <span>— Dinda & Jejaring Komisi</span></li>
+    <li>Event Pelatihan & Coaching <span>— Tiket Member vs Umum</span></li>
+    <li>Peta Klinik & Komunitas Mitra <span>— Modul Lokasi</span></li>
+    <li>Sponsor Perusahaan Obat <span>— Revenue Stream Tambahan</span></li>
+    <li>Admin Cabang <span>— Kak Reza, Pencatat Transaksi</span></li>
+    <li>Admin Pusat & Peran Sistem <span>— Tabel Aktor</span></li>
+    <li>Arsitektur & Roadmap <span>— Scope & Prioritas</span></li>
+  </ol>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 1 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 01</div>
+    <h2>Tentang Harmonivita</h2>
+    <div class="story">
+      <p>Di tengah hiruk-pikuk kota dan gaya hidup modern yang kian jauh dari keseimbangan, lahirlah sebuah inisiatif yang percaya bahwa <strong>kesehatan bukan sekadar urusan dokter dan obat</strong>. Harmonivita — dari kata "harmoni" dan "vita" (kehidupan) — adalah komunitas kesehatan holistik yang menggabungkan layanan medis, edukasi, dan jejaring sosial dalam satu ekosistem yang hangat dan terpercaya.</p>
+      <p>Harmonivita beroperasi dengan model klinik dan komunitas: anggota terdaftar mendapatkan akses ke konsultasi dokter, catatan kesehatan digital, konten edukasi, serta komunitas yang saling mendukung. Di balik layar, klinik-klinik mitra dan admin cabang bekerja sama untuk memastikan setiap transaksi dan kunjungan tercatat dengan rapi.</p>
+    </div>
+    <div class="highlight-box">
+      <h4>✦ Pilar Ekosistem Harmonivita</h4>
+      <ul>
+        <li><strong>Portal Digital</strong> — Satu pintu untuk konten kesehatan, komunitas, dan manajemen member</li>
+        <li><strong>Klinik Mitra</strong> — Jaringan klinik yang terintegrasi, bisa Harmonivita sendiri atau mitra terverifikasi</li>
+        <li><strong>Komunitas & Event</strong> — Pelatihan, coaching, dan kalender kesehatan yang aktif</li>
+        <li><strong>Sistem Member</strong> — Keanggotaan tahunan dengan benefit riil: buku kesehatan, konsultasi gratis, reminder WA</li>
+        <li><strong>Jejaring Referral</strong> — Sistem viral growth berbasis komisi yang menguntungkan member aktif</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 2 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 02</div>
+    <h2>Portal & Konten Komunitas</h2>
+    <div class="story">
+      <p>Halaman utama portal Harmonivita dirancang seperti sebuah <em>majalah kesehatan digital yang hidup</em>. Siapapun yang membuka <strong>harmonivita.id</strong> akan disambut oleh aliran konten yang terus diperbarui — artikel tips kesehatan, video YouTube terbaru dari channel Harmonivita, update sosial media terkini, dan jadwal event yang akan datang.</p>
+    </div>
+
+    <div class="section-divider"><span>Modul Konten Portal</span></div>
+
+    <table class="scope-table">
+      <thead>
+        <tr>
+          <th>Modul</th>
+          <th>Deskripsi</th>
+          <th>Sumber Konten</th>
+          <th>Akses</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>📰 Artikel</td>
+          <td>Artikel kesehatan, tips, dan edukasi. Ditulis oleh tim atau dokter mitra.</td>
+          <td>CMS Admin Pusat</td>
+          <td>Publik</td>
+        </tr>
+        <tr>
+          <td>📺 Video YouTube</td>
+          <td>Feed otomatis dari channel YouTube resmi Harmonivita via YouTube Data API.</td>
+          <td>YouTube API</td>
+          <td>Publik</td>
+        </tr>
+        <tr>
+          <td>📱 Update Sosmed</td>
+          <td>Embed atau feed dari Instagram @harmonivita.id — postingan, reels, dan stories highlight.</td>
+          <td>Instagram Embed / API</td>
+          <td>Publik</td>
+        </tr>
+        <tr>
+          <td>📅 Kalender Event</td>
+          <td>Daftar event pelatihan & coaching. Member lihat harga khusus, non-member harga umum.</td>
+          <td>CMS Admin Pusat</td>
+          <td>Publik (harga tersembunyi untuk non-member)</td>
+        </tr>
+        <tr>
+          <td>🗺 Peta Klinik</td>
+          <td>Lokasi klinik Harmonivita & klinik mitra dengan info jam buka, dokter, dan layanan.</td>
+          <td>Google Maps API</td>
+          <td>Publik</td>
+        </tr>
+        <tr>
+          <td>👥 Info Komunitas</td>
+          <td>Profil komunitas mitra, wilayah operasi, dan cara bergabung.</td>
+          <td>CMS Admin Pusat</td>
+          <td>Publik</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <div class="info-label">💡 Catatan Pengembangan</div>
+      <p>Feed YouTube dan Instagram bisa dimulai dengan embed statis sederhana (MVP), kemudian ditingkatkan ke integrasi API penuh di fase berikutnya untuk auto-refresh dan analytics tayangan.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 3 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 03</div>
+    <h2>Bergabung Lewat QR Code — Kisah Siti Rahayu</h2>
+
+    <div class="persona-card">
+      <div class="persona-avatar">👩</div>
+      <div class="persona-info">
+        <h3>Siti Rahayu</h3>
+        <div class="persona-role">Calon Member · Ibu Rumah Tangga, 38 Tahun</div>
+        <p>Siti menemukan akun Instagram <strong>@harmonivita.id</strong> dari repostan temannya. Ia tertarik dengan konten tips kesehatan dan mulai mengikuti akun tersebut. Suatu hari, ia melihat postingan tentang program keanggotaan dengan QR code di caption-nya.</p>
+      </div>
+    </div>
+
+    <div class="story">
+      <p>Siti mengetuk ikon kamera di HP-nya, mengarahkan lensa ke QR code yang tertera di postingan Instagram Harmonivita. Dalam hitungan detik, ia sudah diarahkan ke halaman landing pendaftaran member di portal harmonivita.id.</p>
+      <p>Yang menarik: sistem Harmonivita sudah <em>menandai dari mana Siti datang</em>. QR code Instagram membawa parameter sumber <code>utm_source=instagram&utm_campaign=member_reg</code>, sehingga tim marketing bisa tahu berapa persen member baru masuk dari jalur Instagram, seberapa efektif sebuah postingan, dan apakah Siti diarahkan oleh referral member lain.</p>
+    </div>
+
+    <div class="section-divider"><span>Alur Pendaftaran Member</span></div>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <h4>Scan QR Code</h4>
+          <p>QR code bisa berasal dari postingan Instagram, poster fisik di klinik, atau link referral dari member lain. Setiap sumber membawa parameter unik yang tersimpan di sistem.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <h4>Landing Page Pendaftaran</h4>
+          <p>Halaman khusus yang menampilkan benefit member: buku kesehatan gratis (senilai Rp60.000), konsultasi dokter gratis setahun penuh, akses health history digital, dan reminder WA.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <h4>Isi Formulir Pendaftaran</h4>
+          <p>Nama lengkap, tanggal lahir, nomor WhatsApp (wajib — untuk reminder), email, alamat domisili, dan kode referral (opsional). Sistem menyimpan sumber registrasi secara otomatis.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-content">
+          <h4>Pembayaran Rp200.000/Tahun</h4>
+          <p>Diarahkan ke payment gateway. Mendukung transfer bank, QRIS, dan dompet digital. Setelah lunas, sistem langsung mengaktifkan keanggotaan.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">5</div>
+        <div class="flow-step-content">
+          <h4>Notifikasi & Onboarding</h4>
+          <p>Member menerima pesan WA selamat datang + link aktivasi akun portal. Email konfirmasi berisi info pengambilan buku kesehatan di klinik terdekat. Akun member langsung bisa digunakan di portal.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">6</div>
+        <div class="flow-step-content">
+          <h4>Masa Berlaku & Perpanjangan</h4>
+          <p>Keanggotaan aktif selama 12 bulan. Sistem mengirim notifikasi WA H-30, H-14, dan H-1 sebelum kadaluarsa untuk perpanjangan. Link perpanjangan langsung di pesan WA.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-label">🔗 Integrasi QR Code ↔ Portal</div>
+      <ul>
+        <li>Setiap QR code membawa <strong>parameter sumber</strong> (Instagram, poster klinik, referral member, event)</li>
+        <li>Jika datang dari referral member, kode referral otomatis terisi di formulir</li>
+        <li>Admin pusat bisa melihat laporan konversi per sumber QR di dashboard</li>
+        <li>QR code untuk event berbeda dari QR code pendaftaran member — sistem membedakannya</li>
+      </ul>
+    </div>
+
+    <div class="highlight-box">
+      <h4>✦ Paket Keanggotaan Tahunan — Rp200.000/Tahun</h4>
+      <ul>
+        <li>Buku Kesehatan Harmonivita (senilai Rp60.000) — diterima di klinik saat pertama kunjungan</li>
+        <li>Konsultasi dokter GRATIS sepanjang tahun di klinik Harmonivita & klinik mitra</li>
+        <li>Akses riwayat pengobatan & catatan obat digital via portal</li>
+        <li>Notifikasi WA untuk jadwal kontrol, pengingat obat, dan info event</li>
+        <li>Harga KHUSUS MEMBER untuk event pelatihan & coaching berbayar</li>
+        <li>Kode referral unik untuk mengundang kenalan dan mendapat komisi</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 4 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 04</div>
+    <h2>Kehidupan Sebagai Member — Kisah Pak Bambang</h2>
+
+    <div class="persona-card">
+      <div class="persona-avatar">👨</div>
+      <div class="persona-info">
+        <h3>Pak Bambang Sutrisno</h3>
+        <div class="persona-role">Member Aktif · Pedagang, 52 Tahun · Surabaya</div>
+        <p>Pak Bambang sudah menjadi member Harmonivita selama 8 bulan. Ia rajin berobat ke klinik mitra Harmonivita di dekat rumahnya, dan sangat menghargai fitur riwayat kesehatan digital yang memudahkan dokter memahami kondisinya tanpa harus bercerita dari awal setiap kunjungan.</p>
+      </div>
+    </div>
+
+    <div class="story">
+      <p>Setiap kali Pak Bambang masuk ke portal harmonivita.id dan login, ia disambut oleh dasbor pribadi yang sederhana namun informatif. Di pojok kanan atas, tertera nama dan status keanggotaannya yang masih aktif hingga <em>14 Desember 2025</em>. Di bawahnya, sebuah kartu kecil bertuliskan <strong>"Kunjungan Terakhir: 3 Minggu Lalu — dr. Ani Kusuma, Klinik Mitra Buah Batu"</strong>.</p>
+      <p>Pak Bambang mengklik kartu itu dan masuk ke halaman riwayat pengobatan. Di sini, ia bisa melihat catatan lengkap setiap kunjungannya: tanggal, dokter yang menangani, diagnosa, dan daftar obat yang diresepkan lengkap dengan dosisnya. Bukan sekadar catatan mentah — riwayat ini disusun rapi seperti buku medis pribadi.</p>
+    </div>
+
+    <div class="section-divider"><span>Fitur Dasbor Member</span></div>
+
+    <table class="scope-table">
+      <thead>
+        <tr>
+          <th>Fitur</th>
+          <th>Deskripsi</th>
+          <th>Siapa yang Input?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🏠 Dasbor Pribadi</td>
+          <td>Ringkasan status member, kunjungan terakhir, pengingat jadwal berobat, dan saldo referral.</td>
+          <td>Sistem otomatis</td>
+        </tr>
+        <tr>
+          <td>📋 Riwayat Pengobatan</td>
+          <td>List kunjungan ke klinik: tanggal, nama dokter, nama klinik, diagnosa, dan catatan klinis.</td>
+          <td>Admin Cabang / Dokter</td>
+        </tr>
+        <tr>
+          <td>💊 Riwayat Obat</td>
+          <td>Daftar obat yang pernah diresepkan, dosis, durasi konsumsi, dan klinik penerbit resep.</td>
+          <td>Admin Cabang / Dokter</td>
+        </tr>
+        <tr>
+          <td>🔔 Reminder Berobat</td>
+          <td>Notifikasi WhatsApp otomatis berdasarkan jadwal kontrol yang ditetapkan dokter, atau interval default.</td>
+          <td>Admin Cabang / Sistem</td>
+        </tr>
+        <tr>
+          <td>🎫 Kode Referral</td>
+          <td>Kode unik member untuk dibagikan. Lacak siapa yang mendaftar dan berapa komisi terkumpul.</td>
+          <td>Sistem otomatis</td>
+        </tr>
+        <tr>
+          <td>📅 Event Terdaftar</td>
+          <td>Daftar event pelatihan atau coaching yang sudah dibeli/diregistrasi member.</td>
+          <td>Sistem (saat registrasi event)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-divider"><span>Alur Reminder WA</span></div>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <h4>Dokter / Admin Cabang Input Jadwal Kontrol</h4>
+          <p>Setelah kunjungan, admin mencatat bahwa Pak Bambang perlu kontrol ulang dalam 30 hari. Tanggal target tersimpan di sistem.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <h4>Sistem Mengirim Reminder Otomatis</h4>
+          <p>H-3 dari jadwal kontrol, sistem (via WhatsApp Business API atau layanan serupa) mengirim pesan ke nomor WA Pak Bambang: <em>"Halo Pak Bambang, saatnya kontrol ke klinik Harmonivita. Kunjungan berikutnya dijadwalkan tanggal 15 Oktober. Info: [link]"</em></p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <h4>Member Konfirmasi atau Ubah Jadwal</h4>
+          <p>Jika portal mendukung pemesanan jadwal, member bisa klik link untuk konfirmasi atau minta jadwal alternatif. Minimal, reminder sudah memberi tahu jauh sebelum lupa.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 5 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 05</div>
+    <h2>Program Referral — Kisah Dinda & Jejaring Komisi</h2>
+
+    <div class="persona-card">
+      <div class="persona-avatar">👩‍💼</div>
+      <div class="persona-info">
+        <h3>Dinda Permatasari</h3>
+        <div class="persona-role">Member Aktif · Pemilik Salon, 29 Tahun · Bandung</div>
+        <p>Dinda adalah member yang antusias dan sering menceritakan Harmonivita ke teman-temannya. Ia mulai serius menggunakan fitur referral setelah tahu ada komisi yang bisa ia dapatkan dari setiap member baru yang mendaftar pakai kodenya.</p>
+      </div>
+    </div>
+
+    <div class="story">
+      <p>Dinda membuka dasbor portalnya dan menemukan kartu <strong>Referral Program</strong> yang menampilkan kode uniknya: <em>DINDA2024</em>. Di bawah kode itu, tertera angka: <strong>7 member terdaftar dari referralnya, total komisi Rp140.000</strong> — dan nominal itu sudah masuk ke saldo yang bisa dicairkan.</p>
+      <p>Cara kerjanya sederhana namun elegan. Setiap kali seseorang mendaftar menggunakan kode Dinda, sistem mencatat referral itu dan mengalokasikan porsi dari biaya pendaftaran sebagai komisi untuk Dinda. Komisi ini bukan charity — ini adalah <em>insentif nyata</em> yang mendorong member aktif menjadi duta Harmonivita secara organik.</p>
+    </div>
+
+    <div class="section-divider"><span>Skema Referral</span></div>
+
+    <div class="referral-chain">
+      <div class="referral-node highlight">
+        <div class="node-icon">👩‍💼</div>
+        <h5>Dinda</h5>
+        <p>Referrer (Member)</p>
+      </div>
+      <div class="referral-arrow">
+        <span class="commission-label">Komisi</span>
+      </div>
+      <div class="referral-node">
+        <div class="node-icon">📱</div>
+        <h5>Bagikan Kode</h5>
+        <p>DINDA2024</p>
+      </div>
+      <div class="referral-arrow">
+        <span class="commission-label">→</span>
+      </div>
+      <div class="referral-node">
+        <div class="node-icon">👤</div>
+        <h5>Member Baru</h5>
+        <p>Mendaftar Rp200rb</p>
+      </div>
+      <div class="referral-arrow">
+        <span class="commission-label">split</span>
+      </div>
+      <div class="referral-node highlight">
+        <div class="node-icon">💰</div>
+        <h5>Komisi Dinda</h5>
+        <p>Masuk ke saldo</p>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-label">⚙️ Parameter Referral (Perlu Dikonfirmasi)</div>
+      <p>Besaran komisi per referral belum ditentukan dalam brief ini. Beberapa opsi yang lazim digunakan:</p>
+      <ul>
+        <li><strong>Nominal tetap</strong>, misal: Rp20.000 per member baru yang berhasil membayar</li>
+        <li><strong>Persentase</strong>, misal: 10% dari Rp200.000 = Rp20.000 per referral</li>
+        <li><strong>Multi-tier</strong>: referrer dapat X, dan "upline" referrer dapat Y (jika ada struktur bertingkat)</li>
+      </ul>
+      <p style="margin-top:10px;">Perlu konfirmasi: Apakah komisi bisa langsung dicairkan ke rekening, atau digunakan sebagai kredit perpanjangan membership?</p>
+    </div>
+
+    <table class="scope-table">
+      <thead>
+        <tr>
+          <th>Fitur Referral</th>
+          <th>Deskripsi</th>
+          <th>Prioritas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Kode Referral Unik</td>
+          <td>Setiap member mendapat kode unik yang bisa dibagikan via WA, IG, atau link.</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+        </tr>
+        <tr>
+          <td>Tracking Referral</td>
+          <td>Sistem mencatat siapa mereferensikan siapa dan kapan transaksi terjadi.</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+        </tr>
+        <tr>
+          <td>Dasbor Komisi Member</td>
+          <td>Member bisa lihat saldo komisi, histori referral, dan status pencairan.</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+        </tr>
+        <tr>
+          <td>Pencairan Komisi</td>
+          <td>Request withdraw ke rekening bank atau e-wallet (setelah minimal tertentu).</td>
+          <td><span class="badge badge-post">Post-MVP</span></td>
+        </tr>
+        <tr>
+          <td>Leaderboard Referral</td>
+          <td>Peringkat member dengan referral terbanyak bulan ini — gamifikasi komunitas.</td>
+          <td><span class="badge badge-v2">v2</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 6 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 06</div>
+    <h2>Event Pelatihan & Coaching Kesehatan</h2>
+
+    <div class="story">
+      <p>Harmonivita bukan sekadar klinik. Ia adalah komunitas yang percaya bahwa <strong>edukasi adalah obat pencegah</strong>. Maka di luar layanan medis, Harmonivita rutin mengadakan pelatihan dan coaching kesehatan — tentang pola makan, manajemen stres, kesehatan ibu dan anak, hingga literasi obat-obatan.</p>
+      <p>Setiap event memiliki harga tiket, dan di sinilah privilege member terasa nyata: harga untuk member selalu lebih terjangkau dibanding harga untuk umum. Tapi pertanyaannya — bagaimana sistem tahu apakah yang mendaftar event adalah member Harmonivita atau bukan?</p>
+    </div>
+
+    <div class="section-divider"><span>Alur Registrasi Event via QR Code</span></div>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <h4>Admin Buat Event di Portal</h4>
+          <p>Admin pusat membuat entri event: judul, deskripsi, tanggal, lokasi, kuota, harga member, dan harga umum. Sistem otomatis generate QR code unik untuk event tersebut.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <h4>QR Code Disebarkan di Instagram & Portal</h4>
+          <p>QR code event diposting di IG @harmonivita.id dan ditampilkan di halaman kalender event portal. Satu QR code, dua jalur penyebaran.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <h4>Calon Peserta Scan QR</h4>
+          <p>QR membuka halaman registrasi event. Sistem menampilkan dua kondisi:<br>
+          <strong>Jika sudah login sebagai member</strong> → langsung tampil harga member.<br>
+          <strong>Jika belum login / bukan member</strong> → tampil harga umum, dengan ajakan bergabung member.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-content">
+          <h4>Pembayaran & Konfirmasi</h4>
+          <p>Peserta membayar sesuai harga yang ditampilkan. Setelah lunas, sistem mengirim tiket digital via WA dan email. Tiket berisi QR code absensi untuk hari H.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">5</div>
+        <div class="flow-step-content">
+          <h4>Absensi & Deteksi Member di Hari H</h4>
+          <p>Admin event scan tiket QR peserta. Sistem langsung menampilkan nama, status (member/non-member), dan konfirmasi kehadiran tercatat. Laporan kehadiran tersedia di dasbor admin.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-label">🔑 Mekanisme Deteksi Member di Event</div>
+      <ul>
+        <li>Jika peserta sudah <strong>login di portal</strong> saat scan QR event → sistem tahu status member-nya</li>
+        <li>Jika peserta <strong>belum punya akun</strong> → sistem meminta login/daftar sebelum bisa pilih harga member</li>
+        <li>Harga member hanya muncul jika sistem memverifikasi keanggotaan aktif (tidak expired)</li>
+        <li>Peserta non-member yang mendaftar event bisa ditawari upgrade membership sekaligus dengan bundle harga</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 7 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 07</div>
+    <h2>Peta Klinik & Komunitas Mitra</h2>
+
+    <div class="story">
+      <p>Saat seseorang baru saja menjadi member Harmonivita dan ingin tahu <em>"di mana saya bisa berobat?"</em>, halaman Peta Klinik menjadi jawabannya. Portal menampilkan peta interaktif berbasis Google Maps yang menandai dua jenis lokasi: <strong>klinik Harmonivita sendiri</strong> dan <strong>klinik mitra yang telah terverifikasi</strong>.</p>
+    </div>
+
+    <div class="map-features">
+      <div class="map-feature-card">
+        <div class="map-icon">🏥</div>
+        <h4>Klinik Harmonivita</h4>
+        <ul>
+          <li>Pin merah/hijau khas Harmonivita</li>
+          <li>Nama klinik & alamat lengkap</li>
+          <li>Jam operasional</li>
+          <li>Daftar dokter & spesialisasi</li>
+          <li>Nomor kontak / WA klinik</li>
+          <li>Layanan yang tersedia</li>
+        </ul>
+      </div>
+      <div class="map-feature-card">
+        <div class="map-icon">🤝</div>
+        <h4>Klinik Mitra Harmonivita</h4>
+        <ul>
+          <li>Pin warna berbeda (abu/biru)</li>
+          <li>Label "Mitra Harmonivita"</li>
+          <li>Info menerima benefit member</li>
+          <li>Kontak dan alamat</li>
+          <li>Jam buka & layanan tersedia</li>
+        </ul>
+      </div>
+      <div class="map-feature-card">
+        <div class="map-icon">👥</div>
+        <h4>Lokasi Komunitas Mitra</h4>
+        <ul>
+          <li>Titik komunitas afiliasi di kota tertentu</li>
+          <li>Nama & profil singkat komunitas</li>
+          <li>Cara bergabung atau kontak</li>
+          <li>Event komunitas aktif di area</li>
+        </ul>
+      </div>
+      <div class="map-feature-card">
+        <div class="map-icon">🔍</div>
+        <h4>Fitur Pencarian & Filter</h4>
+        <ul>
+          <li>Cari berdasarkan kota / wilayah</li>
+          <li>Filter: klinik Harmonivita vs mitra</li>
+          <li>Filter: menerima konsultasi gratis member</li>
+          <li>"Terdekat dari saya" (geolokasi)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 8 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 08</div>
+    <h2>Sponsor Perusahaan Obat — Revenue Stream Tambahan</h2>
+
+    <div class="story">
+      <p>Harmonivita memiliki sesuatu yang sangat berharga di mata perusahaan farmasi: <em>audiens yang relevan dan tersegmentasi</em>. Member Harmonivita adalah orang-orang yang peduli kesehatan, rutin berobat, dan terbuka terhadap informasi produk kesehatan yang terpercaya. Ini adalah lahan iklan yang jauh lebih presisi dibanding platform umum.</p>
+    </div>
+
+    <div class="revenue-grid">
+      <div class="revenue-card">
+        <div class="icon">🎖</div>
+        <h4>Banner Sponsor Portal</h4>
+        <p>Slot iklan di halaman utama, artikel, dan halaman event. Dibeli per periode (bulanan/tahunan).</p>
+        <div class="amount">Rp/bulan</div>
+        <p>Berdasarkan traffic & posisi</p>
+      </div>
+      <div class="revenue-card">
+        <div class="icon">✍️</div>
+        <h4>Artikel Sponsored</h4>
+        <p>Konten edukasi bermerek dari perusahaan farmasi, ditulis bersama tim Harmonivita. Berlabel "Sponsored Content".</p>
+        <div class="amount">Per artikel</div>
+        <p>Plus biaya penempatan</p>
+      </div>
+      <div class="revenue-card">
+        <div class="icon">📣</div>
+        <h4>Sponsor Event</h4>
+        <p>Perusahaan farmasi sebagai sponsor pelatihan atau coaching. Exposure branding di materi dan lokasi event.</p>
+        <div class="amount">Per event</div>
+        <p>Paket Gold / Silver</p>
+      </div>
+      <div class="revenue-card">
+        <div class="icon">📱</div>
+        <h4>WA Blast Sponsor</h4>
+        <p>Pesan edukasi bermerek dikirim ke member via WA blast (dengan consent member). Perlu diatur frekuensi agar tidak mengganggu.</p>
+        <div class="amount">Per blast</div>
+        <p>Tergantung segmentasi</p>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-label">⚠️ Catatan Etika & Compliance</div>
+      <p>Konten sponsor harus selalu berlabel jelas dan tidak menyesatkan. Informasi produk farmasi wajib melewati review tim medis Harmonivita sebelum ditayangkan. Sistem perlu menyediakan flag "sponsored" yang tidak bisa dimatikan oleh admin sponsor.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 9 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 09</div>
+    <h2>Admin Cabang — Kisah Kak Reza</h2>
+
+    <div class="persona-card">
+      <div class="persona-avatar">🧑‍⚕️</div>
+      <div class="persona-info">
+        <h3>Reza Firmansyah</h3>
+        <div class="persona-role">Admin Cabang · Staf Klinik, 26 Tahun · Klinik Harmonivita Buah Batu</div>
+        <p>Kak Reza bertugas di klinik Harmonivita Buah Batu, Bandung. Setiap hari ia menerima pasien, mencatat kunjungan, memasukkan data resep, dan mengatur jadwal kontrol member. Ia mengakses modul Admin Cabang di portal yang dibatasi hanya untuk data kliniknya sendiri.</p>
+      </div>
+    </div>
+
+    <div class="story">
+      <p>Pagi hari, Kak Reza membuka laptop dan login ke portal admin cabang Harmonivita. Antarmukanya bersih dan fokus — ia hanya melihat data yang relevan dengan kliniknya. Tidak ada data klinik lain, tidak ada keuangan pusat. <em>Data dipartisi per cabang</em>.</p>
+      <p>Ketika Pak Bambang datang berobat, Kak Reza mengetik nama atau nomor member Pak Bambang di kolom pencarian. Dalam sekejap, muncul profil: status member aktif, riwayat kunjungan sebelumnya, dan daftar obat yang pernah diresepkan. Dokter bisa langsung melihat riwayat ini sebelum mulai konsultasi — tanpa perlu tanya satu per satu dari nol.</p>
+      <p>Setelah konsultasi selesai, Kak Reza mencatat: diagnosa, obat yang diresepkan hari ini, dosis, dan jadwal kontrol berikutnya. Ia menekan <strong>Simpan & Kirim Reminder</strong> — dan sistem langsung menjadwalkan notifikasi WA untuk Pak Bambang tiga hari sebelum jadwal kontrol.</p>
+    </div>
+
+    <div class="section-divider"><span>Fungsi Admin Cabang</span></div>
+
+    <table class="scope-table">
+      <thead>
+        <tr>
+          <th>Fungsi</th>
+          <th>Detail</th>
+          <th>Output Sistem</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cari & Verifikasi Member</td>
+          <td>Cari member by nama/nomor HP, verifikasi status aktif, lihat riwayat kunjungan sebelumnya.</td>
+          <td>Status member + histori tampil di layar</td>
+        </tr>
+        <tr>
+          <td>Input Kunjungan Baru</td>
+          <td>Catat tanggal kunjungan, nama dokter, keluhan utama, diagnosa, dan catatan klinis.</td>
+          <td>Entri baru di riwayat member</td>
+        </tr>
+        <tr>
+          <td>Input Resep Obat</td>
+          <td>Nama obat, dosis, frekuensi, durasi. Bisa dipilih dari master list obat atau input manual.</td>
+          <td>Ditambahkan ke riwayat obat member</td>
+        </tr>
+        <tr>
+          <td>Jadwal Kontrol</td>
+          <td>Tetapkan tanggal kontrol berikutnya. Sistem otomatis jadwalkan WA reminder.</td>
+          <td>Reminder WA terkirim H-3 dari jadwal</td>
+        </tr>
+        <tr>
+          <td>Catat Transaksi</td>
+          <td>Input transaksi layanan (di luar konsultasi gratis member): tindakan, obat terjual, biaya.</td>
+          <td>Rekap transaksi klinik per hari/bulan</td>
+        </tr>
+        <tr>
+          <td>Laporan Kunjungan</td>
+          <td>Rekap kunjungan harian/bulanan cabang, bisa diexport PDF.</td>
+          <td>Laporan untuk dilaporkan ke admin pusat</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <div class="info-label">🔐 Pembatasan Akses Admin Cabang</div>
+      <ul>
+        <li>Hanya bisa melihat & mengedit data kunjungan <strong>di kliniknya sendiri</strong></li>
+        <li>Tidak bisa mengubah data kunjungan dari klinik lain</li>
+        <li>Tidak bisa melihat laporan keuangan pusat atau data referral member</li>
+        <li>Tidak bisa mengubah status keanggotaan member (hanya Admin Pusat yang bisa)</li>
+        <li>Log semua aktivitas admin cabang tersimpan untuk audit</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 10 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 10</div>
+    <h2>Admin Pusat & Tabel Aktor Sistem</h2>
+
+    <div class="story">
+      <p>Di balik semua aliran data, konten, dan transaksi Harmonivita, berdiri tim Admin Pusat yang memegang kendali penuh atas ekosistem. Merekalah yang mengelola konten portal, memverifikasi klinik mitra, memantau laporan keuangan konsolidasi, mengatur sponsor, dan memiliki akses ke seluruh data sistem.</p>
+    </div>
+
+    <div class="section-divider"><span>Tabel Aktor Sistem Harmonivita</span></div>
+
+    <table class="scope-table">
+      <thead>
+        <tr>
+          <th>Aktor</th>
+          <th>Deskripsi</th>
+          <th>Akses Utama</th>
+          <th>Batasan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="actor-badge">🌐 Pengunjung</span></td>
+          <td>Siapapun yang membuka portal tanpa login.</td>
+          <td>Artikel, video, feed sosmed, peta klinik, info komunitas, halaman event (harga umum)</td>
+          <td>Tidak bisa lihat health history, harga member, dasbor</td>
+        </tr>
+        <tr>
+          <td><span class="actor-badge">💚 Member</span></td>
+          <td>Orang yang sudah mendaftar dan membayar Rp200rb/tahun.</td>
+          <td>Semua fitur pengunjung + dasbor pribadi, riwayat pengobatan & obat, kode referral, harga event member</td>
+          <td>Tidak bisa edit riwayat medis sendiri, tidak bisa lihat data member lain</td>
+        </tr>
+        <tr>
+          <td><span class="actor-badge">🏥 Admin Cabang</span></td>
+          <td>Staf klinik Harmonivita atau klinik mitra yang ditunjuk.</td>
+          <td>Input kunjungan & resep, jadwal kontrol, transaksi klinik, laporan cabang</td>
+          <td>Hanya data kliniknya sendiri; tidak bisa ubah status member atau lihat data pusat</td>
+        </tr>
+        <tr>
+          <td><span class="actor-badge">🛡 Admin Pusat</span></td>
+          <td>Tim inti Harmonivita yang mengelola seluruh sistem.</td>
+          <td>CMS konten, manajemen member (aktivasi/suspend), kelola event, kelola klinik mitra, laporan konsolidasi, manajemen sponsor, payout referral</td>
+          <td>Tidak ada batasan fungsional; setiap aksi terlog untuk audit</td>
+        </tr>
+        <tr>
+          <td><span class="actor-badge">⚙️ Super Admin</span></td>
+          <td>Developer / CTO Harmonivita. Akses teknis penuh.</td>
+          <td>Semua akses Admin Pusat + konfigurasi sistem, manajemen role, integrasi API, monitoring server</td>
+          <td>Tidak boleh digunakan untuk operasional harian</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-divider"><span>Fungsi Admin Pusat (Detail)</span></div>
+
+    <table class="scope-table">
+      <thead>
+        <tr>
+          <th>Fungsi</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>CMS Konten Portal</td>
+          <td>Buat/edit/hapus artikel, tambah link video YouTube, embed sosmed, buat & kelola event kalender.</td>
+        </tr>
+        <tr>
+          <td>Manajemen Member</td>
+          <td>Lihat semua member, aktivasi manual, suspend akun, perpanjangan darurat, export data member.</td>
+        </tr>
+        <tr>
+          <td>Manajemen Klinik & Mitra</td>
+          <td>Daftarkan klinik baru, kelola data admin cabang per klinik, tambah pin peta, verifikasi mitra.</td>
+        </tr>
+        <tr>
+          <td>Kelola Referral & Payout</td>
+          <td>Pantau komisi referral, verifikasi request withdraw, proses payout ke member.</td>
+        </tr>
+        <tr>
+          <td>Laporan Keuangan Konsolidasi</td>
+          <td>Total pendaftaran baru, total revenue event, komisi referral terdistribusi, data sponsor aktif.</td>
+        </tr>
+        <tr>
+          <td>Manajemen Sponsor</td>
+          <td>Buat slot iklan, assign konten sponsor ke slot, tandai konten sebagai "Sponsored", set periode tayang.</td>
+        </tr>
+        <tr>
+          <td>Pengiriman WA Blast</td>
+          <td>Kirim broadcast pesan ke segmen member (semua member, member wilayah tertentu, member yang expired).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ CHAPTER 11 ══ -->
+<div class="chapter">
+  <div class="container">
+    <div class="chapter-number">Bab 11</div>
+    <h2>Arsitektur Modul & Roadmap Pengembangan</h2>
+
+    <div class="section-divider"><span>Modul Sistem</span></div>
+
+    <div class="arch-modules">
+      <div class="arch-module">
+        <h4>🌐 M1 · Portal Publik</h4>
+        <ul>
+          <li>Halaman artikel & blog</li>
+          <li>Feed YouTube embed</li>
+          <li>Feed Instagram embed</li>
+          <li>Kalender event publik</li>
+          <li>Halaman peta klinik</li>
+          <li>Info komunitas mitra</li>
+          <li>Landing page member reg.</li>
+        </ul>
+      </div>
+      <div class="arch-module">
+        <h4>👤 M2 · Member Portal</h4>
+        <ul>
+          <li>Dasbor member</li>
+          <li>Riwayat pengobatan</li>
+          <li>Riwayat obat</li>
+          <li>Jadwal & reminder kontrol</li>
+          <li>Kode & dasbor referral</li>
+          <li>Event terdaftar</li>
+          <li>Profil & pengaturan akun</li>
+        </ul>
+      </div>
+      <div class="arch-module">
+        <h4>🏥 M3 · Admin Cabang</h4>
+        <ul>
+          <li>Cari & verifikasi member</li>
+          <li>Input kunjungan</li>
+          <li>Input resep obat</li>
+          <li>Jadwal kontrol + trigger WA</li>
+          <li>Input transaksi klinik</li>
+          <li>Laporan kunjungan cabang</li>
+        </ul>
+      </div>
+      <div class="arch-module">
+        <h4>🛡 M4 · Admin Pusat</h4>
+        <ul>
+          <li>CMS artikel & konten</li>
+          <li>Manajemen member & status</li>
+          <li>Kelola event & QR</li>
+          <li>Kelola klinik & mitra</li>
+          <li>Referral & payout</li>
+          <li>Manajemen sponsor</li>
+          <li>Laporan konsolidasi</li>
+        </ul>
+      </div>
+      <div class="arch-module">
+        <h4>🔗 M5 · Integrasi & Notif</h4>
+        <ul>
+          <li>Payment gateway (QRIS/VA)</li>
+          <li>WhatsApp Business API</li>
+          <li>YouTube Data API</li>
+          <li>Instagram Embed</li>
+          <li>Google Maps API</li>
+          <li>QR Code generator</li>
+          <li>Email (SMTP/SaaS)</li>
+        </ul>
+      </div>
+      <div class="arch-module">
+        <h4>📊 M6 · Laporan & Audit</h4>
+        <ul>
+          <li>Laporan member baru per periode</li>
+          <li>Laporan sumber registrasi (UTM)</li>
+          <li>Laporan revenue event</li>
+          <li>Laporan referral & komisi</li>
+          <li>Laporan kunjungan per cabang</li>
+          <li>Activity log admin</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>Roadmap Pengembangan</span></div>
+
+    <div class="roadmap">
+      <div class="phase-card phase-1" data-phase="1">
+        <div class="phase-label">Fase 1 · MVP</div>
+        <h4>Pondasi Portal & Member</h4>
+        <ul>
+          <li>Portal publik (artikel, YouTube embed, peta klinik)</li>
+          <li>Sistem registrasi member + payment</li>
+          <li>QR code pendaftaran (Instagram & portal)</li>
+          <li>Dasbor member dasar</li>
+          <li>Riwayat pengobatan & obat</li>
+          <li>Admin cabang (input kunjungan & resep)</li>
+          <li>Reminder WA jadwal kontrol</li>
+          <li>Referral kode unik + tracking</li>
+          <li>Admin pusat dasar (CMS + manajemen member)</li>
+        </ul>
+      </div>
+      <div class="phase-card phase-2" data-phase="2">
+        <div class="phase-label">Fase 2 · Growth</div>
+        <h4>Event, Komunitas & Monetisasi</h4>
+        <ul>
+          <li>Kalender event + registrasi berbayar</li>
+          <li>Deteksi member vs umum di event</li>
+          <li>Tiket digital QR + absensi</li>
+          <li>Peta komunitas mitra</li>
+          <li>Payout komisi referral</li>
+          <li>Manajemen sponsor & slot iklan</li>
+          <li>WA blast untuk member segment</li>
+          <li>Laporan konsolidasi keuangan</li>
+        </ul>
+      </div>
+      <div class="phase-card phase-3" data-phase="3">
+        <div class="phase-label">Fase 3 · Scale</div>
+        <h4>Engagement & Ekspansi</h4>
+        <ul>
+          <li>Feed Instagram terintegrasi (API)</li>
+          <li>Leaderboard referral (gamifikasi)</li>
+          <li>Notifikasi perpanjangan member otomatis</li>
+          <li>Bundle upgrade non-member di event</li>
+          <li>Mobile app (PWA atau native)</li>
+          <li>Multi-level admin klinik mitra</li>
+          <li>Analitik konten & engagement member</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>Tabel Scope Fitur & Prioritas</span></div>
+
+    <table class="scope-table">
+      <thead>
+        <tr>
+          <th>Fitur</th>
+          <th>Modul</th>
+          <th>Prioritas</th>
+          <th>Catatan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Portal publik (artikel, video, peta)</td>
+          <td>M1</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+          <td>YouTube embed dulu, API belakangan</td>
+        </tr>
+        <tr>
+          <td>Registrasi member + payment</td>
+          <td>M1, M5</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+          <td>Wajib ada QRIS & transfer bank</td>
+        </tr>
+        <tr>
+          <td>QR Code registrasi (multi-sumber)</td>
+          <td>M1, M5</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+          <td>UTM tracking per QR wajib dari awal</td>
+        </tr>
+        <tr>
+          <td>Dasbor member + riwayat kesehatan</td>
+          <td>M2</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+          <td>Core value proposition member</td>
+        </tr>
+        <tr>
+          <td>Admin cabang — input kunjungan & resep</td>
+          <td>M3</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+          <td>Perlu onboarding admin cabang</td>
+        </tr>
+        <tr>
+          <td>Reminder WA otomatis</td>
+          <td>M5</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+          <td>WA Business API atau alternatif (Fonnte, dll)</td>
+        </tr>
+        <tr>
+          <td>Referral kode + dasbor komisi</td>
+          <td>M2, M4</td>
+          <td><span class="badge badge-mvp">MVP</span></td>
+          <td>Payout manual dulu di MVP</td>
+        </tr>
+        <tr>
+          <td>Kalender event + tiket berbayar</td>
+          <td>M1, M4</td>
+          <td><span class="badge badge-post">Post-MVP</span></td>
+          <td>Butuh integrasi payment per event</td>
+        </tr>
+        <tr>
+          <td>Deteksi member/non-member di event</td>
+          <td>M1, M2</td>
+          <td><span class="badge badge-post">Post-MVP</span></td>
+          <td>Butuh session auth yang solid dulu</td>
+        </tr>
+        <tr>
+          <td>Peta komunitas mitra</td>
+          <td>M1</td>
+          <td><span class="badge badge-post">Post-MVP</span></td>
+          <td>Tergantung data komunitas yang siap</td>
+        </tr>
+        <tr>
+          <td>Manajemen sponsor & slot iklan</td>
+          <td>M4</td>
+          <td><span class="badge badge-post">Post-MVP</span></td>
+          <td>Revenue model ke-2; tidak blocking MVP</td>
+        </tr>
+        <tr>
+          <td>Payout referral otomatis</td>
+          <td>M4, M5</td>
+          <td><span class="badge badge-v2">v2</span></td>
+          <td>Integrasi disbursement API (Xendit/Flip)</td>
+        </tr>
+        <tr>
+          <td>Leaderboard referral</td>
+          <td>M2</td>
+          <td><span class="badge badge-v2">v2</span></td>
+          <td>Gamifikasi, bisa setelah growth stabil</td>
+        </tr>
+        <tr>
+          <td>Mobile App (PWA)</td>
+          <td>Semua</td>
+          <td><span class="badge badge-v2">v2</span></td>
+          <td>Web responsif dulu, PWA di fase 3</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <h4>✦ Pertanyaan Terbuka — Perlu Konfirmasi Sebelum Development</h4>
+      <ul>
+        <li><strong>Besaran komisi referral</strong> — nominal tetap atau persentase? Apakah ada multi-tier?</li>
+        <li><strong>Pencairan komisi</strong> — ke rekening langsung, atau bisa dijadikan kredit perpanjangan member?</li>
+        <li><strong>Mekanisme konsultasi gratis</strong> — apakah ada batasan jumlah kunjungan per tahun? Atau benar-benar unlimited?</li>
+        <li><strong>Buku kesehatan fisik</strong> — kapan dan di mana diberikan? Dicatat di sistem sebagai "sudah diambil"?</li>
+        <li><strong>Klinik mitra</strong> — apakah punya akun admin cabang sendiri di sistem, atau admin Harmonivita yang input untuk mereka?</li>
+        <li><strong>WA notifikasi</strong> — apakah menggunakan WhatsApp Business API resmi, atau solusi pihak ketiga (Fonnte, WABLAS, dll)?</li>
+        <li><strong>Pricelist event</strong> — harga member dan umum apakah ditetapkan per event oleh admin pusat, atau ada template?</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ FOOTER ══ -->
+<div class="doc-footer">
+  <p>🌿 <strong>Harmonivita Portal — Project Narrative Story</strong></p>
+  <p style="margin-top:8px;">Dokumen ini adalah entry point development. Bukan spesifikasi teknis final.<br>
+  Semua keputusan arsitektur detail akan mengikuti hasil konfirmasi atas pertanyaan terbuka di atas.</p>
+  <p style="margin-top:16px; font-size:12px; opacity:0.5;">Dibuat April 2025 · Aragoya × Harmonivita · v1.0</p>
+</div>
+
+</body>
+</html>

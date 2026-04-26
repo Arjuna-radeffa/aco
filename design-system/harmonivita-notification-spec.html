@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmonivita — Notification Specification</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2D5016;
+    --moss: #4A7C2F;
+    --sage: #7BA05B;
+    --mint: #C8E6B4;
+    --cream: #FAF6EE;
+    --parchment: #F2EAD8;
+    --terracotta: #C1622A;
+    --amber: #D4873A;
+    --gold: #E8B84B;
+    --warm-brown: #6B4C2A;
+    --text-dark: #1E2A14;
+    --text-body: #3A4A2C;
+    --text-muted: #6A7A5C;
+    --border: #D6E8C4;
+    --white: #ffffff;
+    --wa-green: #075E54;
+    --wa-light: #DCF8C6;
+    --wa-bubble: #E7FFDB;
+    --wa-bg: #ECE5DD;
+    --email-blue: #1A73E8;
+    --email-light: #EAF1FB;
+    --red: #C0392B;
+    --red-light: #FDECEA;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-body); line-height: 1.8; font-size: 15px; }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh; background: var(--forest);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 60px 40px; position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 20% 80%, rgba(74,124,47,.4) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 60% at 80% 20%, rgba(200,230,180,.15) 0%, transparent 55%);
+  }
+  .cover-badge { font-size:11px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:var(--gold); border:1px solid rgba(232,184,75,.4); padding:6px 20px; border-radius:20px; margin-bottom:40px; position:relative; }
+  .cover-leaf { font-size:64px; margin-bottom:20px; position:relative; }
+  .cover h1 { font-family:'Playfair Display',serif; font-size:clamp(46px,7vw,78px); font-weight:700; color:#fff; letter-spacing:-1px; line-height:1.05; margin-bottom:12px; position:relative; }
+  .cover h1 span { color:var(--gold); font-style:italic; }
+  .cover-sub { font-family:'Lora',serif; font-size:17px; color:rgba(255,255,255,.7); font-style:italic; margin-bottom:12px; position:relative; }
+  .cover-doc-title { font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--mint); margin-bottom:48px; position:relative; }
+  .cover-meta { display:flex; gap:36px; flex-wrap:wrap; justify-content:center; position:relative; }
+  .cover-meta-item { text-align:center; color:rgba(255,255,255,.55); font-size:12px; letter-spacing:1px; }
+  .cover-meta-item strong { display:block; color:var(--mint); font-size:13px; font-weight:500; margin-bottom:2px; }
+  .cover-wave { position:absolute; bottom:0; left:0; right:0; height:80px; background:var(--cream); clip-path:ellipse(55% 100% at 50% 100%); }
+
+  /* ── STATS ── */
+  .stats-bar { background:var(--forest); padding:36px 40px; }
+  .stats-inner { max-width:960px; margin:0 auto; display:flex; justify-content:space-around; flex-wrap:wrap; gap:12px; }
+  .stat-item { text-align:center; padding:8px 20px; }
+  .stat-item .num { font-family:'Playfair Display',serif; font-size:34px; font-weight:700; color:var(--gold); display:block; }
+  .stat-item .lbl { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,.55); }
+
+  /* ── LAYOUT ── */
+  .container { max-width:960px; margin:0 auto; padding:0 40px; }
+
+  /* ── TOC ── */
+  .toc { background:var(--parchment); border-left:4px solid var(--sage); padding:36px 44px; margin:60px auto; max-width:960px; border-radius:0 12px 12px 0; }
+  .toc h2 { font-family:'Playfair Display',serif; font-size:20px; color:var(--forest); margin-bottom:22px; }
+  .toc-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .toc-cat { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--terracotta); margin-bottom:8px; }
+  .toc ul { list-style:none; padding:0; }
+  .toc ul li { font-size:13px; color:var(--text-body); padding:4px 0 4px 14px; border-left:2px solid var(--border); margin-bottom:3px; line-height:1.45; }
+  .toc ul li code { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--terracotta); background:rgba(193,98,42,.08); padding:1px 5px; border-radius:3px; }
+
+  /* ── SECTION DIVIDER ── */
+  .divider { display:flex; align-items:center; gap:14px; margin:52px 0 28px; }
+  .divider span { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); white-space:nowrap; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── INFRA GRID ── */
+  .infra-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin:24px 0 40px; }
+  .infra-card { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
+  .infra-card .ic-icon { font-size:28px; margin-bottom:8px; }
+  .infra-card h4 { font-size:13px; font-weight:700; color:var(--forest); margin-bottom:6px; }
+  .infra-card p { font-size:12px; color:var(--text-muted); line-height:1.5; }
+  .infra-card code { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--terracotta); }
+
+  /* ── VARIABLE TABLE ── */
+  .var-table { width:100%; border-collapse:collapse; margin:20px 0 40px; font-size:13px; }
+  .var-table thead tr { background:var(--forest); color:white; }
+  .var-table thead th { padding:11px 16px; text-align:left; font-weight:500; }
+  .var-table tbody tr { border-bottom:1px solid var(--border); }
+  .var-table tbody tr:nth-child(even) { background:var(--parchment); }
+  .var-table td { padding:10px 16px; vertical-align:top; line-height:1.6; }
+  .var-table td:first-child { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--terracotta); font-weight:600; white-space:nowrap; }
+  .var-table td:nth-child(2) { color:var(--text-muted); font-size:12px; }
+
+  /* ── NOTIFICATION CARD ── */
+  .notif-card {
+    background:var(--white); border:1px solid var(--border); border-radius:16px;
+    margin-bottom:32px; overflow:hidden;
+    box-shadow:0 2px 12px rgba(45,80,22,.05);
+  }
+  .notif-header {
+    padding:20px 26px 16px; border-bottom:1px solid var(--border);
+    display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;
+  }
+  .notif-id {
+    background:var(--forest); color:var(--gold);
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
+    padding:4px 12px; border-radius:20px; white-space:nowrap; flex-shrink:0; margin-top:2px;
+  }
+  .notif-title { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--forest); line-height:1.3; flex:1; min-width:200px; }
+  .notif-badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; width:100%; padding-left:0; }
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:.3px; }
+  .b-wa { background:var(--wa-light); color:var(--wa-green); }
+  .b-email { background:var(--email-light); color:var(--email-blue); }
+  .b-both { background:var(--mint); color:var(--forest); }
+  .b-internal { background:#F5EEF8; color:#7D3C98; }
+  .b-trigger { background:var(--parchment); color:var(--warm-brown); border:1px solid var(--border); }
+  .b-critical { background:var(--red-light); color:var(--red); }
+  .b-scheduled { background:#FEF9E7; color:#7D6608; }
+  .b-mvp { background:var(--mint); color:var(--forest); }
+  .b-post { background:#FFE8CC; color:var(--warm-brown); }
+
+  .notif-body { padding:22px 26px; }
+
+  /* ── META ROW ── */
+  .meta-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:22px; }
+  .meta-item { background:var(--parchment); border-radius:8px; padding:12px 14px; }
+  .meta-item .m-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+  .meta-item .m-value { font-size:13px; color:var(--text-body); line-height:1.4; font-weight:500; }
+  .meta-item .m-value code { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--terracotta); }
+
+  /* ── WA MOCKUP ── */
+  .wa-section { margin:16px 0; }
+  .wa-section-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--wa-green); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .wa-section-label::after { content:''; flex:1; height:1px; background:var(--wa-light); }
+  .wa-phone {
+    background:var(--wa-bg); border-radius:14px; padding:16px 14px;
+    max-width:380px; font-family:'DM Sans',sans-serif;
+  }
+  .wa-phone .wa-header {
+    background:var(--wa-green); color:white; border-radius:10px 10px 0 0;
+    padding:10px 14px; display:flex; align-items:center; gap:10px; margin:-16px -14px 12px; border-radius:10px 10px 0 0;
+  }
+  .wa-phone .wa-header .wa-avatar { width:32px; height:32px; background:var(--sage); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .wa-phone .wa-header .wa-name { font-size:14px; font-weight:600; }
+  .wa-phone .wa-header .wa-sub { font-size:11px; color:rgba(255,255,255,.7); }
+  .wa-bubble {
+    background:var(--wa-bubble); border-radius:0 10px 10px 10px;
+    padding:12px 14px; font-size:14px; line-height:1.6; color:#111;
+    box-shadow:0 1px 2px rgba(0,0,0,.1); position:relative;
+  }
+  .wa-bubble::before {
+    content:''; position:absolute; top:0; left:-8px; width:0; height:0;
+    border-top:8px solid var(--wa-bubble); border-left:8px solid transparent;
+  }
+  .wa-bubble .wa-var { color:var(--wa-green); font-weight:600; }
+  .wa-bubble .wa-bold { font-weight:700; }
+  .wa-bubble .wa-break { display:block; margin-top:6px; }
+  .wa-time { text-align:right; font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .wa-btn { background:var(--white); border:1px solid #D1FAE5; border-radius:8px; padding:10px 14px; margin-top:8px; text-align:center; color:var(--wa-green); font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px; }
+
+  /* ── EMAIL MOCKUP ── */
+  .email-section { margin:16px 0; }
+  .email-section-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--email-blue); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .email-section-label::after { content:''; flex:1; height:1px; background:var(--email-light); }
+  .email-mockup {
+    border:1px solid #dadce0; border-radius:12px; overflow:hidden; max-width:520px;
+    font-family:'DM Sans',sans-serif;
+  }
+  .email-toolbar {
+    background:#F1F3F4; padding:10px 16px; display:flex; align-items:center; gap:6px;
+  }
+  .email-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .email-header { background:var(--white); padding:14px 20px; border-bottom:1px solid #dadce0; }
+  .email-from { font-size:11px; color:var(--text-muted); margin-bottom:2px; }
+  .email-subject { font-size:15px; font-weight:700; color:var(--text-dark); }
+  .email-body { background:var(--white); padding:18px 20px; font-size:13px; line-height:1.7; color:var(--text-body); }
+  .email-body .e-var { color:var(--email-blue); font-weight:600; }
+  .email-body .e-bold { font-weight:700; color:var(--forest); }
+  .email-body .e-break { display:block; margin-top:8px; }
+  .email-body .e-btn { display:inline-block; background:var(--forest); color:white; padding:10px 22px; border-radius:8px; font-weight:600; font-size:13px; margin-top:12px; text-decoration:none; }
+  .email-body .e-muted { color:var(--text-muted); font-size:12px; margin-top:10px; }
+
+  /* ── TEMPLATE RAW ── */
+  .template-raw {
+    background:#1E2A14; border-radius:10px; padding:18px 20px; margin:12px 0;
+    font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.75;
+    color:#A8D5A2; overflow-x:auto;
+  }
+  .template-raw .t-var { color:var(--gold); }
+  .template-raw .t-meta { color:rgba(168,213,162,.4); font-size:11px; }
+  .template-raw .t-bold { color:white; }
+  .template-raw .t-btn { color:#6FB8F7; }
+
+  /* ── VARIABLES USED ── */
+  .vars-used { display:flex; flex-wrap:wrap; gap:6px; margin:12px 0; }
+  .var-chip { background:var(--parchment); border:1px solid var(--border); border-radius:16px; padding:3px 10px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--terracotta); font-weight:500; }
+
+  /* ── RULE NOTES ── */
+  .rule-notes { list-style:none; padding:0; margin:12px 0; }
+  .rule-note { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border); }
+  .rule-note:last-child { border-bottom:none; }
+  .rn-bullet { width:20px; height:20px; background:var(--mint); color:var(--forest); font-size:10px; font-weight:700; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+  .rn-text { font-size:13px; color:var(--text-body); line-height:1.6; }
+  .rn-text strong { color:var(--forest); }
+  .rn-text code { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--terracotta); background:var(--parchment); padding:1px 5px; border-radius:3px; }
+
+  /* ── ALERT ── */
+  .alert { border-radius:10px; padding:14px 18px; margin:14px 0; display:flex; gap:10px; align-items:flex-start; }
+  .alert-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+  .alert-text { font-size:13px; line-height:1.6; }
+  .alert-text strong { font-weight:700; }
+  .alert.warning { background:#FEF9E7; border:1px solid #F9E79F; color:var(--warm-brown); }
+  .alert.warning .alert-text strong { color:#7D6608; }
+  .alert.info { background:var(--email-light); border:1px solid #AED6F1; color:#1A5276; }
+  .alert.note { background:var(--parchment); border:1px solid var(--border); color:var(--text-muted); }
+  .alert.note .alert-text strong { color:var(--forest); }
+
+  /* ── FLOW TABLE ── */
+  .flow-table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; }
+  .flow-table thead tr { background:var(--forest); color:white; }
+  .flow-table thead th { padding:10px 14px; text-align:left; font-weight:500; }
+  .flow-table tbody tr { border-bottom:1px solid var(--border); }
+  .flow-table tbody tr:nth-child(even) { background:var(--parchment); }
+  .flow-table td { padding:10px 14px; vertical-align:top; line-height:1.5; }
+  .flow-table td:first-child { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--terracotta); white-space:nowrap; font-weight:600; }
+
+  /* ── FOOTER ── */
+  .doc-footer { background:var(--forest); color:rgba(255,255,255,.6); text-align:center; padding:40px; font-size:13px; margin-top:80px; }
+  .doc-footer strong { color:var(--gold); }
+
+  @media (max-width:640px) {
+    .container { padding:0 20px; }
+    .toc-grid { grid-template-columns:1fr; }
+    .meta-row { grid-template-columns:1fr 1fr; }
+    .wa-phone, .email-mockup { max-width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="cover-badge">Dokumen Pengembangan Produk</div>
+  <div class="cover-leaf">🌿</div>
+  <h1>Harmo<span>nivita</span></h1>
+  <p class="cover-sub">Portal Komunitas Kesehatan Holistik & Klinik Mitra</p>
+  <p class="cover-doc-title">Notification Specification — Template, Trigger & Delivery Rules</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><strong>Versi</strong>1.0 — April 2025</div>
+    <div class="cover-meta-item"><strong>Referensi</strong>Business Logic v1.0 · BL-NOT</div>
+    <div class="cover-meta-item"><strong>Status</strong>Draft Final</div>
+  </div>
+  <div class="cover-wave"></div>
+</div>
+
+<!-- ══ STATS ══ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item"><span class="num">16</span><span class="lbl">Total Notifikasi</span></div>
+    <div class="stat-item"><span class="num">11</span><span class="lbl">WhatsApp</span></div>
+    <div class="stat-item"><span class="num">8</span><span class="lbl">Email</span></div>
+    <div class="stat-item"><span class="num">3</span><span class="lbl">Internal / Admin</span></div>
+    <div class="stat-item"><span class="num">12</span><span class="lbl">Variabel Template</span></div>
+  </div>
+</div>
+
+<!-- ══ TOC ══ -->
+<div class="toc">
+  <h2>🗂 Daftar Notifikasi</h2>
+  <div class="toc-grid">
+    <div>
+      <div class="toc-cat">Transaksional — Member</div>
+      <ul>
+        <li><code>NOTIF-001</code> Registrasi Berhasil — Selamat Datang</li>
+        <li><code>NOTIF-002</code> Keanggotaan Berhasil Diperpanjang</li>
+        <li><code>NOTIF-003</code> Reset Password</li>
+        <li><code>NOTIF-004</code> Tiket Event Berhasil Dibeli</li>
+        <li><code>NOTIF-005</code> Komisi Referral Dikreditkan</li>
+        <li><code>NOTIF-006</code> Request Pencairan Komisi Diterima</li>
+        <li><code>NOTIF-007</code> Pencairan Komisi Selesai (Payout)</li>
+      </ul>
+      <div class="toc-cat" style="margin-top:18px;">Terjadwal — Member</div>
+      <ul>
+        <li><code>NOTIF-010</code> Reminder Perpanjangan H-30</li>
+        <li><code>NOTIF-011</code> Reminder Perpanjangan H-14</li>
+        <li><code>NOTIF-012</code> Reminder Perpanjangan H-1</li>
+        <li><code>NOTIF-013</code> Keanggotaan Expired (Hari H)</li>
+        <li><code>NOTIF-014</code> Reminder Jadwal Kontrol Dokter</li>
+      </ul>
+    </div>
+    <div>
+      <div class="toc-cat">Internal — Admin</div>
+      <ul>
+        <li><code>NOTIF-020</code> Kredensial Admin Cabang Baru</li>
+        <li><code>NOTIF-021</code> WA Reminder Kontrol Gagal → Admin Cabang</li>
+        <li><code>NOTIF-022</code> Request Payout Masuk → Admin Pusat</li>
+      </ul>
+      <div class="toc-cat" style="margin-top:18px;">Infrastruktur & Aturan Global</div>
+      <ul>
+        <li>Stack pengiriman & provider</li>
+        <li>Glosarium variabel template</li>
+        <li>Retry & fallback rules</li>
+        <li>WA template approval checklist</li>
+        <li>Tabel pengiriman per status member</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════ INFRASTRUKTUR ══════════════════ -->
+<div class="container">
+  <div class="divider"><span>Infrastruktur Pengiriman</span></div>
+
+  <div class="infra-grid">
+    <div class="infra-card">
+      <div class="ic-icon">💬</div>
+      <h4>WhatsApp Business API</h4>
+      <p>Provider: <code>Fonnte</code> / <code>WABLAS</code> / Official Meta WABA<br>Semua WA menggunakan message template yang sudah disetujui Meta sebelum dikirim.</p>
+    </div>
+    <div class="infra-card">
+      <div class="ic-icon">📧</div>
+      <h4>Email Transactional</h4>
+      <p>Provider: <code>Mailgun</code> / <code>SendGrid</code> / <code>AWS SES</code><br>Sender: <code>noreply@harmonivita.id</code><br>Reply-to: <code>hello@harmonivita.id</code></p>
+    </div>
+    <div class="infra-card">
+      <div class="ic-icon">⏱</div>
+      <h4>Scheduled Jobs</h4>
+      <p>Cron job harian pukul <code>07:00 WIB</code> untuk reminder terjadwal (perpanjangan, kontrol). Notifikasi transaksional dikirim real-time via queue (maks. 5 menit).</p>
+    </div>
+    <div class="infra-card">
+      <div class="ic-icon">🔁</div>
+      <h4>Retry Policy</h4>
+      <p>WA gagal → retry <strong>1x</strong> setelah 15 menit. Jika masih gagal → fallback email (untuk notif kritis). Log semua status pengiriman.</p>
+    </div>
+  </div>
+
+  <!-- ══ VARIABEL GLOSARIUM ══ -->
+  <div class="divider"><span>Glosarium Variabel Template</span></div>
+  <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Variabel ditulis dalam format <code style="background:var(--parchment);padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--terracotta);">{{nama_variabel}}</code> di dalam template. Nilai diisi sistem secara otomatis saat notifikasi dikirim.</p>
+
+  <table class="var-table">
+    <thead>
+      <tr><th>Variabel</th><th>Deskripsi</th><th>Contoh Nilai</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>{{member_name}}</td><td>Nama depan member (dari field nama lengkap)</td><td>Siti</td></tr>
+      <tr><td>{{expiry_date}}</td><td>Tanggal kadaluarsa keanggotaan, format DD MMM YYYY</td><td>15 April 2026</td></tr>
+      <tr><td>{{days_remaining}}</td><td>Sisa hari sebelum kadaluarsa</td><td>30</td></tr>
+      <tr><td>{{new_expiry_date}}</td><td>Tanggal kadaluarsa baru setelah perpanjangan</td><td>15 April 2027</td></tr>
+      <tr><td>{{referral_code}}</td><td>Kode referral unik member</td><td>SITI2025</td></tr>
+      <tr><td>{{commission_amount}}</td><td>Jumlah komisi yang dikreditkan (format Rupiah)</td><td>Rp20.000</td></tr>
+      <tr><td>{{commission_balance}}</td><td>Total saldo komisi member saat ini</td><td>Rp140.000</td></tr>
+      <tr><td>{{referral_name}}</td><td>Nama depan member baru yang berhasil direferensikan</td><td>Bambang</td></tr>
+      <tr><td>{{payout_amount}}</td><td>Jumlah komisi yang berhasil dicairkan</td><td>Rp100.000</td></tr>
+      <tr><td>{{event_name}}</td><td>Nama event yang diregistrasi</td><td>Pelatihan Pola Makan Sehat</td></tr>
+      <tr><td>{{event_date}}</td><td>Tanggal & waktu event, format EEE, DD MMM YYYY · HH:mm WIB</td><td>Sab, 10 Mei 2025 · 09:00 WIB</td></tr>
+      <tr><td>{{event_location}}</td><td>Lokasi penyelenggaraan event</td><td>Aula RS Harapan, Bandung</td></tr>
+      <tr><td>{{clinic_name}}</td><td>Nama klinik tempat jadwal kontrol</td><td>Klinik Harmonivita Buah Batu</td></tr>
+      <tr><td>{{control_date}}</td><td>Tanggal jadwal kontrol dokter, format DD MMM YYYY</td><td>18 Mei 2025</td></tr>
+      <tr><td>{{clinic_phone}}</td><td>Nomor WA/telepon klinik</td><td>0811-2345-6789</td></tr>
+      <tr><td>{{portal_url}}</td><td>URL portal Harmonivita</td><td>harmonivita.id</td></tr>
+      <tr><td>{{renewal_url}}</td><td>Link langsung ke halaman perpanjangan keanggotaan</td><td>harmonivita.id/perpanjang</td></tr>
+      <tr><td>{{activation_url}}</td><td>Link aktivasi akun yang dikirim saat registrasi pertama</td><td>harmonivita.id/aktivasi?token=xxx</td></tr>
+      <tr><td>{{reset_url}}</td><td>Link reset password (berlaku 1 jam)</td><td>harmonivita.id/reset-password?token=xxx</td></tr>
+      <tr><td>{{otp_code}}</td><td>Kode OTP 6 digit untuk reset password via WA</td><td>847291</td></tr>
+      <tr><td>{{admin_name}}</td><td>Nama Admin Cabang baru (untuk NOTIF-020)</td><td>Reza Firmansyah</td></tr>
+      <tr><td>{{admin_email}}</td><td>Email Admin Cabang baru</td><td>reza@klinikbuahbatu.id</td></tr>
+      <tr><td>{{temp_password}}</td><td>Password sementara Admin Cabang (harus diganti saat login pertama)</td><td>HmV#8kP2</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ══ TABEL PENGIRIMAN PER STATUS ══ -->
+  <div class="divider"><span>Tabel Pengiriman per Status Member</span></div>
+  <table class="flow-table">
+    <thead>
+      <tr><th>NOTIF ID</th><th>ACTIVE</th><th>EXPIRED</th><th>SUSPENDED</th><th>PENDING_PAYMENT</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>NOTIF-001</td><td>✓ Dikirim (baru aktif)</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-002</td><td>✓ Dikirim</td><td>✓ Dikirim (baru aktif lagi)</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-003</td><td>✓ Dikirim</td><td>✓ Dikirim</td><td>—</td><td>✓ Dikirim</td></tr>
+      <tr><td>NOTIF-004</td><td>✓ Dikirim</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-005</td><td>✓ Dikirim</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-006</td><td>✓ Dikirim</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-007</td><td>✓ Dikirim</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-010</td><td>✓ H-30 dari expiry</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-011</td><td>✓ H-14 dari expiry</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-012</td><td>✓ H-1 dari expiry</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-013</td><td>—</td><td>✓ Hari H expiry</td><td>—</td><td>—</td></tr>
+      <tr><td>NOTIF-014</td><td>✓ H-3 kontrol</td><td>✓ H-3 kontrol</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ══════════════════ NOTIF-001 ══════════════════ -->
+<div class="container">
+  <div class="divider"><span>Notifikasi Transaksional — Member</span></div>
+
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-001</div>
+      <div>
+        <div class="notif-title">Registrasi Berhasil — Selamat Datang</div>
+        <div class="notif-badges">
+          <span class="badge b-both">💬 WA + 📧 Email</span>
+          <span class="badge b-critical">🔴 Kritis</span>
+          <span class="badge b-trigger">Trigger: payment_confirmed</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member yang baru terdaftar</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Real-time, maks. <code>5 menit</code> setelah payment webhook sukses</div></div>
+        <div class="meta-item"><div class="m-label">Fallback</div><div class="m-value">Jika WA gagal 2x → tetap kirim Email</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_welcome_member</code></div></div>
+      </div>
+
+      <!-- WA -->
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header">
+            <div class="wa-avatar">🌿</div>
+            <div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div>
+          </div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! 🌿<br><br>
+            <span class="wa-bold">Selamat datang di Harmonivita!</span> Keanggotaan Anda resmi aktif hingga <span class="wa-var">{{expiry_date}}</span>.<br><br>
+            Yang Anda dapatkan:<br>
+            ✅ Konsultasi dokter gratis (unlimited)<br>
+            ✅ Riwayat kesehatan digital<br>
+            ✅ Reminder jadwal berobat via WA<br>
+            ✅ Harga spesial di setiap event<br><br>
+            Aktifkan akun portal Anda di sini:<br>
+            <span class="wa-var">{{activation_url}}</span>
+            <div class="wa-time">07.32 ✓✓</div>
+          </div>
+          <div class="wa-btn">🔓 Aktifkan Akun Saya</div>
+        </div>
+      </div>
+
+      <!-- Template Raw -->
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_welcome_member</span><br>
+Halo, <span class="t-var">{{1}}</span>! 🌿<br><br>
+<span class="t-bold">Selamat datang di Harmonivita!</span> Keanggotaan Anda resmi aktif hingga <span class="t-var">{{2}}</span>.<br><br>
+Yang Anda dapatkan:<br>
+✅ Konsultasi dokter gratis (unlimited)<br>
+✅ Riwayat kesehatan digital<br>
+✅ Reminder jadwal berobat via WA<br>
+✅ Harga spesial di setiap event<br><br>
+Aktifkan akun portal Anda di sini:<br>
+<span class="t-var">{{3}}</span><br><br>
+<span class="t-meta">// Button CTA</span><br>
+<span class="t-btn">[Aktifkan Akun Saya] → URL: {{3}}</span>
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = expiry_date</span><span class="var-chip">{{3}} = activation_url</span></div>
+
+      <!-- Email -->
+      <div class="email-section" style="margin-top:20px;">
+        <div class="email-section-label">📧 Email</div>
+        <div class="email-mockup">
+          <div class="email-toolbar">
+            <div class="email-dot" style="background:#FF5F57;"></div>
+            <div class="email-dot" style="background:#FEBC2E;"></div>
+            <div class="email-dot" style="background:#28C840;"></div>
+          </div>
+          <div class="email-header">
+            <div class="email-from">Dari: Harmonivita &lt;noreply@harmonivita.id&gt;</div>
+            <div class="email-subject">🌿 Selamat datang di Harmonivita, <span style="color:var(--forest)">{{member_name}}</span>!</div>
+          </div>
+          <div class="email-body">
+            Halo <span class="e-bold">{{member_name}}</span>,<br><br>
+            Keanggotaan Harmonivita Anda <span class="e-bold">resmi aktif</span> hingga <span class="e-bold">{{expiry_date}}</span>. Terima kasih telah bergabung!
+            <span class="e-break"></span>
+            <strong>Langkah berikutnya:</strong><br>
+            1. Klik tombol di bawah untuk mengaktifkan akun portal Anda<br>
+            2. Kunjungi klinik Harmonivita atau klinik mitra terdekat untuk ambil <strong>Buku Kesehatan</strong> gratis Anda<br>
+            3. Bagikan kode referral <strong>{{referral_code}}</strong> untuk mendapat komisi dari setiap teman yang bergabung
+            <span class="e-break"></span>
+            <a class="e-btn">Aktifkan Akun Portal →</a>
+            <span class="e-break"></span>
+            <span class="e-muted">Link aktivasi berlaku 7 hari. Jika ada pertanyaan, balas email ini atau hubungi hello@harmonivita.id</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-002 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-002</div>
+      <div>
+        <div class="notif-title">Keanggotaan Berhasil Diperpanjang</div>
+        <div class="notif-badges">
+          <span class="badge b-both">💬 WA + 📧 Email</span>
+          <span class="badge b-critical">🔴 Kritis</span>
+          <span class="badge b-trigger">Trigger: renewal_payment_confirmed</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member yang melakukan perpanjangan</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Real-time, maks. <code>5 menit</code> setelah webhook perpanjangan sukses</div></div>
+        <div class="meta-item"><div class="m-label">Fallback</div><div class="m-value">Jika WA gagal 2x → tetap kirim Email</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_renewal_success</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! 🎉<br><br>
+            Keanggotaan Harmonivita Anda berhasil diperpanjang.<br><br>
+            📅 <span class="wa-bold">Aktif hingga: {{new_expiry_date}}</span><br><br>
+            Terima kasih telah terus bersama Harmonivita. Anda bisa langsung menggunakan benefit keanggotaan Anda!
+            <div class="wa-time">10.15 ✓✓</div>
+          </div>
+          <div class="wa-btn">🌿 Buka Portal Saya</div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_renewal_success</span><br>
+Halo, <span class="t-var">{{1}}</span>! 🎉<br><br>
+Keanggotaan Harmonivita Anda berhasil diperpanjang.<br><br>
+📅 <span class="t-bold">Aktif hingga: <span class="t-var">{{2}}</span></span><br><br>
+Terima kasih telah terus bersama Harmonivita. Anda bisa langsung menggunakan benefit keanggotaan Anda!<br><br>
+<span class="t-btn">[Buka Portal Saya] → URL: {{portal_url}}</span>
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = new_expiry_date</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-003 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-003</div>
+      <div>
+        <div class="notif-title">Reset Password</div>
+        <div class="notif-badges">
+          <span class="badge b-both">💬 WA (OTP) + 📧 Email (Link)</span>
+          <span class="badge b-critical">🔴 Kritis</span>
+          <span class="badge b-trigger">Trigger: forgot_password_request</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member yang request lupa password</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Real-time, maks. <code>2 menit</code></div></div>
+        <div class="meta-item"><div class="m-label">Masa Berlaku</div><div class="m-value">OTP: <code>10 menit</code>. Link email: <code>1 jam</code></div></div>
+        <div class="meta-item"><div class="m-label">Catatan</div><div class="m-value">WA kirim OTP, Email kirim link. Member bisa pilih salah satu.</div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp — OTP</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Kode verifikasi Harmonivita Anda:<br><br>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:4px;color:var(--forest);">847291</span><br><br>
+            Berlaku selama <span class="wa-bold">10 menit</span>. Jangan bagikan kode ini ke siapapun, termasuk tim Harmonivita.
+            <div class="wa-time">14.22 ✓✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template — Authentication Category (OTP)</span><br>
+<span class="t-meta">// Template name: hvita_otp_reset</span><br>
+Kode verifikasi Harmonivita Anda:<br><br>
+<span class="t-bold"><span class="t-var">{{1}}</span></span><br><br>
+Berlaku selama <span class="t-bold">10 menit</span>. Jangan bagikan kode ini ke siapapun.
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = otp_code</span></div>
+      <div class="alert warning" style="margin-top:14px;">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-text">WA template kategori <strong>AUTHENTICATION</strong> memiliki syarat khusus Meta: tidak boleh ada elemen marketing, hanya boleh berisi OTP dan instruksi keamanan. Template ini diajukan terpisah dari template lainnya.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-004 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-004</div>
+      <div>
+        <div class="notif-title">Tiket Event Berhasil Dibeli</div>
+        <div class="notif-badges">
+          <span class="badge b-both">💬 WA + 📧 Email</span>
+          <span class="badge b-critical">🔴 Kritis</span>
+          <span class="badge b-trigger">Trigger: event_payment_confirmed</span>
+          <span class="badge b-post">Post-MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Peserta yang berhasil registrasi event</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Maks. <code>5 menit</code> setelah payment event dikonfirmasi</div></div>
+        <div class="meta-item"><div class="m-label">Catatan Khusus</div><div class="m-value">Email mengandung QR code tiket sebagai gambar lampiran</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_event_ticket</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! 🎫<br><br>
+            Pendaftaran event Anda berhasil!<br><br>
+            📌 <span class="wa-bold">{{event_name}}</span><br>
+            📅 {{event_date}}<br>
+            📍 {{event_location}}<br><br>
+            Tiket digital & QR code absensi sudah dikirim ke email Anda. Tunjukkan QR code saat check-in di hari H.
+            <div class="wa-time">09.01 ✓✓</div>
+          </div>
+          <div class="wa-btn">📧 Cek Email Saya</div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_event_ticket</span><br>
+Halo, <span class="t-var">{{1}}</span>! 🎫<br><br>
+Pendaftaran event Anda berhasil!<br><br>
+📌 <span class="t-bold"><span class="t-var">{{2}}</span></span><br>
+📅 <span class="t-var">{{3}}</span><br>
+📍 <span class="t-var">{{4}}</span><br><br>
+Tiket digital & QR code absensi sudah dikirim ke email Anda. Tunjukkan QR code saat check-in di hari H.<br><br>
+<span class="t-btn">[Cek Email Saya]</span>
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = event_name</span><span class="var-chip">{{3}} = event_date</span><span class="var-chip">{{4}} = event_location</span></div>
+
+      <div class="email-section" style="margin-top:18px;">
+        <div class="email-section-label">📧 Email — berisi QR Code tiket</div>
+        <div class="email-mockup">
+          <div class="email-toolbar"><div class="email-dot" style="background:#FF5F57;"></div><div class="email-dot" style="background:#FEBC2E;"></div><div class="email-dot" style="background:#28C840;"></div></div>
+          <div class="email-header">
+            <div class="email-from">Dari: Harmonivita &lt;noreply@harmonivita.id&gt;</div>
+            <div class="email-subject">🎫 Tiket Anda: {{event_name}}</div>
+          </div>
+          <div class="email-body">
+            Halo <span class="e-bold">{{member_name}}</span>, pendaftaran Anda dikonfirmasi!<br><br>
+            <span class="e-bold">{{event_name}}</span><br>
+            📅 {{event_date}}<br>
+            📍 {{event_location}}<br><br>
+            <em style="color:var(--text-muted);">[QR Code Tiket — gambar inline atau lampiran PNG]</em><br><br>
+            Tunjukkan QR code ini kepada panitia saat check-in. QR berlaku mulai H-1 hingga hari H event.<br>
+            <span class="e-muted">Simpan email ini. QR code juga tersedia di portal: harmonivita.id/tiket-saya</span>
+          </div>
+        </div>
+      </div>
+      <div class="alert note" style="margin-top:12px;">
+        <div class="alert-icon">📎</div>
+        <div class="alert-text"><strong>Teknis QR Code:</strong> Generate QR code sebagai gambar PNG (300×300px, quiet zone 4 modul) yang di-embed inline di email dan dapat diunduh. Konten QR: URL validasi tiket di server <code>harmonivita.id/api/ticket/validate/{ticket_id}</code>.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-005 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-005</div>
+      <div>
+        <div class="notif-title">Komisi Referral Dikreditkan</div>
+        <div class="notif-badges">
+          <span class="badge b-wa">💬 WhatsApp</span>
+          <span class="badge b-trigger">Trigger: referral_commission_credited</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member yang mereferensikan (referrer)</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Real-time setelah payment member baru dikonfirmasi</div></div>
+        <div class="meta-item"><div class="m-label">Fallback</div><div class="m-value">Tidak ada fallback email — informasional</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_commission_credited</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! 💰<br><br>
+            <span class="wa-var">{{referral_name}}</span> baru saja bergabung dengan kode referral Anda.<br><br>
+            Komisi <span class="wa-bold">{{commission_amount}}</span> telah masuk ke saldo Anda.<br>
+            Total saldo: <span class="wa-bold">{{commission_balance}}</span><br><br>
+            Terus bagikan kode <span class="wa-bold">{{referral_code}}</span> dan kumpulkan lebih banyak!
+            <div class="wa-time">11.47 ✓✓</div>
+          </div>
+          <div class="wa-btn">💳 Lihat Saldo Referral</div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_commission_credited</span><br>
+Halo, <span class="t-var">{{1}}</span>! 💰<br><br>
+<span class="t-var">{{2}}</span> baru saja bergabung dengan kode referral Anda.<br><br>
+Komisi <span class="t-bold"><span class="t-var">{{3}}</span></span> telah masuk ke saldo Anda.<br>
+Total saldo: <span class="t-bold"><span class="t-var">{{4}}</span></span><br><br>
+Terus bagikan kode <span class="t-bold"><span class="t-var">{{5}}</span></span> dan kumpulkan lebih banyak!<br><br>
+<span class="t-btn">[Lihat Saldo Referral] → URL: {{portal_url}}/referral</span>
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = referral_name</span><span class="var-chip">{{3}} = commission_amount</span><span class="var-chip">{{4}} = commission_balance</span><span class="var-chip">{{5}} = referral_code</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-006 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-006</div>
+      <div>
+        <div class="notif-title">Request Pencairan Komisi Diterima</div>
+        <div class="notif-badges">
+          <span class="badge b-wa">💬 WhatsApp</span>
+          <span class="badge b-trigger">Trigger: withdrawal_request_submitted</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member yang mengajukan pencairan</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Real-time saat request disubmit</div></div>
+        <div class="meta-item"><div class="m-label">Tujuan</div><div class="m-value">Konfirmasi request diterima, set ekspektasi waktu proses</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_withdrawal_received</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>!<br><br>
+            Request pencairan komisi <span class="wa-bold">{{payout_amount}}</span> telah kami terima dan sedang diproses.<br><br>
+            ⏱ Estimasi proses: <span class="wa-bold">1–3 hari kerja</span><br><br>
+            Kami akan mengirim notifikasi setelah transfer selesai. Terima kasih atas kesabaran Anda!
+            <div class="wa-time">15.03 ✓✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_withdrawal_received</span><br>
+Halo, <span class="t-var">{{1}}</span>!<br><br>
+Request pencairan komisi <span class="t-bold"><span class="t-var">{{2}}</span></span> telah kami terima dan sedang diproses.<br><br>
+⏱ Estimasi proses: <span class="t-bold">1–3 hari kerja</span><br><br>
+Kami akan mengirim notifikasi setelah transfer selesai. Terima kasih atas kesabaran Anda!
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = payout_amount</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-007 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-007</div>
+      <div>
+        <div class="notif-title">Pencairan Komisi Selesai (Payout)</div>
+        <div class="notif-badges">
+          <span class="badge b-wa">💬 WhatsApp</span>
+          <span class="badge b-critical">🔴 Kritis</span>
+          <span class="badge b-trigger">Trigger: admin_confirms_payout</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member yang menerima payout</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Real-time saat Admin Pusat mengkonfirmasi transfer</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_payout_done</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! ✅<br><br>
+            Pencairan komisi Anda telah berhasil diproses.<br><br>
+            💸 <span class="wa-bold">{{payout_amount}}</span> sudah ditransfer ke rekening/e-wallet terdaftar.<br>
+            Saldo tersisa: <span class="wa-bold">{{commission_balance}}</span><br><br>
+            Dana biasanya masuk dalam 1×24 jam (tergantung bank).
+            <div class="wa-time">16.30 ✓✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_payout_done</span><br>
+Halo, <span class="t-var">{{1}}</span>! ✅<br><br>
+Pencairan komisi Anda telah berhasil diproses.<br><br>
+💸 <span class="t-bold"><span class="t-var">{{2}}</span></span> sudah ditransfer ke rekening/e-wallet terdaftar.<br>
+Saldo tersisa: <span class="t-bold"><span class="t-var">{{3}}</span></span><br><br>
+Dana biasanya masuk dalam 1×24 jam (tergantung bank).
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = payout_amount</span><span class="var-chip">{{3}} = commission_balance</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ DIVIDER REMINDER ══ -->
+  <div class="divider"><span>Notifikasi Terjadwal — Scheduled</span></div>
+
+  <!-- ══ NOTIF-010 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-010</div>
+      <div>
+        <div class="notif-title">Reminder Perpanjangan H-30</div>
+        <div class="notif-badges">
+          <span class="badge b-wa">💬 WhatsApp</span>
+          <span class="badge b-scheduled">⏰ Terjadwal</span>
+          <span class="badge b-trigger">Cron: daily 07:00 WIB · 30 hari sebelum expiry</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member ACTIVE dengan <code>expiry_date</code> = hari ini + 30 hari</div></div>
+        <div class="meta-item"><div class="m-label">Nada Pesan</div><div class="m-value">Informatif & ringan — jangan terkesan urgent</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_renewal_reminder_30</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! 🌿<br><br>
+            Keanggotaan Harmonivita Anda akan berakhir pada <span class="wa-bold">{{expiry_date}}</span> ({{days_remaining}} hari lagi).<br><br>
+            Perpanjang sekarang agar benefit Anda tidak terputus dan tanggal kadaluarsa otomatis maju 1 tahun dari sekarang!
+            <div class="wa-time">07.02 ✓✓</div>
+          </div>
+          <div class="wa-btn">🔄 Perpanjang Keanggotaan</div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_renewal_reminder_30</span><br>
+Halo, <span class="t-var">{{1}}</span>! 🌿<br><br>
+Keanggotaan Harmonivita Anda akan berakhir pada <span class="t-bold"><span class="t-var">{{2}}</span></span> (<span class="t-var">{{3}}</span> hari lagi).<br><br>
+Perpanjang sekarang agar benefit Anda tidak terputus dan tanggal kadaluarsa otomatis maju 1 tahun!<br><br>
+<span class="t-btn">[Perpanjang Keanggotaan] → URL: {{renewal_url}}</span>
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = expiry_date</span><span class="var-chip">{{3}} = days_remaining</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-011 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-011</div>
+      <div>
+        <div class="notif-title">Reminder Perpanjangan H-14</div>
+        <div class="notif-badges">
+          <span class="badge b-wa">💬 WhatsApp</span>
+          <span class="badge b-scheduled">⏰ Terjadwal</span>
+          <span class="badge b-trigger">Cron: daily 07:00 WIB · 14 hari sebelum expiry</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member ACTIVE dengan <code>expiry_date</code> = hari ini + 14 hari</div></div>
+        <div class="meta-item"><div class="m-label">Nada Pesan</div><div class="m-value">Lebih assertive dari H-30 — mulai tunjukkan urgency ringan</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_renewal_reminder_14</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! ⏳<br><br>
+            Keanggotaan Harmonivita Anda tersisa <span class="wa-bold">{{days_remaining}} hari</span> lagi (berakhir {{expiry_date}}).<br><br>
+            Jangan sampai terlewat! Perpanjang sekarang dan nikmati benefit tanpa jeda — konsultasi gratis, akses riwayat medis, & reminder kesehatan tetap berjalan.
+            <div class="wa-time">07.03 ✓✓</div>
+          </div>
+          <div class="wa-btn">🔄 Perpanjang Sekarang</div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_renewal_reminder_14</span><br>
+Halo, <span class="t-var">{{1}}</span>! ⏳<br><br>
+Keanggotaan Harmonivita Anda tersisa <span class="t-bold"><span class="t-var">{{2}}</span> hari</span> lagi (berakhir <span class="t-var">{{3}}</span>).<br><br>
+Jangan sampai terlewat! Perpanjang sekarang dan nikmati benefit tanpa jeda — konsultasi gratis, akses riwayat medis, &amp; reminder kesehatan tetap berjalan.<br><br>
+<span class="t-btn">[Perpanjang Sekarang] → URL: {{renewal_url}}</span>
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = days_remaining</span><span class="var-chip">{{3}} = expiry_date</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-012 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-012</div>
+      <div>
+        <div class="notif-title">Reminder Perpanjangan H-1</div>
+        <div class="notif-badges">
+          <span class="badge b-wa">💬 WhatsApp</span>
+          <span class="badge b-scheduled">⏰ Terjadwal</span>
+          <span class="badge b-trigger">Cron: daily 07:00 WIB · 1 hari sebelum expiry</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member ACTIVE dengan <code>expiry_date</code> = besok</div></div>
+        <div class="meta-item"><div class="m-label">Nada Pesan</div><div class="m-value">Urgent — pesan terakhir sebelum expired. Tombol langsung bayar.</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_renewal_reminder_1</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! 🚨<br><br>
+            Keanggotaan Harmonivita Anda <span class="wa-bold">berakhir BESOK</span> ({{expiry_date}}).<br><br>
+            Setelah expired, akses konsultasi gratis dan fitur member lainnya akan dinonaktifkan.<br><br>
+            Perpanjang hari ini, hanya Rp200.000/tahun →
+            <div class="wa-time">07.01 ✓✓</div>
+          </div>
+          <div class="wa-btn">🔄 Perpanjang Sekarang — Rp200.000</div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_renewal_reminder_1</span><br>
+Halo, <span class="t-var">{{1}}</span>! 🚨<br><br>
+Keanggotaan Harmonivita Anda <span class="t-bold">berakhir BESOK</span> (<span class="t-var">{{2}}</span>).<br><br>
+Setelah expired, akses konsultasi gratis dan fitur member lainnya akan dinonaktifkan.<br><br>
+Perpanjang hari ini, hanya Rp200.000/tahun →<br><br>
+<span class="t-btn">[Perpanjang Sekarang — Rp200.000] → URL: {{renewal_url}}</span>
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = expiry_date</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-013 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-013</div>
+      <div>
+        <div class="notif-title">Keanggotaan Expired — Hari H</div>
+        <div class="notif-badges">
+          <span class="badge b-wa">💬 WhatsApp</span>
+          <span class="badge b-scheduled">⏰ Terjadwal</span>
+          <span class="badge b-trigger">Cron: daily 07:00 WIB · saat expiry_date = hari ini</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member yang baru saja EXPIRED hari ini</div></div>
+        <div class="meta-item"><div class="m-label">Nada Pesan</div><div class="m-value">Empati + ajakan kembali. Jangan terlalu keras.</div></div>
+        <div class="meta-item"><div class="m-label">Catatan</div><div class="m-value">Kirim setelah status member diperbarui ke EXPIRED oleh cron job</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_membership_expired</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>.<br><br>
+            Keanggotaan Harmonivita Anda telah berakhir hari ini.<br><br>
+            Jangan khawatir — riwayat kesehatan Anda tetap tersimpan dan masih bisa dilihat. Perpanjang kapan saja untuk kembali menikmati konsultasi gratis dan semua benefit member.
+            <div class="wa-time">07.05 ✓✓</div>
+          </div>
+          <div class="wa-btn">🔄 Perpanjang Keanggotaan</div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_membership_expired</span><br>
+Halo, <span class="t-var">{{1}}</span>.<br><br>
+Keanggotaan Harmonivita Anda telah berakhir hari ini.<br><br>
+Jangan khawatir — riwayat kesehatan Anda tetap tersimpan dan masih bisa dilihat. Perpanjang kapan saja untuk kembali menikmati konsultasi gratis dan semua benefit member.<br><br>
+<span class="t-btn">[Perpanjang Keanggotaan] → URL: {{renewal_url}}</span>
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-014 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-014</div>
+      <div>
+        <div class="notif-title">Reminder Jadwal Kontrol Dokter</div>
+        <div class="notif-badges">
+          <span class="badge b-wa">💬 WhatsApp</span>
+          <span class="badge b-scheduled">⏰ Terjadwal</span>
+          <span class="badge b-trigger">Cron: daily 07:00 WIB · 3 hari sebelum control_date</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Member (status ACTIVE <em>atau</em> EXPIRED) dengan jadwal kontrol H-3</div></div>
+        <div class="meta-item"><div class="m-label">Fallback</div><div class="m-value">WA gagal 2x → email ke Admin Cabang klinik terkait (NOTIF-021)</div></div>
+        <div class="meta-item"><div class="m-label">Catatan</div><div class="m-value">Dikirim terlepas dari status keanggotaan — ini urusan medis</div></div>
+        <div class="meta-item"><div class="m-label">WA Template Name</div><div class="m-value"><code>hvita_control_reminder</code></div></div>
+      </div>
+      <div class="wa-section">
+        <div class="wa-section-label">💬 WhatsApp Message</div>
+        <div class="wa-phone">
+          <div class="wa-header"><div class="wa-avatar">🌿</div><div><div class="wa-name">Harmonivita</div><div class="wa-sub">Kesehatan Holistik</div></div></div>
+          <div class="wa-bubble">
+            Halo, <span class="wa-var">{{member_name}}</span>! 🩺<br><br>
+            Anda memiliki jadwal kontrol dokter yang akan datang:<br><br>
+            📅 <span class="wa-bold">{{control_date}}</span><br>
+            🏥 <span class="wa-bold">{{clinic_name}}</span><br>
+            📞 {{clinic_phone}}<br><br>
+            Hubungi klinik di atas untuk konfirmasi atau mengubah jadwal jika diperlukan.
+            <div class="wa-time">07.04 ✓✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="template-raw">
+<span class="t-meta">// WA Template Body — hvita_control_reminder</span><br>
+Halo, <span class="t-var">{{1}}</span>! 🩺<br><br>
+Anda memiliki jadwal kontrol dokter yang akan datang:<br><br>
+📅 <span class="t-bold"><span class="t-var">{{2}}</span></span><br>
+🏥 <span class="t-bold"><span class="t-var">{{3}}</span></span><br>
+📞 <span class="t-var">{{4}}</span><br><br>
+Hubungi klinik di atas untuk konfirmasi atau mengubah jadwal jika diperlukan.
+      </div>
+      <div class="vars-used"><span class="var-chip">{{1}} = member_name</span><span class="var-chip">{{2}} = control_date</span><span class="var-chip">{{3}} = clinic_name</span><span class="var-chip">{{4}} = clinic_phone</span></div>
+    </div>
+  </div>
+
+
+  <!-- ══ DIVIDER INTERNAL ══ -->
+  <div class="divider"><span>Notifikasi Internal — Admin</span></div>
+
+  <!-- ══ NOTIF-020 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-020</div>
+      <div>
+        <div class="notif-title">Kredensial Admin Cabang Baru</div>
+        <div class="notif-badges">
+          <span class="badge b-email">📧 Email</span>
+          <span class="badge b-internal">🔐 Internal</span>
+          <span class="badge b-trigger">Trigger: admin_cabang_created by Admin Pusat</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Admin Cabang yang baru dibuat akunnya</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Real-time saat Admin Pusat membuat akun Admin Cabang baru</div></div>
+        <div class="meta-item"><div class="m-label">Keamanan</div><div class="m-value">Password sementara wajib diganti saat login pertama</div></div>
+      </div>
+      <div class="email-section">
+        <div class="email-section-label">📧 Email</div>
+        <div class="email-mockup">
+          <div class="email-toolbar"><div class="email-dot" style="background:#FF5F57;"></div><div class="email-dot" style="background:#FEBC2E;"></div><div class="email-dot" style="background:#28C840;"></div></div>
+          <div class="email-header">
+            <div class="email-from">Dari: Harmonivita System &lt;noreply@harmonivita.id&gt;</div>
+            <div class="email-subject">🌿 Akun Admin Harmonivita Anda Siap</div>
+          </div>
+          <div class="email-body">
+            Halo <span class="e-bold">{{admin_name}}</span>,<br><br>
+            Akun Admin Cabang Harmonivita Anda telah dibuat. Berikut kredensial awal Anda:<br><br>
+            🔗 <span class="e-bold">URL Login:</span> harmonivita.id/admin<br>
+            📧 <span class="e-bold">Email:</span> {{admin_email}}<br>
+            🔑 <span class="e-bold">Password Sementara:</span> <code style="background:#f5f5f5;padding:2px 6px;border-radius:4px;">{{temp_password}}</code><br><br>
+            <strong style="color:var(--red);">⚠️ Anda wajib mengganti password ini saat login pertama.</strong>
+            <span class="e-break"></span>
+            <a class="e-btn">Login ke Panel Admin →</a>
+            <span class="e-break"></span>
+            <span class="e-muted">Email ini bersifat rahasia. Jangan teruskan ke pihak manapun. Jika ada pertanyaan, hubungi Admin Pusat Harmonivita.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-021 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-021</div>
+      <div>
+        <div class="notif-title">WA Reminder Kontrol Gagal → Notifikasi ke Admin Cabang</div>
+        <div class="notif-badges">
+          <span class="badge b-email">📧 Email</span>
+          <span class="badge b-internal">🔐 Internal</span>
+          <span class="badge b-trigger">Trigger: NOTIF-014 gagal setelah 2x retry</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Admin Cabang dari klinik yang menetapkan jadwal kontrol</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Segera setelah retry WA ke-2 gagal</div></div>
+        <div class="meta-item"><div class="m-label">Tujuan</div><div class="m-value">Admin Cabang perlu hubungi member secara manual</div></div>
+      </div>
+      <div class="email-section">
+        <div class="email-section-label">📧 Email ke Admin Cabang</div>
+        <div class="email-mockup">
+          <div class="email-toolbar"><div class="email-dot" style="background:#FF5F57;"></div><div class="email-dot" style="background:#FEBC2E;"></div><div class="email-dot" style="background:#28C840;"></div></div>
+          <div class="email-header">
+            <div class="email-from">Dari: Harmonivita System &lt;noreply@harmonivita.id&gt;</div>
+            <div class="email-subject">⚠️ Reminder kontrol gagal terkirim — {{member_name}}</div>
+          </div>
+          <div class="email-body">
+            Halo Tim Admin Cabang,<br><br>
+            Sistem gagal mengirim reminder jadwal kontrol via WhatsApp kepada member berikut:<br><br>
+            👤 <span class="e-bold">Nama:</span> {{member_name}}<br>
+            📅 <span class="e-bold">Jadwal Kontrol:</span> {{control_date}}<br>
+            📞 <span class="e-bold">Nomor WA Terdaftar:</span> {{clinic_phone}} *(nomor WA member)*<br><br>
+            Mohon hubungi member ini secara manual untuk memastikan jadwal kontrol tetap berjalan.
+            <span class="e-break"></span>
+            <span class="e-muted">Pesan ini dikirim otomatis oleh sistem Harmonivita. Tidak perlu membalas email ini.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ NOTIF-022 ══ -->
+  <div class="notif-card">
+    <div class="notif-header">
+      <div class="notif-id">NOTIF-022</div>
+      <div>
+        <div class="notif-title">Request Payout Masuk → Notifikasi ke Admin Pusat</div>
+        <div class="notif-badges">
+          <span class="badge b-email">📧 Email</span>
+          <span class="badge b-internal">🔐 Internal</span>
+          <span class="badge b-trigger">Trigger: member_submits_withdrawal_request</span>
+          <span class="badge b-mvp">MVP</span>
+        </div>
+      </div>
+    </div>
+    <div class="notif-body">
+      <div class="meta-row">
+        <div class="meta-item"><div class="m-label">Penerima</div><div class="m-value">Admin Pusat (semua akun admin pusat aktif)</div></div>
+        <div class="meta-item"><div class="m-label">Timing</div><div class="m-value">Real-time saat member submit request pencairan</div></div>
+        <div class="meta-item"><div class="m-label">Alternatif</div><div class="m-value">Bisa juga berupa badge notifikasi di dashboard admin (tidak harus email)</div></div>
+      </div>
+      <div class="email-section">
+        <div class="email-section-label">📧 Email ke Admin Pusat</div>
+        <div class="email-mockup">
+          <div class="email-toolbar"><div class="email-dot" style="background:#FF5F57;"></div><div class="email-dot" style="background:#FEBC2E;"></div><div class="email-dot" style="background:#28C840;"></div></div>
+          <div class="email-header">
+            <div class="email-from">Dari: Harmonivita System &lt;noreply@harmonivita.id&gt;</div>
+            <div class="email-subject">💸 Request payout baru — {{member_name}} · {{payout_amount}}</div>
+          </div>
+          <div class="email-body">
+            Request pencairan komisi baru masuk dan menunggu proses:<br><br>
+            👤 <span class="e-bold">Member:</span> {{member_name}}<br>
+            💰 <span class="e-bold">Jumlah:</span> {{payout_amount}}<br>
+            🏦 <span class="e-bold">Metode:</span> Transfer rekening / E-wallet<br><br>
+            Buka panel admin untuk memproses request ini.
+            <span class="e-break"></span>
+            <a class="e-btn">Proses di Panel Admin →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ WA APPROVAL CHECKLIST ══ -->
+  <div class="divider"><span>WA Template Approval Checklist (Meta)</span></div>
+  <div class="alert info">
+    <div class="alert-icon">ℹ️</div>
+    <div class="alert-text"><strong>Semua template WA harus diajukan dan disetujui Meta sebelum sistem dapat mengirimkan pesan.</strong> Proses approval biasanya 1–3 hari kerja. Kirimkan semua template sekaligus sebelum development selesai agar tidak ada blocker saat launch.</div>
+  </div>
+
+  <table class="flow-table">
+    <thead>
+      <tr><th>Template Name</th><th>Notif ID</th><th>Kategori Meta</th><th>Ada Button?</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>hvita_welcome_member</td><td>NOTIF-001</td><td>UTILITY</td><td>✓ CTA (URL)</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_renewal_success</td><td>NOTIF-002</td><td>UTILITY</td><td>✓ CTA (URL)</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_otp_reset</td><td>NOTIF-003</td><td>AUTHENTICATION</td><td>✗ Tidak ada</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_event_ticket</td><td>NOTIF-004</td><td>UTILITY</td><td>✓ CTA</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_commission_credited</td><td>NOTIF-005</td><td>UTILITY</td><td>✓ CTA (URL)</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_withdrawal_received</td><td>NOTIF-006</td><td>UTILITY</td><td>✗ Tidak ada</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_payout_done</td><td>NOTIF-007</td><td>UTILITY</td><td>✗ Tidak ada</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_renewal_reminder_30</td><td>NOTIF-010</td><td>UTILITY</td><td>✓ CTA (URL)</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_renewal_reminder_14</td><td>NOTIF-011</td><td>UTILITY</td><td>✓ CTA (URL)</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_renewal_reminder_1</td><td>NOTIF-012</td><td>UTILITY</td><td>✓ CTA (URL + harga)</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_membership_expired</td><td>NOTIF-013</td><td>UTILITY</td><td>✓ CTA (URL)</td><td>⬜ Belum diajukan</td></tr>
+      <tr><td>hvita_control_reminder</td><td>NOTIF-014</td><td>UTILITY</td><td>✗ Tidak ada</td><td>⬜ Belum diajukan</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert warning">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text"><strong>Aturan Meta yang perlu diperhatikan:</strong> Template MARKETING harus menyertakan opt-out button. Template AUTHENTICATION tidak boleh ada elemen promosi. Semua template dengan button CTA harus menyertakan domain yang terverifikasi di Meta Business Manager (<code>harmonivita.id</code>). Hindari penggunaan kata-kata seperti "GRATIS", "DISKON", "MENANG" di template UTILITY karena bisa menyebabkan rejection.</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <p>🌿 <strong>Harmonivita — Notification Specification v1.0</strong></p>
+  <p style="margin-top:8px; font-size:12px;">Dokumen ini adalah bagian dari rangkaian: Narrative Story → User Stories → Business Logic → <strong>Notification Spec</strong> → Technical Spec.<br>Semua template WA harus diajukan ke Meta sebelum go-live. Domain harmonivita.id harus terverifikasi di Meta Business Manager.</p>
+  <p style="margin-top:16px; font-size:12px; opacity:.5;">Dibuat April 2025 · Aragoya × Harmonivita · v1.0 · 16 Notifikasi · 12 WA Templates</p>
+</div>
+
+</body>
+</html>
