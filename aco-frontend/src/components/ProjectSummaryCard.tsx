@@ -1,7 +1,45 @@
 import React from "react";
 import { Project } from "../types/projectTypes";
-import { MapPin, ShieldCheck, Landmark, BadgeDollarSign, ArrowRight } from "lucide-react";
-import VisualAllocationChart from "./VisualAllocationChart";
+import { ArrowRight, TrendingUp, Heart } from 'lucide-react';
+import { cn } from '../utils/cn';
+
+export function RasioBar({ pctKomersial }: { pctKomersial: number }) {
+  const pctSosial = 100 - pctKomersial;
+
+  if (pctKomersial === 100) {
+    return (
+      <div className="flex items-center gap-2">
+        <div className="h-1.5 flex-1 rounded-full bg-emerald-500" />
+        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider shrink-0 italic">100% Komersial</span>
+      </div>
+    );
+  }
+  if (pctKomersial === 0) {
+    return (
+      <div className="flex items-center gap-2">
+        <div className="h-1.5 flex-1 rounded-full bg-amber-400" />
+        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider shrink-0 italic">100% Sosial</span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-2">
+      <div className="h-1.5 flex-1 rounded-full bg-slate-100 overflow-hidden flex">
+        <div
+          className="h-full bg-emerald-500 rounded-l-full"
+          style={{ width: `${pctKomersial}%` }}
+        />
+        <div
+          className="h-full bg-amber-400 rounded-r-full"
+          style={{ width: `${pctSosial}%` }}
+        />
+      </div>
+      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider shrink-0 whitespace-nowrap italic">
+        {pctKomersial}% · {pctSosial}%
+      </span>
+    </div>
+  );
+}
 
 interface ProjectSummaryCardProps {
   project: Project;
@@ -9,101 +47,91 @@ interface ProjectSummaryCardProps {
 }
 
 const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({ project, onViewDetail }) => {
-  const { title, location, description, imageUrl, currentFunding, targetFunding, metadata } = project;
-  const progress = targetFunding > 0 ? (currentFunding / targetFunding) * 100 : 0;
+  const progress = Math.round((project.currentFunding / project.targetFunding) * 100);
+  const isFull = progress >= 100;
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-slate-100 hover:shadow-2xl transition-all duration-300 group">
-      <div className="relative h-64 overflow-hidden">
+    <div 
+      onClick={() => onViewDetail(project.id)}
+      className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-200 transition-all duration-500 flex flex-col group cursor-pointer h-full"
+    >
+      {/* Thumbnail */}
+      <div className="h-48 relative overflow-hidden bg-slate-100 italic">
         <img
-          src={imageUrl}
-          alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          src={project.imageUrl || `https://images.unsplash.com/photo-1590664095641-dafa1871220a?q=80&w=600&auto=format&fit=crop`}
+          alt={project.title}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
-        <div className="absolute top-4 left-4 flex gap-2">
-          {metadata?.landStatus === "Wakaf" && (
-            <span className="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
-              <Landmark className="w-3.5 h-3.5" />
-              Lahan Wakaf
-            </span>
-          )}
-          {metadata?.landStatus === "Commercial" && (
-            <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
-              <BadgeDollarSign className="w-3.5 h-3.5" />
-              Komersil
-            </span>
-          )}
-          <span className="bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-slate-200/50">
-            {metadata?.fundingType || 'N/A'}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        
+        {/* Badges Overlay */}
+        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+          <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-[9px] font-black uppercase tracking-widest text-slate-900 border border-white/20">
+            {project.category}
+          </span>
+          <span className={cn(
+            "px-3 py-1 rounded-full backdrop-blur-md text-[9px] font-black uppercase tracking-widest border border-white/20",
+            project.metadata.landStatus === 'Wakaf' ? "bg-amber-500/90 text-white" : "bg-emerald-500/90 text-white"
+          )}>
+            {project.metadata.fundingType}
           </span>
         </div>
+
+        {isFull && (
+          <div className="absolute bottom-4 right-4 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full italic shadow-lg">
+            Fully Funded
+          </div>
+        )}
       </div>
 
-      <div className="p-8">
-        <div className="flex items-center gap-2 text-slate-500 text-sm mb-3">
-          <MapPin className="w-4 h-4 text-indigo-500" />
-          {location}
-        </div>
-        
-        <h2 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
-          {title}
-        </h2>
-        
-        <p className="text-slate-600 leading-relaxed mb-6 line-clamp-2">
-          {description}
-        </p>
+      <div className="p-6 flex flex-col flex-1 gap-4">
+        {/* Name */}
+        <h3 className="font-bold text-slate-900 text-lg leading-tight group-hover:text-emerald-600 transition-colors">
+          {project.title}
+        </h3>
 
-        {/* Ownership Model Highlight */}
-        <div className="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100/50 mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs text-indigo-600 font-semibold uppercase tracking-wider">Model Kepemilikan</p>
-              <p className="text-sm font-bold text-slate-800">
-                {metadata?.ownershipModel || 'Standard'} 
-                <span className="text-slate-500 font-normal ml-1">
-                  ({metadata?.landStatus === "Wakaf" ? "Asset Umat" : "Developer Owned"})
-                </span>
-              </p>
-            </div>
+        {/* Rasio Bar */}
+        <RasioBar pctKomersial={project.metadata.allocation.commercial} />
+
+        {/* Status Mini */}
+        <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400 italic">
+          <div className="flex items-center gap-1.5">
+            <TrendingUp size={14} className="text-emerald-500" />
+            <span>12 - 18% Target Yield</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Heart size={14} className="text-amber-500" />
+            <span>24 Bulan</span>
           </div>
         </div>
 
-        <div className="mb-8">
-          <div className="flex justify-between items-end mb-2">
-            <div>
-              <p className="text-xs text-slate-400 font-medium mb-1">Target Pendanaan</p>
-              <p className="text-lg font-bold text-slate-900">
-                Rp {(targetFunding / 1000000000).toFixed(1)}M
-              </p>
+        {/* Progress Section */}
+        <div className="mt-auto pt-4 border-t border-slate-50">
+          <div className="flex justify-between items-end mb-2.5">
+            <div className="space-y-0.5">
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Terkumpul</p>
+              <p className="text-sm font-bold text-slate-900 italic">Rp {project.currentFunding.toLocaleString('id-ID')}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm font-bold text-indigo-600">{progress.toFixed(0)}% Terkumpul</p>
+              <p className="text-xl font-black text-emerald-600 italic leading-none">{Math.min(progress, 100)}%</p>
             </div>
           </div>
-          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+          
+          <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
             <div 
-              className="bg-indigo-600 h-full rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${progress}%` }}
+              className={cn(
+                "h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(16,185,129,0.3)]",
+                progress >= 80 ? "bg-gradient-to-r from-emerald-400 to-amber-500" : "bg-gradient-to-r from-emerald-500 to-emerald-400"
+              )}
+              style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
+          
+          <p className="text-[10px] font-bold text-slate-400 mt-3 flex justify-between uppercase tracking-widest italic">
+            <span>Target Dana</span>
+            <span className="text-slate-900">Rp {project.targetFunding.toLocaleString('id-ID')}</span>
+          </p>
         </div>
-
-        {/* Allocation Widget */}
-        <VisualAllocationChart 
-          commercial={metadata?.allocation?.commercial ?? 100} 
-          social={metadata?.allocation?.social ?? 0} 
-        />
-
-        <button 
-          onClick={() => onViewDetail(project.id)}
-          className="w-full mt-8 bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-indigo-600 transition-all duration-300 flex items-center justify-center gap-2 group/btn"
-        >
-          Lihat Detail Proyek
-          <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-        </button>
       </div>
     </div>
   );

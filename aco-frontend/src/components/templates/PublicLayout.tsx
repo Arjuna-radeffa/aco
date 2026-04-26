@@ -5,7 +5,6 @@ import {
   ChevronRight, 
   Menu, 
   X, 
-  User as UserIcon, 
   Search,
   Globe,
   ShieldCheck,
@@ -50,7 +49,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans selection:bg-blue-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans selection:bg-emerald-500 selection:text-white">
       {/* --- NAVBAR --- */}
       <nav className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
@@ -62,10 +61,10 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => onNavigate({ view: 'home' })}
           >
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black italic text-xl shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">A</div>
-            <div className="flex flex-col">
-              <span className="text-sm font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">ACO Engine</span>
-              <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Core External v1.1</span>
+            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-black italic text-xl shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">A</div>
+            <div className="flex flex-col text-left">
+              <span className="text-sm font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">ACO Platform</span>
+              <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Professional Edge v2.0</span>
             </div>
           </div>
 
@@ -79,13 +78,13 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                   className={cn(
                     "text-[10px] font-black uppercase tracking-[0.2em] transition-all relative py-2",
                     activeView === link.view 
-                      ? "text-blue-600 dark:text-blue-400" 
+                      ? "text-emerald-600 dark:text-emerald-400" 
                       : "text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
                   {link.label}
                   {activeView === link.view && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full animate-in fade-in zoom-in duration-300" />
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 rounded-full animate-in fade-in zoom-in duration-300" />
                   )}
                 </button>
               ))}
@@ -94,10 +93,10 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
 
           {/* Auth Buttons / Dashboard */}
           <div className="flex items-center gap-4">
-            {currentUser ? (
+             {currentUser ? (
               <button 
                 onClick={() => onNavigate({ view: getDashboardView(currentUser.role) })}
-                className="px-6 py-2.5 bg-slate-900 dark:bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/10 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                className="px-6 py-2.5 bg-slate-900 dark:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-500/10 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
               >
                 Dashboard <ChevronRight size={14} />
               </button>
@@ -106,13 +105,13 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                 <>
                   <button 
                     onClick={() => onNavigate({ view: 'login' })}
-                    className="hidden sm:block px-6 py-2.5 text-slate-900 dark:text-white text-[10px] font-black uppercase tracking-widest hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="hidden sm:block px-6 py-2.5 text-slate-900 dark:text-white text-[10px] font-black uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                   >
                     Masuk
                   </button>
                   <button 
                     onClick={() => onNavigate({ view: 'register' })}
-                    className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all"
+                    className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all"
                   >
                     Daftar
                   </button>
@@ -142,7 +141,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                   onNavigate({ view: link.view });
                   setIsMobileMenuOpen(false);
                 }}
-                className="block w-full text-left p-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600"
+                className="block w-full text-left p-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600"
               >
                 {link.label}
               </button>
@@ -163,9 +162,9 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
       {!simple && (
         <footer className="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 py-20 mt-20">
           <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div className="col-span-1 md:col-span-2 space-y-6">
+             <div className="col-span-1 md:col-span-2 space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-900 dark:bg-blue-600 rounded-xl flex items-center justify-center text-white font-black italic text-xl">A</div>
+                <div className="w-10 h-10 bg-slate-900 dark:bg-emerald-600 rounded-xl flex items-center justify-center text-white font-black italic text-xl">A</div>
                 <span className="text-lg font-black italic tracking-tighter text-slate-900 dark:text-white uppercase leading-none">ACO Platform</span>
               </div>
               <p className="text-sm text-slate-400 max-w-sm leading-relaxed font-medium">
@@ -173,7 +172,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               </p>
               <div className="flex gap-4">
                 {[Globe, ShieldCheck, CreditCard, Heart].map((Icon, i) => (
-                  <div key={i} className="w-10 h-10 rounded-full border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-600 transition-all cursor-pointer">
+                  <div key={i} className="w-10 h-10 rounded-full border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:border-emerald-600 transition-all cursor-pointer">
                     <Icon size={18} />
                   </div>
                 ))}
@@ -187,7 +186,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                   <li key={link.id}>
                     <button 
                       onClick={() => onNavigate({ view: link.view })}
-                      className="text-[11px] font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest"
+                      className="text-[11px] font-bold text-slate-400 hover:text-emerald-600 transition-colors uppercase tracking-widest"
                     >
                       {link.label}
                     </button>
@@ -200,10 +199,10 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white italic">Legals & Privacy</h4>
               <ul className="space-y-4">
                 <li>
-                  <button onClick={() => onNavigate({ view: 'terms' })} className="text-[11px] font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest">Syarat & Ketentuan</button>
+                  <button onClick={() => onNavigate({ view: 'terms' })} className="text-[11px] font-bold text-slate-400 hover:text-emerald-600 transition-colors uppercase tracking-widest">Syarat & Ketentuan</button>
                 </li>
                 <li>
-                  <button onClick={() => onNavigate({ view: 'privacy' })} className="text-[11px] font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest">Kebijakan Privasi</button>
+                  <button onClick={() => onNavigate({ view: 'privacy' })} className="text-[11px] font-bold text-slate-400 hover:text-emerald-600 transition-colors uppercase tracking-widest">Kebijakan Privasi</button>
                 </li>
               </ul>
             </div>

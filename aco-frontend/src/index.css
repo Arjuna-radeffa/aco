@@ -25,15 +25,7 @@ html, body, #root {
   height: 100%;
 }
 
-.container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  margin-top: 100px;
-}
+/* Removing rogue .container override to allow Tailwind's native container utility to work */
 
 .form-group {
   margin-bottom: 1rem;
