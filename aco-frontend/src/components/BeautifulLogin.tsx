@@ -11,6 +11,8 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { mockLogin } from '../mockAuth';
+import { cn } from '../utils/cn';
+import { useStore } from '../store/useStore';
 
 interface BeautifulLoginProps {
   onLogin: (authData: any) => void;
@@ -24,6 +26,8 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const [isDemoExpanded, setIsDemoExpanded] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,11 +97,11 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
         </div>
 
         {/* Bagian Kanan: Form Login */}
-        <div className="flex-1 p-8 md:p-16 flex flex-col items-center overflow-y-auto relative">
+        <div className="flex-1 p-6 md:p-12 flex flex-col items-center overflow-y-auto relative custom-scrollbar">
           {/* Back Button */}
           <button 
             onClick={onBack}
-            className="absolute top-8 left-8 md:top-12 md:left-12 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors font-semibold group"
+            className="absolute top-6 left-6 md:top-10 md:left-10 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors font-semibold group z-20"
           >
             <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-200 transition-colors">
               <ArrowLeft size={16} />
@@ -106,26 +110,26 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
           </button>
 
           {/* Spacer to push content down */}
-          <div className="w-full h-12 md:h-24 hidden md:block" />
+          <div className="w-full h-16 md:h-20 hidden md:block" />
           
-          <div className="w-full max-w-md mb-10">
+          <div className="w-full max-w-md mb-8">
             <h1 className="text-2xl font-bold text-slate-900 mb-2">Selamat Datang Kembali</h1>
             <p className="text-slate-500 text-sm">Masuk untuk mengelola portofolio dan penyaluran Anda.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md">
+          <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-md">
             {/* Input Email */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700 ml-1">Email Address</label>
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1 italic">Email Address</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500 text-slate-400">
-                  <Mail size={18} />
+                  <Mail size={16} />
                 </div>
                 <input 
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
                   placeholder="name@company.com"
                   required
                 />
@@ -133,20 +137,20 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
             </div>
 
             {/* Input Password */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex justify-between items-center px-1">
-                <label className="text-sm font-semibold text-slate-700">Password</label>
-                <a href="#" className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">Lupa Password?</a>
+                <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 italic">Password</label>
+                <a href="#" className="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700 transition-colors italic">Lupa?</a>
               </div>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500 text-slate-400">
-                  <Lock size={18} />
+                  <Lock size={16} />
                 </div>
                 <input 
                   type={showPassword ? "text" : "password"} 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                  className="w-full pl-11 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
                   placeholder="••••••••"
                   required
                 />
@@ -155,13 +159,13 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="text-red-500 text-sm bg-red-50 p-3 rounded-xl border border-red-100">
+              <div className="text-red-500 text-xs font-bold italic bg-red-50 p-3 rounded-xl border border-red-100">
                 {error}
               </div>
             )}
@@ -173,125 +177,120 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
                 id="remember" 
                 className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
               />
-              <label htmlFor="remember" className="text-xs text-slate-600 cursor-pointer select-none">Biarkan saya tetap masuk</label>
+              <label htmlFor="remember" className="text-[11px] font-bold text-slate-500 cursor-pointer select-none italic uppercase tracking-wider uppercase tracking-widest">Biarkan saya tetap masuk</label>
             </div>
 
             {/* Submit Button */}
             <button 
               type="submit"
               disabled={isLoading}
-              className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-2 group active:scale-[0.98]"
+              className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-black italic uppercase tracking-tighter py-4 rounded-2xl transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-2 group active:scale-[0.98]"
             >
-              {isLoading ? 'Signing In...' : 'Sign In ke Dashboard'}
+              {isLoading ? 'Processing...' : 'Sign In ke Dashboard'}
               {!isLoading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
             </button>
+
+            {/* Demo Credentials Box - Expandable */}
+            <div className={cn(
+              "mt-8 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-[2rem] border border-slate-100 dark:border-slate-800 w-full max-w-md relative overflow-hidden transition-all duration-500 cursor-pointer group",
+              isDemoExpanded ? "shadow-2xl shadow-blue-500/10 ring-2 ring-blue-500/10" : "hover:bg-white dark:hover:bg-slate-900 text-center"
+            )}>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+              
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setIsDemoExpanded(!isDemoExpanded); }}
+                className="w-full flex justify-between items-center relative z-10"
+              >
+                <div className="space-y-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-black italic uppercase tracking-tighter text-slate-900 dark:text-white">Demo Credentials</h3>
+                    <span className="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-widest italic leading-none">10 Roles</span>
+                  </div>
+                  {!isDemoExpanded && <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Click to expand access roles</p>}
+                </div>
+                <div className={cn("w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center transition-transform duration-300", isDemoExpanded ? "rotate-180" : "animate-bounce")}>
+                  <ChevronRight size={14} className={isDemoExpanded ? "rotate-90" : ""} />
+                </div>
+              </button>
+              
+              {isDemoExpanded && (
+                <div className="mt-6 space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="grid grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar relative z-10 overscroll-contain">
+                    {/* Category: Investors & Public */}
+                    <div className="col-span-2 mb-2">
+                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] italic border-b border-slate-100 dark:border-slate-800 pb-2">01. Public & Investors</div>
+                    </div>
+                    {[
+                      { role: 'external_user', email: 'user@aco.com', name: 'Budi Santoso', badge: 'External' },
+                      { role: 'investor_micro', email: 'rina@aco.com', name: 'Rina Wijaya', badge: 'Micro Inv' },
+                      { role: 'investor_enterprise', email: 'budi@aco.com', name: 'Citra Corp', badge: 'Enterprise' },
+                    ].map((user) => (
+                      <button
+                        key={user.email}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setEmail(user.email); setPassword('password123'); }}
+                        className="text-left p-4 rounded-2xl border border-slate-100 bg-white hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/5 transition-all group"
+                      >
+                        <div className="font-black italic text-[11px] text-slate-900 uppercase leading-tight group-hover:text-blue-600 transition-colors">{user.name}</div>
+                        <div className="text-blue-600 text-[9px] font-black uppercase tracking-widest mt-1 opacity-70">{user.badge}</div>
+                      </button>
+                    ))}
+
+                    {/* Category: ZISWAF & Partners */}
+                    <div className="col-span-2 mt-4 mb-2">
+                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] italic border-b border-slate-100 dark:border-slate-800 pb-2">02. ZISWAF & Partners</div>
+                    </div>
+                    {[
+                      { role: 'wakif', email: 'mahmud@aco.com', name: 'Haji Mahmud', badge: 'Wakif' },
+                      { role: 'muzakki', email: 'salim@aco.com', name: 'Pak Salim', badge: 'Muzakki' },
+                      { role: 'mustahiq', email: 'ruslan@aco.com', name: 'Pak Ruslan', badge: 'Mustahiq' },
+                      { role: 'project_owner', email: 'dimas@aco.com', name: 'Dimas Partner', badge: 'Owner' },
+                    ].map((user) => (
+                      <button
+                        key={user.email}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setEmail(user.email); setPassword('password123'); }}
+                        className="text-left p-4 rounded-2xl border border-slate-100 bg-white hover:border-emerald-500 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group"
+                      >
+                        <div className="font-black italic text-[11px] text-slate-900 uppercase leading-tight group-hover:text-emerald-600 transition-colors">{user.name}</div>
+                        <div className="text-emerald-600 text-[9px] font-black uppercase tracking-widest mt-1 opacity-70">{user.badge}</div>
+                      </button>
+                    ))}
+
+                    {/* Category: ACO Staff */}
+                    <div className="col-span-2 mt-4 mb-2">
+                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] italic border-b border-slate-100 dark:border-slate-800 pb-2">03. ACO Staff</div>
+                    </div>
+                    {[
+                      { role: 'investment_officer', email: 'arief@aco.com', name: 'Arief', badge: 'Inv Officer' },
+                      { role: 'portfolio_monitor', email: 'sinta@aco.com', name: 'Sinta', badge: 'Monitor' },
+                      { role: 'finance_officer', email: 'hendra@aco.com', name: 'Hendra', badge: 'Finance' },
+                    ].map((user) => (
+                      <button
+                        key={user.email}
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setEmail(user.email); setPassword('password123'); }}
+                        className="text-left p-4 rounded-2xl border border-slate-100 bg-white hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group"
+                      >
+                        <div className="font-black italic text-[11px] text-slate-900 uppercase leading-tight group-hover:text-indigo-600 transition-colors">{user.name}</div>
+                        <div className="text-indigo-600 text-[9px] font-black uppercase tracking-widest mt-1 opacity-70">{user.badge}</div>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                      <ShieldCheck size={16} />
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest italic leading-tight">
+                      Password default: <span className="text-slate-900 dark:text-white">password123</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </form>
-
-          {/* Demo Credentials Box */}
-          <div className="mt-8 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-sm font-bold text-slate-900">🎭 Demo Credentials - Pilih User</h3>
-              <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full font-semibold">11 Roles</span>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto">
-              {/* Investor Section */}
-              <div className="col-span-2">
-                <div className="text-xs font-bold text-slate-700 mb-2 text-center">👤 INVESTORS</div>
-              </div>
-              
-              {[
-                { role: 'investor_micro', email: 'rina@aco.com', name: 'Rina Wijaya', badge: 'Micro' },
-                { role: 'investor_enterprise', email: 'budi@aco.com', name: 'Budi Santoso', badge: 'Enterprise' },
-              ].map((user) => (
-                <button
-                  key={user.email}
-                  onClick={() => {
-                    setEmail(user.email);
-                    setPassword('password123');
-                  }}
-                  className="text-left p-3 rounded-lg border border-blue-200 bg-white hover:bg-blue-100 hover:border-blue-400 transition text-xs"
-                >
-                  <div className="font-bold text-slate-900">{user.name}</div>
-                  <div className="text-slate-500 text-xs truncate">{user.email}</div>
-                  <div className="text-blue-600 text-xs font-semibold">{user.badge}</div>
-                </button>
-              ))}
-
-              {/* Project Owner */}
-              <div className="col-span-2 mt-2">
-                <div className="text-xs font-bold text-slate-700 mb-2 text-center">🏢 PROJECT OWNER</div>
-              </div>
-              
-              {[
-                { role: 'project_owner', email: 'dimas@aco.com', name: 'Dimas Pratama', badge: 'Owner' },
-              ].map((user) => (
-                <button
-                  key={user.email}
-                  onClick={() => {
-                    setEmail(user.email);
-                    setPassword('password123');
-                  }}
-                  className="text-left col-span-2 p-3 rounded-lg border border-amber-200 bg-white hover:bg-amber-100 hover:border-amber-400 transition text-xs"
-                >
-                  <div className="font-bold text-slate-900">{user.name}</div>
-                  <div className="text-slate-500 text-xs">{user.email}</div>
-                </button>
-              ))}
-
-              {/* ZIS Section */}
-              <div className="col-span-2 mt-2">
-                <div className="text-xs font-bold text-slate-700 mb-2 text-center">🕌 ZAKAT, INFAQ, WAKAF</div>
-              </div>
-
-              {[
-                { role: 'muzakki', email: 'salim@aco.com', name: 'Pak Salim', badge: 'Muzakki' },
-                { role: 'munfiq_mutashadiq', email: 'tari@aco.com', name: 'Bu Tari', badge: 'Munfiq' },
-                { role: 'wakif', email: 'mahmud@aco.com', name: 'Haji Mahmud', badge: 'Wakif' },
-                { role: 'mustahiq', email: 'ruslan@aco.com', name: 'Pak Ruslan', badge: 'Mustahiq' },
-              ].map((user) => (
-                <button
-                  key={user.email}
-                  onClick={() => {
-                    setEmail(user.email);
-                    setPassword('password123');
-                  }}
-                  className="text-left p-3 rounded-lg border border-green-200 bg-white hover:bg-green-100 hover:border-green-400 transition text-xs"
-                >
-                  <div className="font-bold text-slate-900">{user.name}</div>
-                  <div className="text-green-600 text-xs font-semibold">{user.badge}</div>
-                </button>
-              ))}
-
-              {/* Staff Section */}
-              <div className="col-span-2 mt-2">
-                <div className="text-xs font-bold text-slate-700 mb-2 text-center">👨‍💼 ACO STAFF</div>
-              </div>
-
-              {[
-                { role: 'investment_officer', email: 'arief@aco.com', name: 'Arief', badge: 'Inv Officer' },
-                { role: 'portfolio_monitor', email: 'sinta@aco.com', name: 'Sinta', badge: 'Monitor' },
-                { role: 'finance_officer', email: 'hendra@aco.com', name: 'Hendra', badge: 'Finance' },
-                { role: 'admin', email: 'reza@aco.com', name: 'Reza', badge: 'Admin' },
-              ].map((user) => (
-                <button
-                  key={user.email}
-                  onClick={() => {
-                    setEmail(user.email);
-                    setPassword('password123');
-                  }}
-                  className="text-left p-3 rounded-lg border border-purple-200 bg-white hover:bg-purple-100 hover:border-purple-400 transition text-xs"
-                >
-                  <div className="font-bold text-slate-900">{user.name}</div>
-                  <div className="text-purple-600 text-xs font-semibold">{user.badge}</div>
-                </button>
-              ))}
-            </div>
-            
-            <p className="text-xs text-slate-600 mt-3 text-center italic">
-              💡 Click user to fill email, then click SignIn. Password semua: <span className="font-mono font-bold text-slate-900">password123</span>
-            </p>
-          </div>
 
           {/* Footer Form */}
           <div className="mt-8 pt-6 border-t border-slate-100 text-center w-full max-w-md">

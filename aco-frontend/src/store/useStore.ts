@@ -16,7 +16,7 @@ interface AppState {
 }
 
 export const useStore = create<AppState>((set) => ({
-  currentUser: mockUsers[0], // Default to Arief
+  currentUser: null, // Start with no user for marketing flow
   projects: mockProjects,
   transactions: mockTransactions,
 
