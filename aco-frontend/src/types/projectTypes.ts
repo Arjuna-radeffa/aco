@@ -49,4 +49,6 @@ export interface Project {
   financialProjections: FinancialProjection[];
   socialImpacts: SocialImpactDetail[];
   legalDocuments: { name: string; url: string }[];
+  parentId?: string;
+  children?: Project[];
 }

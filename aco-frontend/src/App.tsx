@@ -11,7 +11,9 @@ import InvestFlowPage from './components/pages/InvestFlowPage'
 import WaqfMoneyFlowPage from './components/pages/WaqfMoneyFlowPage'
 import ExternalDashboardPage from './components/pages/ExternalDashboardPage'
 import ParticipationDetailPage from './components/pages/ParticipationDetailPage'
+import { AboutPage } from './components/pages/AboutPage'
 import { TermsPage, PrivacyPage } from './components/pages/StaticPages'
+import { PublicLayout } from './components/templates/PublicLayout'
 
 import { mockLogin } from './mockAuth'
 import { RoleBasedLayout } from './components/templates/RoleBasedLayout'
@@ -46,6 +48,7 @@ type View =
   | 'participation-detail'
   | 'terms'
   | 'privacy'
+  | 'about'
 
 interface ViewState {
   view: View
@@ -109,6 +112,7 @@ function App() {
       case 'participation-detail': return `/my-dashboard/participation/${s.participationId || ''}`
       case 'terms': return '/terms'
       case 'privacy': return '/privacy'
+      case 'about': return '/about'
       case 'dashboard': return '/dashboard'
       default: return '/'
     }
@@ -193,18 +197,61 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="App">
-        {/* HOME */}
-        {view === 'home' && (
-          <HomePage
-            onLoginClick={() => navigate({ view: 'login' })}
-            onQuickLoginClick={handleQuickLogin}
-            onViewProjects={() => navigate({ view: 'browse' })}
-            onViewZisProjects={() => navigate({ view: 'browse' })}
-            onViewDetail={(id) => navigate({ view: 'project-details', projectId: id })}
-          />
+        {/* PUBLIC MARKETING WRAPPER */}
+        {['home', 'browse', 'about', 'project-details', 'terms', 'privacy'].includes(view) && (
+          <PublicLayout activeView={view} onNavigate={navigate}>
+            {view === 'home' && (
+              <HomePage
+                onViewDetail={(id) => navigate({ view: 'project-details', projectId: id })}
+                onNavigate={navigate}
+              />
+            )}
+            
+            {view === 'browse' && (
+              <BrowsePage
+                currentUser={currentUser}
+                onViewDetail={(id) => navigate({ view: 'project-details', projectId: id })}
+                onLoginClick={() => navigate({ view: 'login' })}
+                onKycClick={() => navigate({ view: 'kyc' })}
+              />
+            )}
+
+            {view === 'about' && (
+              <AboutPage />
+            )}
+
+            {view === 'project-details' && projectId && (
+              <ProjectDetailsPage
+                projectId={projectId}
+                onBack={() => navigate({ view: 'browse' })}
+                onInvestClick={(id?: string) => {
+                  if (!currentUser) {
+                    navigate({ view: 'login' })
+                  } else {
+                    navigate({ view: 'invest', projectId: id || projectId })
+                  }
+                }}
+                onWaqfClick={(id?: string) => {
+                  if (!currentUser) {
+                    navigate({ view: 'login' })
+                  } else {
+                    navigate({ view: 'waqf', projectId: id || projectId })
+                  }
+                }}
+              />
+            )}
+
+            {view === 'terms' && (
+              <TermsPage onBack={() => navigate({ view: 'home' })} />
+            )}
+
+            {view === 'privacy' && (
+              <PrivacyPage onBack={() => navigate({ view: 'home' })} />
+            )}
+          </PublicLayout>
         )}
 
-        {/* LOGIN */}
+        {/* LOGIN (Standalone) */}
         {view === 'login' && (
           <BeautifulLogin
             onLogin={handleLogin}
@@ -213,60 +260,31 @@ function App() {
           />
         )}
 
-        {/* REGISTER */}
-        {view === 'register' && (
-          <RegisterPage
-            onBack={() => navigate({ view: 'home' })}
-            onLoginClick={() => navigate({ view: 'login' })}
-          />
+        {/* REGISTER & KYC (Simple Public Layout) */}
+        {['register', 'kyc'].includes(view) && (
+          <PublicLayout activeView={view} onNavigate={navigate} simple>
+            {view === 'register' && (
+              <RegisterPage
+                onBack={() => navigate({ view: 'home' })}
+                onLoginClick={() => navigate({ view: 'login' })}
+              />
+            )}
+
+            {view === 'kyc' && (
+              <KycUploadPage
+                currentUser={currentUser}
+                onBack={() => navigate({ view: 'ex-dashboard' })}
+              />
+            )}
+          </PublicLayout>
         )}
 
-        {/* INTERNAL DASHBOARD (officers, etc.) */}
+        {/* INTERNAL DASHBOARD */}
         {view === 'dashboard' && currentUser && (
           <RoleBasedLayout />
         )}
 
-        {/* PUBLIC PROJECT DETAIL */}
-        {view === 'project-details' && projectId && (
-          <ProjectDetailsPage
-            projectId={projectId}
-            onBack={() => navigate({ view: 'browse' })}
-            onInvestClick={(id?: string) => {
-              if (!currentUser) {
-                navigate({ view: 'login' })
-              } else {
-                navigate({ view: 'invest', projectId: id || projectId })
-              }
-            }}
-            onWaqfClick={(id?: string) => {
-              if (!currentUser) {
-                navigate({ view: 'login' })
-              } else {
-                navigate({ view: 'waqf', projectId: id || projectId })
-              }
-            }}
-          />
-        )}
-
-        {/* BROWSE CATALOG */}
-        {view === 'browse' && (
-          <BrowsePage
-            currentUser={currentUser}
-            onViewDetail={(id) => navigate({ view: 'project-details', projectId: id })}
-            onLoginClick={() => navigate({ view: 'login' })}
-            onKycClick={() => navigate({ view: 'kyc' })}
-          />
-        )}
-
-        {/* KYC */}
-        {view === 'kyc' && (
-          <KycUploadPage
-            currentUser={currentUser}
-            onBack={() => navigate({ view: 'ex-dashboard' })}
-          />
-        )}
-
-        {/* INVEST FLOW */}
+        {/* INVEST & WAQF FLOWS (Internal State) */}
         {view === 'invest' && projectId && (
           <InvestFlowPage
             projectId={projectId}
@@ -277,7 +295,6 @@ function App() {
           />
         )}
 
-        {/* WAQF MONEY FLOW */}
         {view === 'waqf' && projectId && (
           <WaqfMoneyFlowPage
             projectId={projectId}
@@ -304,16 +321,6 @@ function App() {
             participationId={participationId}
             onBack={() => navigate({ view: 'ex-dashboard' })}
           />
-        )}
-
-        {/* TERMS */}
-        {view === 'terms' && (
-          <TermsPage onBack={() => navigate({ view: 'home' })} />
-        )}
-
-        {/* PRIVACY */}
-        {view === 'privacy' && (
-          <PrivacyPage onBack={() => navigate({ view: 'home' })} />
         )}
       </div>
     </ErrorBoundary>

@@ -3,6 +3,185 @@
 
 ---
 
+# MODUL 5 — HALAMAN PUBLIK MARKETING
+
+---
+
+## P-PUB-NAV — Shared Public Layout (Navbar & Footer)
+**Berlaku untuk:** Semua halaman publik: P-PUB-00, P-PUB-01, P-EX-01, P-EX-02, P-ADD-01, P-ADD-02
+**Catatan:** P-EX-00a (Registrasi) dan P-EX-00b (KYC Upload) menggunakan versi sederhana: hanya logo tanpa nav links.
+
+### Navbar
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Logo ACO | Gambar/link | Navigasi ke `/` |
+| Link "Beranda" | Link nav | Navigasi ke `/`; active state jika di homepage |
+| Link "Browse" | Link nav | Navigasi ke `/browse`; active state jika di `/browse` atau `/browse/[slug]` |
+| Link "Tentang ACO" | Link nav | Navigasi ke `/about`; active state jika di `/about` |
+| Tombol "Masuk" | Button secondary | Navigasi ke `/login`; **hanya tampil jika belum login** |
+| Tombol "Daftar" | Button primary | Navigasi ke `/register`; **hanya tampil jika belum login** |
+| Tombol "Dashboard" | Button primary | **Hanya tampil jika sudah login**; navigasi ke halaman default role: External User → `/dashboard`, Investment Officer → P-IO-01, Portfolio Monitor → P-PM-01, Finance Officer → P-FR-01, Admin → P-AO-01 |
+
+### Footer
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Logo ACO | Gambar | Tidak interaktif |
+| Tagline singkat | Teks | Statis |
+| Link "Beranda" | Link | `/` |
+| Link "Browse" | Link | `/browse` |
+| Link "Tentang ACO" | Link | `/about` |
+| Link "Syarat & Ketentuan" | Link | `/terms` |
+| Link "Kebijakan Privasi" | Link | `/privacy` |
+| Teks copyright | Teks | "© [tahun] ACO. Semua hak dilindungi." Tahun diambil otomatis dari sistem. |
+
+---
+
+## P-PUB-00 — Homepage
+**URL:** `/`
+**Akses:** Publik (termasuk user yang sudah login; tidak ada redirect)
+**Layout:** Menggunakan P-PUB-NAV
+
+### Section 1 — Hero
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Headline | Heading H1 | Teks statis (ditentukan tim ACO) |
+| Subheadline | Teks | Teks statis; deskripsi singkat platform dalam 1–2 kalimat |
+| Tombol "Mulai Investasi" | Button primary | Navigasi ke `/browse?tab=investasi` |
+| Tombol "Wakafkan Sekarang" | Button secondary | Navigasi ke `/browse?tab=wakaf` |
+| Background / ilustrasi | Gambar | Statis |
+
+---
+
+### Section 2 — Statistik Platform
+
+Empat kartu angka yang ditarik secara real-time dari database:
+
+| Kartu | Sumber Data | Format |
+|---|---|---|
+| Jumlah Proyek Aktif | Proyek berstatus Aktif | Angka bulat |
+| Total Dana Investasi Terkumpul | Akumulasi seluruh dana investasi yang masuk platform | Rupiah |
+| Total Wakaf Terkumpul | Akumulasi seluruh wakaf uang yang dikonfirmasi | Rupiah |
+| Jumlah Partisipan | Akun External User dengan KYC terverifikasi | Angka bulat |
+
+---
+
+### Section 3 — Cara Kerja
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Toggle tab | Tab | "Investasi" / "Wakaf"; default aktif: Investasi |
+| Step cards — tab Investasi | Card list horizontal | 4 langkah: (1) Daftar & KYC → (2) Pilih Proyek → (3) Konfirmasi Investasi → (4) Terima Bagi Hasil |
+| Step cards — tab Wakaf | Card list horizontal | 4 langkah: (1) Daftar & KYC → (2) Pilih Program → (3) Ikrarkan Wakaf → (4) Pantau Dampak |
+
+Konten statis; setiap step card berisi ikon, nomor urut, judul, dan deskripsi singkat.
+
+---
+
+### Section 4 — Proyek & Program Unggulan
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Grid proyek | Card grid, maksimal 6 card | Hanya proyek dengan flag "Tampilkan di Homepage" = Ya yang dikonfigurasi Admin di P-AO-04 |
+| Struktur card | — | Sama dengan card di P-EX-01: thumbnail, nama proyek, kategori badge, progress bar pendanaan, target dana, jenis partisipasi badge |
+| Urutan card | — | Mengikuti urutan manual yang ditetapkan Admin |
+| Klik card | — | Navigasi ke P-EX-02 (`/browse/[projectSlug]`) |
+| Tombol "Lihat Semua Proyek" | Button secondary | Navigasi ke `/browse` |
+| Fallback jika tidak ada proyek dipilih admin | — | Section ini tidak dirender sama sekali |
+
+**Dependensi:** P-AO-04 (Konfigurasi Proyek) perlu menambahkan toggle "Tampilkan di Homepage" dan field urutan tampil.
+
+---
+
+### Section 5 — Keunggulan ACO
+
+Empat poin keunggulan statis ditampilkan sebagai card:
+
+| Poin | Deskripsi |
+|---|---|
+| Sesuai Syariah | Aturan syariah dikuatkan di level sistem: pemisahan dana, batas fee nazir, dan permanen wakaf |
+| Transparan | RAB dan rencana penggunaan dana dapat diakses publik per proyek |
+| Dana Terisolasi | Empat rekening terpisah: Investasi, Zakat, Infaq/Shadaqah, dan Wakaf Produktif |
+| Diawasi Penuh | Audit log immutable dan monitoring portofolio berjalan secara real-time |
+
+---
+
+### Section 6 — CTA Penutup
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Teks ajakan | Heading | Statis |
+| Tombol "Daftar Sekarang" | Button primary | Navigasi ke `/register`; **hanya tampil jika belum login** |
+| Tombol "Dashboard" | Button primary | Navigasi ke halaman default role; **hanya tampil jika sudah login** |
+| Tombol "Browse Proyek" | Button secondary | Navigasi ke `/browse`; tampil untuk semua kondisi login |
+
+---
+
+## P-PUB-01 — About ACO
+**URL:** `/about`
+**Akses:** Publik
+**Layout:** Menggunakan P-PUB-NAV
+
+### Section 1 — Profil Organisasi
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Heading | H1 | "Tentang ACO" |
+| Deskripsi | Teks panjang | Penjelasan tentang ACO: siapa, apa yang dilakukan, sejak kapan beroperasi. Konten statis. |
+
+---
+
+### Section 2 — Visi & Misi
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Visi | Teks | Statis |
+| Misi | List poin | Statis |
+
+---
+
+### Section 3 — Cara ACO Bekerja
+
+Penjelasan lebih detail dibandingkan Section Cara Kerja di homepage.
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Sub-section Investasi | Teks + ilustrasi | Mekanisme investasi, skema bagi hasil, dan perlindungan investor termasuk pernyataan "tidak ada jaminan recovery" **[DIKUNCI]** |
+| Sub-section Wakaf Produktif | Teks + ilustrasi | Mekanisme wakaf, peran ACO sebagai nazir, dan alur penyaluran hasil ke mustahiq |
+| Sub-section Wakaf Aset | Teks | Penjelasan bahwa pengajuan di platform adalah langkah awal; proses hukum (akta ikrar wakaf) dilakukan di luar platform **[DIKUNCI sesuai BL-4.4]** |
+
+---
+
+### Section 4 — Kepatuhan Syariah
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Deskripsi komitmen | Teks | Statis |
+| List aturan dikuatkan sistem | List | 4 aturan dari BL-8.1: (1) Fee nazir wakaf ≤ 10% profit bersih, (2) Pokok wakaf bersifat permanen dan tidak dapat ditarik, (3) Dana zakat hanya disalurkan ke 8 asnaf, (4) Empat rekening dana terisolasi sepenuhnya |
+
+---
+
+### Section 5 — Struktur Pengelolaan Dana
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Visualisasi 4 rekening | Diagram atau card grid | Statis; menampilkan 4 kategori dana yang terisolasi beserta penjelasan fungsi masing-masing |
+| Catatan pemisahan | Teks | "Tidak ada transaksi yang dapat memindahkan dana antar kategori tanpa persetujuan dua pihak." |
+
+---
+
+### Section 6 — CTA Penutup
+
+| Elemen | Tipe | Behaviour |
+|---|---|---|
+| Teks ajakan | Teks | Statis |
+| Tombol "Mulai Berpartisipasi" | Button primary | Navigasi ke `/register` jika belum login; `/dashboard` jika sudah login |
+| Tombol "Browse Proyek" | Button secondary | Navigasi ke `/browse` |
+
+---
+
 # MODUL 6 — EXTERNAL USER
 
 ---
@@ -10,6 +189,7 @@
 ## P-EX-00a Registrasi
 **URL:** `/register`
 **Akses:** Publik (belum login)
+**Layout:** Versi sederhana P-PUB-NAV — hanya logo ACO tanpa nav links dan tombol CTA
 
 ### Elemen
 
@@ -35,6 +215,7 @@
 ## P-EX-00b KYC Upload
 **URL:** `/kyc`
 **Akses:** External User (login, email terverifikasi, KYC belum selesai)
+**Layout:** Versi sederhana P-PUB-NAV — hanya logo ACO tanpa nav links dan tombol CTA
 
 ### Elemen
 
@@ -60,12 +241,13 @@
 ## P-EX-01 Browse Catalog
 **URL:** `/browse`
 **Akses:** Publik (termasuk user belum login)
+**Layout:** Menggunakan P-PUB-NAV
 
 ### Elemen
 
 | Elemen | Tipe | Behaviour |
 |---|---|---|
-| Tab "Investasi" / "Wakaf Uang" / "Semua" | Tab | Filter catalog berdasarkan jenis partisipasi |
+| Tab "Investasi" / "Wakaf Uang" / "Semua" | Tab | Filter catalog berdasarkan jenis partisipasi; default "Semua"; dapat diaktifkan via query param: `?tab=investasi` atau `?tab=wakaf` (digunakan oleh CTA di P-PUB-00) |
 | Search bar | Input teks | Pencarian berdasarkan nama proyek atau keyword; real-time atau on-submit |
 | Filter kategori | Dropdown | Properti / Logistik / UMKM / Wakaf Produktif / Sosial / dll. |
 | Filter progress pendanaan | Dropdown | Semua / Masih Tersedia / Hampir Penuh (>80%) |
@@ -82,6 +264,7 @@
 ## P-EX-02 Detail Proyek / Program (Publik)
 **URL:** `/browse/[projectSlug]`
 **Akses:** Publik
+**Layout:** Menggunakan P-PUB-NAV
 
 ### Elemen
 
@@ -390,6 +573,7 @@
 ## P-ADD-01 Halaman Syarat & Ketentuan
 **URL:** `/terms`
 **Akses:** Publik
+**Layout:** Menggunakan P-PUB-NAV
 
 Halaman statis berisi teks Syarat & Ketentuan platform.
 
@@ -398,6 +582,7 @@ Halaman statis berisi teks Syarat & Ketentuan platform.
 ## P-ADD-02 Halaman Kebijakan Privasi
 **URL:** `/privacy`
 **Akses:** Publik
+**Layout:** Menggunakan P-PUB-NAV
 
 Halaman statis berisi teks Kebijakan Privasi platform.
 
@@ -449,6 +634,9 @@ Halaman statis berisi teks Kebijakan Privasi platform.
 | P-AO-04 | Konfigurasi Proyek | Admin |
 | P-AO-05 | Antrian Validasi Dokumen | Admin |
 | P-AO-06 | Audit Log | Admin |
+| P-PUB-NAV | Shared Public Navbar & Footer | Semua halaman publik (komponen, bukan halaman) |
+| P-PUB-00 | Homepage | Publik |
+| P-PUB-01 | About ACO | Publik |
 | P-EX-00a | Registrasi | Publik |
 | P-EX-00b | KYC Upload | External User |
 | P-EX-01 | Browse Catalog | Publik |
@@ -465,9 +653,9 @@ Halaman statis berisi teks Kebijakan Privasi platform.
 | P-ADD-03 | 404 | Semua |
 | P-ADD-04 | 403 | Semua |
 
-**Total: 37 halaman**
+**Total: 39 halaman + 1 shared component (P-PUB-NAV)**
 
 ---
 
-*ACO Page Spec — Modul External User v1.0*
+*ACO Page Spec — Modul Publik Marketing & External User v1.1*
 *Dibaca bersama: ACO_PageSpec_Internal_v1.md, ACO_BusinessLogic_Rules_v1.md, ACO_Notification_Spec_v1.md, ACO_UserStories_v3.md*

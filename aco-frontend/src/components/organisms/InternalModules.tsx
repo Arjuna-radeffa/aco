@@ -1,77 +1,149 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GlassCard } from '../atoms/GlassCard';
 import { StatusIndicator } from '../atoms/StatusIndicator';
 import { MonitoringChart } from './MonitoringChart';
-import { ChevronRight, Filter, Search, Download, ShieldCheck, UserPlus, Clock, Activity, AlertCircle, Percent, RefreshCw, FileText, File, History, XCircle, PlusSquare, Settings } from 'lucide-react';
+import { 
+  Search, Filter, Activity, Clock, Percent, PlusSquare, 
+  ChevronRight, RefreshCw, XCircle, Save, AlertCircle, Trash2, Shield, UserPlus,
+  ArrowRight, Download, Eye, FileText, CheckCircle, Menu, Settings
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../store/useStore';
 
-// --- ARIEF: INVESTMENT OFFICER ---
+// === HELPER COMPONENTS ===
 
+const ProjectTreeNode: React.FC<{ project: any; level?: number; globalExpand?: boolean }> = ({ project, level = 0, globalExpand }) => {
+  const [isExpanded, setIsExpanded] = useState(level === 0);
+  const hasChildren = project.children && project.children.length > 0;
+
+  React.useEffect(() => {
+    if (globalExpand !== undefined) {
+      setIsExpanded(globalExpand);
+    }
+  }, [globalExpand]);
+
+  return (
+    <div className="space-y-2" style={{ marginLeft: `${level * 2}rem` }}>
+      <div className="relative">
+        <GlassCard 
+          className={`p-5 hover:border-blue-300 dark:hover:border-blue-500 transition-all cursor-pointer group bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 relative ${isExpanded && hasChildren ? 'border-blue-500 shadow-lg shadow-blue-500/5' : ''}`}
+          onClick={() => hasChildren && setIsExpanded(!isExpanded)}
+        >
+          {level > 0 && (
+            <div className="absolute -left-6 top-1/2 w-6 h-[2px] bg-slate-200 dark:bg-slate-800" />
+          )}
+          
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black italic shadow-sm transition-colors ${
+                level === 0 
+                  ? 'bg-blue-600 text-white shadow-blue-200' 
+                  : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:text-blue-500'
+              }`}>
+                {project.title[0]}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-black italic text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase tracking-tight">{project.title}</h4>
+                  {hasChildren && (
+                    <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-[8px] font-black text-blue-600 dark:text-blue-400 rounded-lg">
+                      {project.children.length} NODES
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter">
+                  {project.category} {level === 0 ? '• CORE ROOT' : `• SUB-NODE L${level}`}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-8">
+              <div className="text-right hidden sm:block">
+                <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 mb-0.5 tracking-widest">Allocation</p>
+                <div className="flex items-center gap-2">
+                   <div className="flex -space-x-1">
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                   </div>
+                   <p className="text-[10px] font-black italic text-slate-900 dark:text-white">{project.metadata?.allocation?.commercial ?? 100}%/{project.metadata?.allocation?.social ?? 0}%</p>
+                </div>
+              </div>
+              
+              <div className="text-right">
+                <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 mb-0.5 tracking-widest">RAB Value</p>
+                <p className="text-xs font-black italic text-slate-900 dark:text-white">Rp {project.targetFunding?.toLocaleString() || '0'}</p>
+              </div>
+
+              <StatusIndicator status={project.currentFunding >= project.targetFunding ? 'healthy' : 'at_risk'} />
+              
+              {hasChildren && (
+                <ChevronRight size={18} className={`text-slate-300 dark:text-slate-600 transition-all ${isExpanded ? 'rotate-90 text-blue-500' : ''}`} />
+              )}
+              
+              {!hasChildren && (
+                <button className="p-2 opacity-0 group-hover:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all text-slate-400 hover:text-blue-600">
+                  <Settings size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+        </GlassCard>
+      </div>
+
+      {hasChildren && isExpanded && (
+        <div className="relative">
+          <div className="absolute left-[1.25rem] top-0 bottom-0 w-[2px] bg-slate-100 dark:bg-slate-800/50" />
+          <div className="space-y-4 pt-2">
+            {project.children.map((child: any) => (
+              <ProjectTreeNode key={child.id} project={child} level={level + 1} globalExpand={globalExpand} />
+            ))}
+            <div style={{ marginLeft: `${(level + 1) * 2}rem` }}>
+              <button className="w-full p-4 border-2 border-dashed border-slate-100 dark:border-slate-800/80 rounded-2xl text-[9px] font-black uppercase text-slate-300 dark:text-slate-600 hover:border-blue-300 dark:hover:border-blue-900/50 hover:text-blue-600 dark:hover:text-blue-400 transition-all flex items-center justify-center gap-3 group/add">
+                <PlusSquare size={16} className="group-hover/add:scale-110 transition-transform" /> 
+                Add New Sub-Project Node
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// === MODULES BY ROLE ===
+
+// --- ARIEF: INVESTMENT OFFICER ---
 export const ProjectsList: React.FC = () => {
   const projects = useStore((state: any) => state.projects);
-  const [expandedId, setExpandedId] = React.useState<string | null>(null);
+  const [isAllExpanded, setIsAllExpanded] = useState<boolean | undefined>(undefined);
   
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex justify-between items-center bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-        <div className="relative w-72">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-500" />
-          <input className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-xl text-xs outline-none text-slate-900 dark:text-white dark:placeholder-slate-500" placeholder="Search projects..." />
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white dark:bg-slate-900/50 p-8 rounded-[3rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors">
+        <div>
+          <h2 className="text-3xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase inline-flex items-center gap-4">
+            Project Tree <span className="text-blue-600">Context</span>
+          </h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1">Hierarchical Management System v1.2</p>
         </div>
-        <div className="flex gap-2">
-          <button className="p-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"><Filter size={18} /></button>
-          <button className="px-4 py-2 bg-slate-900 dark:bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Expand All</button>
+        <div className="flex gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-72">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-500" />
+            <input className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl text-[11px] font-bold outline-none text-slate-900 dark:text-white placeholder-slate-400 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-inner" placeholder="Search across nodes..." />
+          </div>
+          <button className="p-3 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl text-slate-400 dark:text-slate-500 hover:text-blue-600 transition-all"><Filter size={20} /></button>
+          <button 
+            onClick={() => setIsAllExpanded(isAllExpanded === true ? false : true)}
+            className="px-6 py-3 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all outline-none"
+          >
+            {isAllExpanded === true ? 'Collapse All' : 'Expand Global'}
+          </button>
         </div>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-6">
         {projects.map((p: any) => (
-          <div key={p.id} className="space-y-2">
-            <GlassCard 
-              className={`p-6 hover:border-blue-300 dark:hover:border-blue-500 transition-all cursor-pointer group bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 ${expandedId === p.id ? 'border-blue-500 shadow-lg shadow-blue-500/10' : ''}`}
-              onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
-            >
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black italic">
-                    {p.title[0]}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-black italic text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{p.title}</h4>
-                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{p.category} | Root Project</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
-                    <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 mb-0.5">Total RAB</p>
-                    <p className="text-xs font-black italic text-slate-900 dark:text-white">Rp {p.targetAmount?.toLocaleString() || '0'}</p>
-                  </div>
-                  <StatusIndicator status={p.status} />
-                  <ChevronRight size={18} className={`text-slate-300 dark:text-slate-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all ${expandedId === p.id ? 'rotate-90 text-blue-500' : ''}`} />
-                </div>
-              </div>
-            </GlassCard>
-            
-            {expandedId === p.id && (
-              <div className="pl-12 space-y-3 animate-in slide-in-from-top-4 fade-in duration-300">
-                {[1, 2].map((i) => (
-                  <div key={i} className="p-4 bg-white dark:bg-slate-900/50 backdrop-blur-sm rounded-2xl border border-slate-100 dark:border-slate-800 flex justify-between items-center hover:bg-white dark:hover:bg-slate-800 transition-all cursor-pointer group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                      <p className="text-[10px] font-black uppercase text-slate-700 dark:text-slate-300 italic">Sub-Project Node {i}</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                       <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500">RAB: Rp 45.000.000</p>
-                       <button className="text-[9px] font-black uppercase text-blue-600 dark:text-blue-400 tracking-widest opacity-0 group-hover:opacity-100 transition-all">View Detail</button>
-                    </div>
-                  </div>
-                ))}
-                <button className="w-full p-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 hover:border-blue-300 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all flex items-center justify-center gap-2">
-                   <PlusSquare size={14} /> Add Sub-Node
-                </button>
-              </div>
-            )}
-          </div>
+          <ProjectTreeNode key={p.id} project={p} globalExpand={isAllExpanded} />
         ))}
       </div>
     </div>
@@ -79,47 +151,63 @@ export const ProjectsList: React.FC = () => {
 };
 
 // --- SINTA: PORTFOLIO MONITOR ---
-
 export const MonitoringDashboard: React.FC = () => {
   const projects = useStore((state: any) => state.projects);
+  
+  const stats = [
+    { label: 'Active Nodes', val: '42', color: 'text-blue-600', trend: '+12%' },
+    { label: 'Avg Node Health', val: '94%', color: 'text-emerald-600', trend: 'Stable' },
+    { label: 'Critical Variance', val: '3', color: 'text-red-500', trend: '+1' },
+    { label: 'Review Latency', val: '1.2h', color: 'text-amber-500', trend: '-15%' }
+  ];
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="grid grid-cols-4 gap-6">
-        {[
-          { label: 'Active Projects', val: '24', color: 'text-blue-600' },
-          { label: 'Recent Updates', val: '156', color: 'text-emerald-600' },
-          { label: 'Overdue Reports', val: '3', color: 'text-red-500' },
-          { label: 'Need Review', val: '12', color: 'text-amber-500' }
-        ].map((s, i) => (
-          <GlassCard key={i} className="p-6 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-            <p className="text-[8px] font-black uppercase text-slate-400 dark:text-slate-500 mb-2 italic">{s.label}</p>
-            <p className={`text-2xl font-black italic ${s.color}`}>{s.val}</p>
-            <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 mt-4 rounded-full overflow-hidden">
-               <div className={`h-full bg-current ${s.color}`} style={{ width: '60%' }} />
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      <div className="flex justify-between items-end">
+        <div>
+          <h2 className="text-4xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase inline-flex items-center gap-4">
+            Health <span className="text-emerald-600">Surveillance</span>
+          </h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-2">P-PM-01 Portfolio Monitoring v2.0</p>
+        </div>
+        <button className="px-8 py-3 bg-slate-900 dark:bg-slate-800 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-emerald-600 transition-all">
+          <Activity size={16} /> Live Refresh
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((s, i) => (
+          <GlassCard key={i} className="p-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-slate-50 dark:bg-slate-800/50 rounded-full group-hover:scale-110 transition-transform" />
+            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 mb-2 italic tracking-widest relative z-10">{s.label}</p>
+            <div className="flex items-end gap-3 relative z-10">
+              <h4 className={`text-3xl font-black italic leading-none ${s.color}`}>{s.val}</h4>
+              <span className="text-[9px] font-black bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg text-slate-500">{s.trend}</span>
             </div>
           </GlassCard>
         ))}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        {projects.slice(0, 2).map((p: any) => (
-          <GlassCard key={p.id} className="p-8 space-y-6">
+        {projects.map((p: any) => (
+          <GlassCard key={p.id} className="p-10 space-y-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 group hover:shadow-2xl transition-all">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-lg font-black italic">{p.title}</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Health Metric Analysis</p>
+                <h3 className="text-xl font-black italic text-slate-900 dark:text-white group-hover:text-emerald-500 transition-colors uppercase">{p.title}</h3>
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest italic">{p.category} • {p.children?.length || 0} Sub-Nodes Linked</p>
               </div>
-              <StatusIndicator status={p.status} />
-            </div>
-            <div className="h-48">
-              <MonitoringChart data={p.reports} color={p.status === 'at_risk' ? '#f59e0b' : '#2563eb'} />
-            </div>
-            <div className="pt-6 border-t border-slate-100 flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Clock size={14} className="text-slate-300" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Last updated: 2h ago</span>
+              <div className="flex flex-col items-end gap-2">
+                <StatusIndicator status={p.status || 'healthy'} />
+                <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Aggregate Score: 98/100</span>
               </div>
-              <button className="text-[10px] font-black uppercase text-blue-600 hover:tracking-widest transition-all">Deep Dive</button>
+            </div>
+            <div className="h-40">
+              <MonitoringChart data={p.reports || []} color={p.status === 'at_risk' ? '#f59e0b' : '#10b981'} />
+            </div>
+            <div className="pt-4 flex justify-between items-center">
+              <button className="px-6 py-3 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all flex items-center gap-2">
+                Node Analytics <ChevronRight size={14} />
+              </button>
             </div>
           </GlassCard>
         ))}
@@ -130,32 +218,30 @@ export const MonitoringDashboard: React.FC = () => {
 
 export const UpdateQueue: React.FC = () => {
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 pb-20">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-black italic tracking-tight uppercase text-slate-900 dark:text-white">Update Queue</h2>
-          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Pending Review: 8 Projects</p>
+          <h2 className="text-4xl font-black italic tracking-tighter uppercase text-slate-900 dark:text-white">Update <span className="text-blue-600">Delta</span></h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2 italic">Pending Review: 8 Revision Requests</p>
         </div>
-        <button className="px-6 py-2 bg-slate-900 dark:bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Verify Batch</button>
       </div>
-
-      <div className="space-y-4">
+      <div className="space-y-6">
         {[
-          { project: 'Lumbung Pangan Berkah', type: 'RAB Update', time: '10m ago', status: 'Priority' },
-          { project: 'Logistik Pantura Express', type: 'Health Monitor', time: '2h ago', status: 'Standard' },
-          { project: 'Pemberdayaan Lele Bioflok', type: 'Document Upload', time: '5h ago', status: 'Standard' },
+          { project: 'Lumbung Pangan Berkah', type: 'Financial Revision', delta: { old: 'Rp 450M', new: 'Rp 520M', icon: <Percent size={18} /> } },
         ].map((item, i) => (
-          <GlassCard key={i} className="p-6 flex justify-between items-center hover:border-blue-300 dark:hover:border-blue-500 transition-all cursor-pointer bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-            <div className="flex items-center gap-4">
-               <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center"><Activity size={18} /></div>
-               <div>
-                  <h4 className="text-sm font-black italic text-slate-900 dark:text-white">{item.project}</h4>
-                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{item.type} • {item.time}</p>
-               </div>
+          <GlassCard key={i} className="p-8 flex items-center justify-between bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-6">
+              <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">{item.delta.icon}</div>
+              <div>
+                <h4 className="text-lg font-black italic text-slate-900 dark:text-white uppercase">{item.project}</h4>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.type}</p>
+              </div>
             </div>
             <div className="flex items-center gap-4">
-               <span className={`text-[8px] font-black px-2 py-1 rounded-lg ${item.status === 'Priority' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-300'}`}>{item.status}</span>
-               <button className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 tracking-widest hover:tracking-[0.2em] transition-all">Review</button>
+              <span className="text-xs font-bold text-slate-400 line-through">{item.delta.old}</span>
+              <ArrowRight size={16} className="text-slate-300" />
+              <span className="text-sm font-black text-blue-600">{item.delta.new}</span>
+              <button className="ml-6 px-6 py-3 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Approve</button>
             </div>
           </GlassCard>
         ))}
@@ -166,30 +252,25 @@ export const UpdateQueue: React.FC = () => {
 
 export const OverdueReports: React.FC = () => {
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-black italic tracking-tight uppercase text-red-600">Overdue Criticals</h2>
-          <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mt-1">High Risk: 3 Projects</p>
+          <h2 className="text-4xl font-black italic tracking-tighter text-red-600 uppercase">Emergency <span className="text-slate-900 dark:text-white">Watch</span></h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2 italic">3 Overdue Reports Detected</p>
         </div>
-        <button className="px-6 py-2 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20">Send Final Warning</button>
       </div>
-
       <div className="space-y-4">
-        {[
-          { project: 'Tanah Wakaf Cipayung', days: '14 Days Overdue', severity: 'Critical' },
-          { project: 'UMKM Kerajinan Bambu', days: '5 Days Overdue', severity: 'Warning' },
-        ].map((item, i) => (
-          <div key={i} className="p-8 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-red-100 dark:border-red-900/30 shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-1 h-full bg-red-500" />
-            <div className="flex justify-between items-center">
-               <div>
-                  <h4 className="text-xl font-black italic text-slate-900 dark:text-white">{item.project}</h4>
-                  <p className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest mt-1">{item.days}</p>
-               </div>
-               <button className="px-6 py-2 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest italic group-hover:bg-red-600 transition-all">Escalate</button>
+        {[1, 2, 3].map(i => (
+          <GlassCard key={i} className="p-8 flex items-center justify-between bg-white dark:bg-slate-900/50 border-red-100 dark:border-red-900/30">
+            <div className="flex items-center gap-6">
+              <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center"><AlertCircle size={24} /></div>
+              <div>
+                <h4 className="text-lg font-black italic text-slate-900 dark:text-white uppercase tracking-tight">Project Node High Risk #{i}</h4>
+                <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Lapsed: 4 Days Overdue</p>
+              </div>
             </div>
-          </div>
+            <button className="px-8 py-3 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Issue Warning</button>
+          </GlassCard>
         ))}
       </div>
     </div>
@@ -197,98 +278,30 @@ export const OverdueReports: React.FC = () => {
 };
 
 // --- HENDRA: FINANCE OFFICER ---
-
 export const FinanceDashboard: React.FC = () => {
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      <div className="flex justify-between items-end">
+        <div>
+          <h2 className="text-4xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase inline-flex items-center gap-4">
+            Treasury <span className="text-indigo-600">Command</span>
+          </h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-2">P-FO-01 Master Treasury Engine v3.0</p>
+        </div>
+        <button className="px-8 py-3 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20">Withdrawal Request</button>
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Investment Fund', amount: '8.4B', color: 'bg-blue-600' },
-          { label: 'Zakat Pool', amount: '1.2B', color: 'bg-emerald-600' },
-          { label: 'Infaq & Social', amount: '450M', color: 'bg-amber-500' },
-          { label: 'Waqf Treasury', amount: '2.4B', color: 'bg-indigo-600' }
+          { label: 'Investment Pool', amount: '8.45B', color: 'bg-blue-600' },
+          { label: 'Zakat/Social', amount: '1.22B', color: 'bg-emerald-600' },
+          { label: 'Waqf Treasury', amount: '2.40B', color: 'bg-amber-600' },
+          { label: 'Operational', amount: '450M', color: 'bg-slate-900' }
         ].map((f, i) => (
-          <div key={i} className="p-8 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
-            <div className={`absolute top-0 left-0 w-1 h-full ${f.color}`} />
-            <p className="text-[9px] font-black uppercase text-slate-400 dark:text-slate-500 mb-2 italic tracking-widest">{f.label}</p>
-            <h4 className="text-2xl font-black italic leading-none text-slate-900 dark:text-white">Rp {f.amount}</h4>
-            <p className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 mt-3 flex items-center gap-1">
-              <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> +2.4% vs last month
-            </p>
-          </div>
+          <GlassCard key={i} className="p-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
+            <p className="text-[9px] font-black uppercase text-slate-400 mb-2 italic tracking-widest">{f.label}</p>
+            <h4 className="text-3xl font-black italic text-slate-900 dark:text-white mb-2 leading-none">Rp {f.amount}</h4>
+          </GlassCard>
         ))}
-      </div>
-
-      <GlassCard className="p-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-         <div className="flex justify-between items-center mb-10">
-            <h5 className="text-[10px] font-black uppercase tracking-widest italic leading-none text-slate-900 dark:text-white">Treasury Allocation</h5>
-            <button className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 hover:text-blue-600 transition-colors">
-               <Download size={14} /> Export Report
-            </button>
-         </div>
-         <div className="space-y-8">
-            {[
-               { name: 'Infrastructure Development', active: 65, total: '2.4B' },
-               { name: 'Micro-Education Loans', active: 42, total: '890M' },
-               { name: 'Agricultural Waqf', active: 88, total: '1.2B' }
-            ].map((p, i) => (
-               <div key={i} className="space-y-3">
-                  <div className="flex justify-between items-end">
-                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-tight text-slate-900 dark:text-slate-300">{p.name}</p>
-                        <p className="text-[8px] font-bold text-slate-400 dark:text-slate-500">Target Realization: {p.active}%</p>
-                     </div>
-                     <span className="text-xs font-black italic text-slate-900 dark:text-white">Rp {p.total}</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                     <div className="h-full bg-blue-600 rounded-full" style={{ width: `${p.active}%` }} />
-                  </div>
-               </div>
-            ))}
-         </div>
-      </GlassCard>
-    </div>
-  );
-};
-
-export const ReviewQueue: React.FC = () => {
-  return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-black italic tracking-tight uppercase text-blue-600">Financial Review</h2>
-        <div className="flex gap-2">
-           <div className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl text-[10px] font-black uppercase">Approved: 124</div>
-           <div className="px-4 py-2 bg-amber-50 text-amber-700 rounded-xl text-[10px] font-black uppercase">Pending: 12</div>
-        </div>
-      </div>
-
-      <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-xl shadow-slate-200/20 dark:shadow-none">
-         <table className="w-full text-left">
-            <thead>
-               <tr className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-black uppercase italic tracking-widest">
-                  <th className="p-6">Entity</th>
-                  <th className="p-6">Amount</th>
-                  <th className="p-6">Category</th>
-                  <th className="p-6">Action</th>
-               </tr>
-            </thead>
-            <tbody className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
-               {[
-                  { name: 'Investasi - Bpk. Agus', amount: 'Rp 25.000.000', cat: 'Investment' },
-                  { name: 'Wakaf - Ibu Siti', amount: 'Rp 10.000.000', cat: 'Waqf' },
-                  { name: 'Infaq Digital', amount: 'Rp 2.500.000', cat: 'Infaq' },
-               ].map((tr, i) => (
-                  <tr key={i} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors">
-                     <td className="p-6">{tr.name}</td>
-                     <td className="p-6 font-black italic text-slate-900 dark:text-white">{tr.amount}</td>
-                     <td className="p-6 uppercase italic text-blue-600 dark:text-blue-400">{tr.cat}</td>
-                     <td className="p-6">
-                        <button className="text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest hover:text-blue-900 dark:hover:text-blue-300 transition-colors">Authorize</button>
-                     </td>
-                  </tr>
-               ))}
-            </tbody>
-         </table>
       </div>
     </div>
   );
@@ -296,299 +309,144 @@ export const ReviewQueue: React.FC = () => {
 
 export const ProfitSharing: React.FC = () => {
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-3xl font-black italic tracking-tight text-emerald-600 uppercase">Profit Distribution Engine</h2>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Status: Calculation Ready</p>
+          <h2 className="text-4xl font-black italic tracking-tighter text-emerald-600 uppercase inline-flex items-center gap-4">
+            Profit <span className="text-slate-900 dark:text-white">Synthesizer</span>
+          </h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-2">P-FO-04 Automated Distribution Engine</p>
         </div>
-        <button className="px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20">Execute Payout</button>
+        <button className="px-10 py-4 bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all">Execute Batch Payout</button>
       </div>
-
-      <div className="grid grid-cols-3 gap-6">
-        <GlassCard className="p-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-          <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 mb-2 italic">Basis Profit (NET)</p>
-          <h4 className="text-2xl font-black italic text-slate-900 dark:text-white">Rp 450.000.000</h4>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <GlassCard className="p-10 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-center">
+          <p className="text-[10px] font-black uppercase text-slate-400 mb-4 italic tracking-widest">Gross Yield Pool</p>
+          <h4 className="text-4xl font-black italic text-slate-900 dark:text-white underline decoration-emerald-500 decoration-4 underline-offset-8">Rp 450.0M</h4>
         </GlassCard>
-        <GlassCard className="p-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-          <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 mb-2 italic">ACO Fee (2%)</p>
-          <h4 className="text-2xl font-black italic text-slate-900 dark:text-white">Rp 9.000.000</h4>
+        <GlassCard className="p-10 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-center">
+          <p className="text-[10px] font-black uppercase text-slate-400 mb-4 italic tracking-widest">ACO Engine Fee (2%)</p>
+          <h4 className="text-4xl font-black italic text-slate-900 dark:text-white underline decoration-blue-500 decoration-4 underline-offset-8">Rp 9.0M</h4>
         </GlassCard>
-        <GlassCard className="p-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-          <p className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 mb-2 italic">Investor Pool</p>
-          <h4 className="text-2xl font-black italic text-slate-900 dark:text-white">Rp 441.000.000</h4>
+        <GlassCard className="p-10 bg-emerald-600 text-white shadow-2xl text-center relative overflow-hidden">
+          <p className="text-[10px] font-black uppercase text-emerald-200 mb-4 italic tracking-widest relative z-10">Net Distributable</p>
+          <h4 className="text-4xl font-black italic relative z-10 leading-none">Rp 441.0M</h4>
         </GlassCard>
       </div>
-
-      <GlassCard className="p-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-        <h5 className="text-[10px] font-black uppercase tracking-widest italic mb-6 text-slate-900 dark:text-white">Distribution Breakdown</h5>
-        <div className="space-y-4">
-          {[
-            { tag: 'INV-001', name: 'Micro-Funding Alpha', amount: 'Rp 120.000.000', share: '27.2%' },
-            { tag: 'INV-002', name: 'Logistics Expansion', amount: 'Rp 280.000.000', share: '63.5%' },
-            { tag: 'INV-003', name: 'Social Impact Fund', amount: 'Rp 41.000.000', share: '9.3%' },
-          ].map((item, i) => (
-            <div key={i} className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
-              <div>
-                <p className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400">{item.tag}</p>
-                <p className="text-sm font-black italic text-slate-900 dark:text-slate-200">{item.name}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-black text-slate-900 dark:text-white">{item.amount}</p>
-                <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase">Share: {item.share}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </GlassCard>
-    </div>
-  );
-};
-
-export const Reconciliation: React.FC = () => {
-  return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-black italic tracking-tight uppercase text-indigo-600">Audit & Reconciliation</h2>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Variance detected: 0.02% (Within limit)</p>
-        </div>
-        <div className="flex gap-3">
-          <button className="px-5 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-            <Filter size={14} /> Filter Source
-          </button>
-          <button className="px-5 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Verify All</button>
-        </div>
-      </div>
-
-      <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/20 dark:shadow-none">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-900 dark:bg-slate-800 text-white italic text-[10px] font-black uppercase tracking-widest">
-              <th className="p-6">Transaction Node</th>
-              <th className="p-6">Projected (RAB)</th>
-              <th className="p-6">Realized</th>
-              <th className="p-6">Variance</th>
-              <th className="p-6">Status</th>
-            </tr>
-          </thead>
-          <tbody className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
-            {[
-              { node: 'Building Foundation A', rab: 'Rp 450M', real: 'Rp 452M', var: '+Rp 2M', status: 'Warning' },
-              { node: 'Fleet Maintenance Q2', rab: 'Rp 120M', real: 'Rp 118M', var: '-Rp 2M', status: 'Healthy' },
-              { node: 'IT Infrastructure', rab: 'Rp 85M', real: 'Rp 85M', var: 'Rp 0', status: 'Healthy' },
-            ].map((row, i) => (
-              <tr key={i} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors">
-                <td className="p-6 text-slate-900 dark:text-white">{row.node}</td>
-                <td className="p-6">{row.rab}</td>
-                <td className="p-6">{row.real}</td>
-                <td className="p-6 font-black italic text-slate-900 dark:text-white">{row.var}</td>
-                <td className="p-6">
-                  <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${
-                    row.status === 'Healthy' ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-                  }`}>
-                    {row.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-export const FinancialReports: React.FC = () => {
-  return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-       <div>
-          <h2 className="text-3xl font-black italic tracking-tight uppercase text-slate-800 dark:text-slate-100">Master Reports</h2>
-          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Generated daily at 00:00 UTC</p>
-       </div>
-
-       <div className="grid grid-cols-2 gap-6">
-          {[
-             { title: 'Consolidated Ledger Q1', date: 'April 2026', size: '2.4 MB' },
-             { title: 'Tax Impact Analysis', date: 'March 2026', size: '1.1 MB' },
-             { title: 'Waqf Productivity Rpt', date: 'April 2026', size: '4.8 MB' },
-             { title: 'ZIS Distribution Log', date: 'Feb 2026', size: '0.9 MB' },
-          ].map((rpt, i) => (
-             <GlassCard key={i} className="p-8 group hover:bg-slate-900 dark:hover:bg-slate-800 hover:text-white transition-all bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-                <div className="flex justify-between items-start">
-                   <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 group-hover:bg-white/10 flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:text-white mb-6">
-                      <Download size={24} />
-                   </div>
-                   <span className="text-[8px] font-black uppercase tracking-[0.2em] italic text-slate-500 group-hover:text-slate-400">PDF/XLS</span>
-                </div>
-                <h4 className="text-lg font-black italic mb-2 text-slate-900 dark:text-white group-hover:text-white">{rpt.title}</h4>
-                <div className="flex justify-between items-center pt-6 border-t border-slate-100 dark:border-slate-800 group-hover:border-white/10 mt-6">
-                   <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 group-hover:text-blue-200">{rpt.date}</p>
-                   <p className="text-[10px] font-black uppercase text-slate-600 dark:text-slate-400 group-hover:text-white">{rpt.size}</p>
-                </div>
-             </GlassCard>
-          ))}
-       </div>
     </div>
   );
 };
 
 // --- REZA: ADMIN ---
-
-export const KYCQueue: React.FC = () => {
+export const AdminAuditLog: React.FC = () => {
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-      <div className="flex justify-between items-center">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-3xl font-black italic tracking-tight uppercase text-blue-600">Identity Authority</h2>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Awaiting Verification: 42 Profiles</p>
-        </div>
-        <div className="flex gap-2">
-           <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest"><Filter size={14} /></button>
-           <button className="px-6 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">Auto-Verify Enabled</button>
+          <h2 className="text-4xl font-black italic tracking-tighter text-slate-900 dark:text-white uppercase inline-flex items-center gap-4">
+            Security <span className="text-red-600">Nexus</span>
+          </h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mt-2">P-ADM-01 Master Audit & Governance v4.0</p>
         </div>
       </div>
-
-       <div className="grid gap-4">
-          {[
-             { name: 'Dr. Michael Chen', country: 'Singapore', status: 'Enhanced Due Diligence' },
-             { name: 'Ahmad Fauzi', country: 'Indonesia', status: 'Standard' },
-             { name: 'Jessica Miller', country: 'USA', status: 'Enhanced Due Diligence' },
-          ].map((u, i) => (
-             <GlassCard key={i} className="p-6 flex justify-between items-center bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-                <div className="flex items-center gap-6">
-                   <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-black italic text-slate-400 dark:text-slate-500">MC</div>
-                   <div>
-                      <h4 className="text-sm font-black italic text-slate-900 dark:text-white">{u.name}</h4>
-                      <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{u.country} | CID-{Math.floor(Math.random() * 9000) + 1000}</p>
-                   </div>
+      <div className="space-y-4">
+        {[
+          { user: 'Hendra (Finance)', action: 'Profit Executed', target: 'Batch #901', time: '2m ago', risk: 'Elevated' },
+          { user: 'Sinta (Portfolio)', action: 'Approved Delta', target: 'Lumbung Pangan', time: '12m ago', risk: 'Standard' },
+          { user: 'System Context', action: 'Auth Failure', target: 'IP 192.168.1.104', time: '2h ago', risk: 'Critical' },
+        ].map((log, i) => (
+          <div key={i} className="flex items-center justify-between p-8 bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] hover:border-red-500 transition-all group overflow-hidden relative shadow-sm">
+             <div className="flex items-center gap-6">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner ${log.risk === 'Critical' ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-400'}`}>
+                   {log.risk === 'Critical' ? <Shield size={24} /> : <FileText size={24} />}
                 </div>
-                <div className="text-right flex items-center gap-6">
-                   <span className="text-[8px] font-black uppercase px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full">{u.status}</span>
-                   <button className="px-6 py-2 bg-slate-900 dark:bg-slate-800 text-white rounded-[1rem] text-[9px] font-black uppercase tracking-widest italic hover:scale-105 transition-all">Review Docs</button>
-                </div>
-             </GlassCard>
-          ))}
-       </div>
-    </div>
-  );
-};
-
-export const DocumentQueue: React.FC = () => {
-  return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-       <div>
-          <h2 className="text-3xl font-black italic tracking-tight uppercase text-amber-600">Project Validation</h2>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Pending Validation: 125 Docs</p>
-       </div>
-
-       <div className="space-y-3">
-          {[
-             { file: 'SHM_Lot_A_11.pdf', proj: 'Tanah Wakaf Cipayung', type: 'Legal', uploader: 'Arief W.' },
-             { file: 'RAB_Final_v2.xlsx', proj: 'Lumbung Pangan', type: 'Financial', uploader: 'Arief W.' },
-          ].map((doc, i) => (
-             <div key={i} className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 flex justify-between items-center hover:shadow-lg transition-all">
-                <div className="flex items-center gap-4">
-                   <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center font-black italic">!</div>
-                   <div>
-                      <p className="text-[10px] font-black uppercase text-amber-600 dark:text-amber-500">{doc.proj}</p>
-                      <h4 className="text-sm font-bold italic text-slate-900 dark:text-white">{doc.file}</h4>
-                   </div>
-                </div>
-                <div className="text-right flex items-center gap-8">
-                   <div>
-                      <p className="text-[8px] font-black uppercase text-slate-400 dark:text-slate-500">Uploader</p>
-                      <p className="text-[10px] font-bold text-slate-900 dark:text-slate-300">{doc.uploader}</p>
-                   </div>
-                   <div className="flex gap-2">
-                      <button className="p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-600 hover:text-white transition-all"><XCircle size={16} /></button>
-                      <button className="p-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl hover:bg-emerald-600 hover:text-white transition-all"><ShieldCheck size={16} /></button>
-                   </div>
+                <div>
+                   <h4 className="text-lg font-black italic text-slate-900 dark:text-white uppercase">{log.user} • {log.action}</h4>
+                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{log.target} • {log.time}</p>
                 </div>
              </div>
-          ))}
-       </div>
-    </div>
-  );
-};
-
-export const AuditLog: React.FC = () => {
-  return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-       <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-black italic tracking-tight uppercase">System Audit Log</h2>
-          <button className="text-[10px] font-black uppercase text-slate-400 flex items-center gap-2 hover:text-blue-600 transition-colors">
-             <Download size={16} /> Archive Logs
-          </button>
-       </div>
-
-       <GlassCard className="p-0 overflow-hidden bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800">
-          <div className="p-6 bg-slate-900 dark:bg-slate-950 text-slate-400 font-mono text-[10px] flex justify-between uppercase tracking-widest font-black italic">
-             <span>Timestamp</span>
-             <span>Action</span>
-             <span>Security Hash</span>
+             <span className={`text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-tighter ${log.risk === 'Critical' ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>{log.risk} RISK</span>
           </div>
-          <div className="p-8 space-y-4 font-mono text-[10px] text-slate-900 dark:text-slate-300">
-             {[
-                { time: '16:04:12', user: 'Hendra G.', act: 'Authorized Transaction TRX-9921', hash: 'e3b0c442...' },
-                { time: '15:58:33', user: 'Admin System', act: 'Scheduled Database Backup', hash: 'd41d8cd9...' },
-                { time: '15:45:01', user: 'Reza Admin', act: 'Rejected KYC Profile SID-004', hash: '811f5926...' },
-                { time: '15:30:12', user: 'Arief W.', act: 'Created Project Node "Phase 2"', hash: '098f6bcd...' },
-             ].map((log, i) => (
-                <div key={i} className="flex justify-between items-center border-b border-slate-50 dark:border-slate-800/50 pb-4 last:border-0 last:pb-0">
-                   <div className="flex gap-6">
-                      <span className="text-blue-600 dark:text-blue-400 font-black">{log.time}</span>
-                      <span className="text-slate-900 dark:text-white font-black uppercase italic">[{log.user}]</span>
-                      <span className="text-slate-500 dark:text-slate-400">{log.act}</span>
-                   </div>
-                   <span className="text-slate-400 dark:text-slate-500 opacity-50">{log.hash}</span>
-                </div>
-             ))}
-          </div>
-       </GlassCard>
+        ))}
+      </div>
     </div>
   );
 };
 
 export const UserManagement: React.FC = () => {
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-4xl font-black italic tracking-tighter uppercase text-slate-900 dark:text-white">Identity <span className="text-blue-600">Vault</span></h2>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2 italic">Internal Staff Access Control</p>
+        </div>
+        <button className="px-8 py-4 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 flex items-center gap-3">
+          <UserPlus size={18} /> Provision New Staff
+        </button>
+      </div>
+      <div className="grid lg:grid-cols-2 gap-8">
+        {[
+          { name: 'Arief Kurniawan', role: 'Investment Officer', bio: 'Specializing in Productive Waqf architecture.', nodes: 12 },
+          { name: 'Sinta Permata', role: 'Portfolio Monitor', bio: 'Risk mitigation and health surveillance.', nodes: 45 },
+          { name: 'Hendra Wijaya', role: 'Finance Officer', bio: 'Treasury Command and Profit Synthesizer.', nodes: 8 },
+          { name: 'Reza Admin', role: 'System Admin', bio: 'Nexus Security and Identity Vault.', nodes: 2 },
+        ].map((staff, i) => (
+          <GlassCard key={i} className="p-10 flex gap-8 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 group hover:border-blue-500 transition-all">
+             <div className="w-24 h-24 rounded-[2rem] bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-3xl font-black text-slate-300 italic uppercase shrink-0">{staff.name[0]}</div>
+             <div className="flex-1">
+                <h4 className="text-xl font-black italic text-slate-900 dark:text-white uppercase">{staff.name}</h4>
+                <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-4">{staff.role}</p>
+                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-6 italic">"{staff.bio}"</p>
+                <div className="flex gap-4">
+                   <div className="px-4 py-2 bg-slate-50 dark:bg-slate-950 rounded-xl">
+                      <p className="text-[8px] font-black text-slate-400 uppercase mb-1">Managed Nodes</p>
+                      <p className="text-sm font-black italic">{staff.nodes}</p>
+                   </div>
+                </div>
+             </div>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const KYCQueue: React.FC = () => {
+  return (
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex justify-between items-center">
          <div>
-            <h4 className="text-2xl font-black italic tracking-tight uppercase">Internal Authority</h4>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total Active Personas: 12</p>
+            <h2 className="text-4xl font-black italic tracking-tighter uppercase text-slate-900 dark:text-white">KYC <span className="text-emerald-600">Verification</span></h2>
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-2 italic">Pending: 15 Onboarding Requests</p>
          </div>
-         <button className="px-6 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 flex items-center gap-2 hover:bg-blue-500 transition-all">
-            <UserPlus size={16} /> Invite Executive
-         </button>
       </div>
-
-       <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-xl shadow-slate-200/20 dark:shadow-none">
+       <div className="bg-white dark:bg-slate-950 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-2xl">
           <table className="w-full text-left">
              <thead>
-                <tr className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-black uppercase italic tracking-widest">
-                   <th className="p-6">Name</th>
-                   <th className="p-6">Role</th>
-                   <th className="p-6">Status</th>
-                   <th className="p-6">Permissions</th>
+                <tr className="bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-black uppercase italic tracking-[0.3em]">
+                   <th className="p-8">Entity Name</th>
+                   <th className="p-8">Type</th>
+                   <th className="p-8">Documentation</th>
+                   <th className="p-8 text-right">Action</th>
                 </tr>
              </thead>
-             <tbody className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
+             <tbody className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
                 {[
-                   { name: 'Arief Wijaksana', role: 'Investment Officer', s: 'Active' },
-                   { name: 'Sinta K. Monitoring', role: 'Portfolio Monitor', s: 'Active' },
-                   { name: 'Hendra G. Finance', role: 'Finance Officer', s: 'Active' },
-                   { name: 'Reza Admin', role: 'Super Admin', s: 'Active' },
-                ].map((u, i) => (
-                   <tr key={i} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors">
-                      <td className="p-6 text-slate-900 dark:text-white">{u.name}</td>
-                      <td className="p-6 uppercase italic text-blue-600 dark:text-blue-400">{u.role}</td>
-                      <td className="p-6"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-2" />{u.s}</td>
-                      <td className="p-6">
-                        <div className="flex gap-2">
-                           <button className="text-slate-300 hover:text-blue-500 dark:hover:text-blue-400 transition-all"><Settings size={14} /></button>
-                           <button className="text-slate-300 hover:text-red-500 dark:hover:text-red-400 transition-all"><XCircle size={14} /></button>
-                        </div>
+                   { name: 'PT Nusantara Food', cat: 'Commercial', doc: 'SK Kemendag' },
+                   { name: 'Yayasan Al-Azhim', cat: 'Social', doc: 'Akta Wakaf' },
+                ].map((tr, i) => (
+                   <tr key={i} className="border-b border-slate-50 dark:border-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                      <td className="p-8 font-black italic text-slate-900 dark:text-white uppercase">{tr.name}</td>
+                      <td className="p-8 italic uppercase text-blue-600 dark:text-blue-400">{tr.cat}</td>
+                      <td className="p-8">
+                         <div className="flex items-center gap-2">
+                            <FileText size={16} className="text-slate-400" />
+                            <span className="underline decoration-slate-300 underline-offset-4">{tr.doc}</span>
+                         </div>
+                      </td>
+                      <td className="p-8 text-right">
+                         <button className="px-6 py-2 bg-slate-900 dark:bg-blue-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest">Authorize</button>
                       </td>
                    </tr>
                 ))}
@@ -598,3 +456,10 @@ export const UserManagement: React.FC = () => {
     </div>
   );
 };
+
+// Aliases for layout compatibility
+export const ReviewQueue = FinanceDashboard;
+export const AuditLog = AdminAuditLog;
+export const DocumentQueue = KYCQueue;
+export const Reconciliation: React.FC = () => <div className="p-8 bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 text-center font-black italic text-slate-400">Reconciliation Engine Context (P-FO-02)</div>;
+export const FinancialReports: React.FC = () => <div className="p-8 bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 text-center font-black italic text-slate-400">Financial Reporting Context (P-SH-01)</div>;

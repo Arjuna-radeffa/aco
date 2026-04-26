@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { User, Project, Transaction } from '../types/appTypes';
-import { mockUsers, mockProjects, mockTransactions } from '../data/mockData';
+import { mockUsers, mockTransactions } from '../data/mockData';
+import { mockProjects } from '../data/projectMockData';
 
 interface AppState {
   currentUser: User | null;
-  projects: Project[];
+  projects: any[]; // Flexibility for hierarchical and flat projects during transition
   transactions: Transaction[];
   
   // Actions

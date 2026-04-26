@@ -34,7 +34,7 @@ Konvensi dokumen:
   - Portfolio Monitor → P-PM-01 (Monitoring Dashboard)
   - Finance Officer → P-FR-01 (Finance Dashboard)
   - Admin → P-AO-01 (KYC Queue)
-  - External User → P-EX-01 (Browse Catalog)
+  - External User → P-EX-06 (Dashboard External User)
 - Jika user sudah login dan mengakses `/login`, redirect ke halaman default role mereka
 - Maksimal 5 kali percobaan login gagal → akun dikunci sementara 15 menit; tampilkan pesan yang sesuai **[DIKUNCI]**
 
@@ -648,6 +648,8 @@ Konvensi dokumen:
 | Dropdown sumber data | Select | Form ACO / Integrasi API |
 | Select akun project team | Select multi | Muncul jika sumber = Form ACO; pilih akun External User yang berwenang mengisi form update; hanya menampilkan akun dengan role External User yang sudah KYC terverifikasi |
 | Info integrasi API | Display | Muncul jika sumber = Integrasi API; menampilkan status koneksi, endpoint, dan timestamp terakhir berhasil (read-only untuk Admin; dikonfigurasi secara teknis oleh developer) |
+| Toggle "Tampilkan di Homepage" | Toggle Ya/Tidak | Default: Tidak; menentukan apakah proyek ini muncul di Section Proyek Unggulan di P-PUB-00; hanya berlaku untuk node yang memiliki minimal satu flag partisipasi = Ya |
+| Field "Urutan di Homepage" | Input angka | Muncul jika "Tampilkan di Homepage" = Ya; angka lebih kecil = tampil lebih awal; jika sama, urut berdasarkan tanggal diaktifkan |
 | Tombol "Simpan" | Button primary | Simpan konfigurasi; catat perubahan di changelog proyek |
 | Tombol "Batal" | Link | Kembali ke P-IO-03 |
 

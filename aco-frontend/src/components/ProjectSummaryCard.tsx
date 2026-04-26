@@ -10,7 +10,7 @@ interface ProjectSummaryCardProps {
 
 const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({ project, onViewDetail }) => {
   const { title, location, description, imageUrl, currentFunding, targetFunding, metadata } = project;
-  const progress = (currentFunding / targetFunding) * 100;
+  const progress = targetFunding > 0 ? (currentFunding / targetFunding) * 100 : 0;
 
   return (
     <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-slate-100 hover:shadow-2xl transition-all duration-300 group">
@@ -21,20 +21,20 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({ project, onView
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-4 left-4 flex gap-2">
-          {metadata.landStatus === "Wakaf" && (
+          {metadata?.landStatus === "Wakaf" && (
             <span className="bg-emerald-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
               <Landmark className="w-3.5 h-3.5" />
               Lahan Wakaf
             </span>
           )}
-          {metadata.landStatus === "Commercial" && (
+          {metadata?.landStatus === "Commercial" && (
             <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
               <BadgeDollarSign className="w-3.5 h-3.5" />
               Komersil
             </span>
           )}
           <span className="bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-slate-200/50">
-            {metadata.fundingType}
+            {metadata?.fundingType || 'N/A'}
           </span>
         </div>
       </div>
@@ -62,9 +62,9 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({ project, onView
             <div>
               <p className="text-xs text-indigo-600 font-semibold uppercase tracking-wider">Model Kepemilikan</p>
               <p className="text-sm font-bold text-slate-800">
-                {metadata.ownershipModel} 
+                {metadata?.ownershipModel || 'Standard'} 
                 <span className="text-slate-500 font-normal ml-1">
-                  ({metadata.landStatus === "Wakaf" ? "Asset Umat" : "Developer Owned"})
+                  ({metadata?.landStatus === "Wakaf" ? "Asset Umat" : "Developer Owned"})
                 </span>
               </p>
             </div>
@@ -93,8 +93,8 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({ project, onView
 
         {/* Allocation Widget */}
         <VisualAllocationChart 
-          commercial={metadata.allocation.commercial} 
-          social={metadata.allocation.social} 
+          commercial={metadata?.allocation?.commercial ?? 100} 
+          social={metadata?.allocation?.social ?? 0} 
         />
 
         <button 
