@@ -171,34 +171,38 @@ const ZakatDetailPage: React.FC<ZakatDetailPageProps> = ({ projectId, onBack }) 
                 <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em] mb-6 italic">Niat Zakat {project.type}</h4>
                 <p className="text-2xl font-bold mb-4 text-right italic leading-relaxed" dir="rtl">{niat.arabic}</p>
                 <p className="text-[10px] text-slate-400 font-medium italic leading-relaxed border-t border-white/10 pt-4 mb-2">{niat.latin}</p>
-                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed mb-6">"{niat.translation}"</p>
-                
-                <label className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/10 cursor-pointer hover:bg-white/10 transition-all group">
-                   <input 
-                     type="checkbox" 
-                     checked={hasReadNiat}
-                     onChange={(e) => setHasReadNiat(e.target.checked)}
-                     className="w-5 h-5 rounded-lg accent-emerald-500 cursor-pointer"
-                   />
-                   <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 group-hover:text-emerald-300">Saya sudah membaca niat</span>
-                </label>
+                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest italic leading-relaxed">"{niat.translation}"</p>
               </div>
 
               {/* Payment Form Card */}
-              <div className={cn(
-                "bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 transition-all",
-                !hasReadNiat && step === 'form' ? "opacity-50 grayscale pointer-events-none" : ""
-              )}>
-                {!hasReadNiat && step === 'form' && (
-                  <div className="absolute inset-0 z-10 flex items-center justify-center p-10 text-center">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-full shadow-lg border border-slate-100">
-                      Baca Niat Terlebih Dahulu
-                    </p>
-                  </div>
-                )}
+              <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 transition-all relative overflow-hidden">
                 {step === 'form' ? (
-                  <form onSubmit={handlePayment} className="space-y-6">
-                    <div className="space-y-2">
+                  <div className="space-y-6">
+                    {/* Checkbox Niat */}
+                    <label className={cn(
+                      "flex items-center gap-3 p-4 rounded-2xl border transition-all cursor-pointer group mb-2",
+                      hasReadNiat 
+                        ? "bg-emerald-50 border-emerald-200" 
+                        : "bg-slate-50 border-slate-200 hover:border-emerald-300"
+                    )}>
+                      <input 
+                        type="checkbox" 
+                        checked={hasReadNiat}
+                        onChange={(e) => setHasReadNiat(e.target.checked)}
+                        className="w-5 h-5 rounded-lg accent-emerald-500 cursor-pointer"
+                      />
+                      <span className={cn(
+                        "text-[10px] font-black uppercase tracking-widest",
+                        hasReadNiat ? "text-emerald-700" : "text-slate-500"
+                      )}>Saya sudah membaca niat zakat</span>
+                    </label>
+
+                    <div className={cn(
+                      "space-y-6 transition-all duration-500",
+                      !hasReadNiat ? "opacity-40 grayscale pointer-events-none blur-[1px]" : ""
+                    )}>
+                      <form onSubmit={handlePayment} className="space-y-6">
+                        <div className="space-y-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nominal Zakat</label>
                       <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">Rp</span>
@@ -272,6 +276,8 @@ const ZakatDetailPage: React.FC<ZakatDetailPageProps> = ({ projectId, onBack }) 
                       Lanjutkan Pembayaran <CreditCard size={18} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                   </form>
+                </div>
+              </div>
                 ) : (
                   <div className="text-center space-y-8 animate-in zoom-in-95 duration-500">
                     <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Calculator, Coins, Briefcase, Wallet, Info, ArrowRight } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-type CalcType = 'profesi' | 'maal' | 'emas';
+type CalcType = 'profesi' | 'maal' | 'emas' | 'perdagangan' | 'pertanian' | 'tabungan' | 'ternak';
 
 const ZakatCalculator: React.FC = () => {
   const [activeType, setActiveType] = useState<CalcType>('profesi');
@@ -12,41 +12,80 @@ const ZakatCalculator: React.FC = () => {
     wealth: '',
     goldWeight: '',
     goldPrice: '1200000', // Default price per gram
+    tradeAssets: '',
+    tradeCash: '',
+    tradeDebt: '',
+    cropYield: '',
+    irrigationType: 'rainfed', // 'rainfed' (10%) or 'irrigated' (5%)
+    animalType: 'cow', // 'cow' or 'sheep'
+    animalCount: '',
+    savings: '',
   });
 
   const calculation = useMemo(() => {
     let total = 0;
     let nishab = 0;
     let isObligatory = false;
+    let nishabUnit = 'Rp';
 
-    // Nishab calculations (Approximate)
-    // Profesi: 522kg beras / month (approx Rp 6-7M)
-    // Maal: 85g gold / year (approx Rp 100M)
-    // Emas: 85g
-    
-    const monthlyIncome = parseFloat(inputs.income || '0') + parseFloat(inputs.bonus || '0');
-    const totalWealth = parseFloat(inputs.wealth || '0');
-    const goldWeightValue = parseFloat(inputs.goldWeight || '0');
     const price = parseFloat(inputs.goldPrice || '0');
-
-    if (activeType === 'profesi') {
-      nishab = 6850000; // Monthly nishab
-      total = monthlyIncome * 0.025;
-      isObligatory = monthlyIncome >= nishab;
-    } else if (activeType === 'maal') {
-      nishab = 85 * price; // Yearly nishab
-      total = totalWealth * 0.025;
-      isObligatory = totalWealth >= nishab;
-    } else if (activeType === 'emas') {
-      nishab = 85; 
-      total = (goldWeightValue * price) * 0.025;
-      isObligatory = goldWeightValue >= nishab;
+    
+    switch (activeType) {
+      case 'profesi':
+        nishab = 6850000; 
+        const monthlyIncome = parseFloat(inputs.income || '0') + parseFloat(inputs.bonus || '0');
+        total = monthlyIncome * 0.025;
+        isObligatory = monthlyIncome >= nishab;
+        break;
+      case 'maal':
+      case 'tabungan':
+        nishab = 85 * price;
+        const wealth = parseFloat(activeType === 'maal' ? inputs.wealth : inputs.savings || '0');
+        total = wealth * 0.025;
+        isObligatory = wealth >= nishab;
+        break;
+      case 'emas':
+        nishab = 85;
+        nishabUnit = 'gram';
+        const weight = parseFloat(inputs.goldWeight || '0');
+        total = (weight * price) * 0.025;
+        isObligatory = weight >= nishab;
+        break;
+      case 'perdagangan':
+        nishab = 85 * price;
+        const tradeTotal = parseFloat(inputs.tradeAssets || '0') + parseFloat(inputs.tradeCash || '0') - parseFloat(inputs.tradeDebt || '0');
+        total = tradeTotal * 0.025;
+        isObligatory = tradeTotal >= nishab;
+        break;
+      case 'pertanian':
+        nishab = 653; // kg gabah
+        nishabUnit = 'kg gabah';
+        const yieldAmount = parseFloat(inputs.cropYield || '0');
+        const rate = inputs.irrigationType === 'rainfed' ? 0.10 : 0.05;
+        total = (yieldAmount * 12000) * rate; // Mock rice price
+        isObligatory = yieldAmount >= nishab;
+        break;
+      case 'ternak':
+        const count = parseFloat(inputs.animalCount || '0');
+        if (inputs.animalType === 'cow') {
+          nishab = 30;
+          nishabUnit = 'ekor';
+          isObligatory = count >= nishab;
+          // Simplified logic for cows: 1 cow for every 30
+          total = Math.floor(count / 30) * 3000000; // Mock cow price for valuation
+        } else {
+          nishab = 40;
+          nishabUnit = 'ekor';
+          isObligatory = count >= nishab;
+          total = Math.floor(count / 40) * 1500000; // Mock sheep price
+        }
+        break;
     }
 
-    return { total: isObligatory ? total : 0, isObligatory, nishab };
+    return { total: isObligatory ? total : 0, isObligatory, nishab, nishabUnit };
   }, [activeType, inputs]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -59,16 +98,16 @@ const ZakatCalculator: React.FC = () => {
             <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
               <Calculator size={20} />
             </div>
-            <h3 className="text-xl font-black text-slate-900 italic tracking-tight uppercase">Kalkulator Zakat</h3>
+            <h3 className="text-xl font-black text-slate-900 italic tracking-tight uppercase">Kalkulator Zakat Lengkap</h3>
           </div>
 
-          <div className="flex bg-slate-100 p-1.5 rounded-2xl mb-10">
-            {(['profesi', 'maal', 'emas'] as CalcType[]).map(type => (
+          <div className="flex flex-wrap bg-slate-100 p-1.5 rounded-2xl mb-10 gap-1">
+            {(['profesi', 'maal', 'emas', 'perdagangan', 'pertanian', 'tabungan', 'ternak'] as CalcType[]).map(type => (
               <button
                 key={type}
                 onClick={() => setActiveType(type)}
                 className={cn(
-                  "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                  "px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
                   activeType === type ? "bg-white text-emerald-600 shadow-lg" : "text-slate-400 hover:text-slate-600"
                 )}
               >
@@ -111,15 +150,15 @@ const ZakatCalculator: React.FC = () => {
               </>
             )}
 
-            {activeType === 'maal' && (
+            {(activeType === 'maal' || activeType === 'tabungan') && (
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Total Nilai Aset/Tabungan</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Total {activeType === 'maal' ? 'Kekayaan' : 'Tabungan'}</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">Rp</span>
                   <input 
                     type="number" 
-                    name="wealth"
-                    value={inputs.wealth}
+                    name={activeType === 'maal' ? 'wealth' : 'savings'}
+                    value={activeType === 'maal' ? inputs.wealth : inputs.savings}
                     onChange={handleInputChange}
                     placeholder="0" 
                     className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-bold"
@@ -144,15 +183,64 @@ const ZakatCalculator: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {activeType === 'perdagangan' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nilai Barang Dagangan</label>
+                  <input type="number" name="tradeAssets" value={inputs.tradeAssets} onChange={handleInputChange} placeholder="0" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-emerald-500 font-bold" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Uang Tunai & Piutang</label>
+                  <input type="number" name="tradeCash" value={inputs.tradeCash} onChange={handleInputChange} placeholder="0" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-emerald-500 font-bold" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hutang Jatuh Tempo</label>
+                  <input type="number" name="tradeDebt" value={inputs.tradeDebt} onChange={handleInputChange} placeholder="0" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-emerald-500 font-bold" />
+                </div>
+              </div>
+            )}
+
+            {activeType === 'pertanian' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Hasil Panen (Kg Gabah)</label>
+                  <input type="number" name="cropYield" value={inputs.cropYield} onChange={handleInputChange} placeholder="0" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-emerald-500 font-bold" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Metode Pengairan</label>
+                  <select name="irrigationType" value={inputs.irrigationType} onChange={handleInputChange} className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-emerald-500 font-bold appearance-none">
+                    <option value="rainfed">Tadah Hujan / Alami (10%)</option>
+                    <option value="irrigated">Irigasi / Berbayar (5%)</option>
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {activeType === 'ternak' && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jenis Hewan</label>
+                  <select name="animalType" value={inputs.animalType} onChange={handleInputChange} className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-emerald-500 font-bold appearance-none">
+                    <option value="cow">Sapi / Kerbau</option>
+                    <option value="sheep">Kambing / Domba</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Jumlah Ekor</label>
+                  <input type="number" name="animalCount" value={inputs.animalCount} onChange={handleInputChange} placeholder="0" className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-emerald-500 font-bold" />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="mt-10 p-6 bg-blue-50 rounded-[2rem] border border-blue-100 flex items-start gap-4">
              <Info className="text-blue-500 shrink-0" size={18} />
              <p className="text-[10px] text-blue-700 font-medium leading-relaxed uppercase tracking-tighter">
-                Nishab {activeType}: {activeType === 'emas' ? calculation.nishab + ' gram' : 'Rp ' + calculation.nishab.toLocaleString()} 
+                Nishab {activeType}: {calculation.nishabUnit === 'Rp' ? 'Rp ' + calculation.nishab.toLocaleString() : calculation.nishab + ' ' + calculation.nishabUnit}
                 <br />
                 {calculation.isObligatory 
-                  ? 'Kekayaan Anda telah mencapai nishab. Wajib mengeluarkan zakat 2.5%.' 
+                  ? 'Kekayaan Anda telah mencapai nishab. Wajib mengeluarkan zakat.' 
                   : 'Kekayaan Anda belum mencapai nishab. Anda tidak wajib berzakat, namun disarankan untuk bersedekah.'}
              </p>
           </div>
