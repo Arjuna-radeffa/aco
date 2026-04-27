@@ -31,6 +31,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
   const navLinks = [
     { label: 'Beranda', view: 'home', id: 'p-nav-home' },
     { label: 'Browse', view: 'browse', id: 'p-nav-browse' },
+    { label: 'Zakat', view: 'zakat', id: 'p-nav-zakat' },
     { label: 'Tentang ACO', view: 'about', id: 'p-nav-about' },
   ];
 

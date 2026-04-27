@@ -9,7 +9,7 @@ export interface User {
 export interface Project {
   id: string;
   title: string;
-  category: 'Logistik' | 'Wakaf' | 'Pertanian' | 'UMKM';
+  category: 'Logistik' | 'Wakaf' | 'Pertanian' | 'UMKM' | 'Zakat';
   status: 'healthy' | 'at_risk' | 'critical';
   progress: number;
   targetFunding: number;
@@ -23,13 +23,31 @@ export interface Project {
     nazir?: string;
   };
   reports: (number | null)[]; // For chart visualization
+  metadata: {
+    allocation: {
+      commercial: number;
+      social: number;
+    }
+  }
+}
+
+export interface ZakatProject {
+  id: string;
+  title: string;
+  type: 'Fitrah' | 'Profesi' | 'Maal' | 'Emas' | 'Perdagangan';
+  description: string;
+  targetBeneficiaries: number;
+  impactScore: number;
+  image: string;
+  minDonation: number;
+  featured?: boolean;
 }
 
 export interface Transaction {
   id: string;
   projectId: string;
   amount: number;
-  type: 'investment' | 'wakaf' | 'profit_share';
+  type: 'investment' | 'wakaf' | 'zakat' | 'profit_share';
   timestamp: string;
   status: 'pending' | 'completed';
 }

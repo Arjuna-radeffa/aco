@@ -14,7 +14,9 @@ import {
   Search
 } from 'lucide-react';
 import ProjectSummaryCard from './ProjectSummaryCard';
+import ZakatCard from './molecules/ZakatCard';
 import { mockProjects } from '../data/projectMockData';
+import { mockZakatProjects } from '../data/zakatMockData';
 import { cn } from '../utils/cn';
 
 interface HomePageProps {
@@ -73,6 +75,7 @@ function StepCard({ step, title, desc, active }: {
 const HomePage: React.FC<HomePageProps> = ({ onViewDetail, onNavigate }) => {
   const [activeTab, setActiveTab] = useState<'investasi' | 'wakaf'>('investasi');
   const [filter, setFilter] = useState<{ komersial: boolean; sosial: boolean }>({ komersial: false, sosial: false });
+  const [zakatFilter, setZakatFilter] = useState('All');
 
   const filteredProjects = mockProjects.filter(p => {
     const isKomersial = p.metadata.allocation.commercial === 100;
@@ -168,6 +171,54 @@ const HomePage: React.FC<HomePageProps> = ({ onViewDetail, onNavigate }) => {
             ]).map((step, idx) => (
               <StepCard key={idx} {...step} active={true} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Zakat & Sosial Section */}
+      <section className="py-32 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+                <Heart className="w-3 h-3" /> Transparansi Sosial Mutlak
+              </div>
+              <h2 className="text-4xl font-bold text-slate-900 italic tracking-tight mb-2 uppercase">Zakat & Sosial.</h2>
+              <p className="text-slate-500 font-medium max-w-md">Salurkan kewajiban Zakat Anda melalui program yang terverifikasi dan berdampak langsung.</p>
+            </div>
+            
+            <div className="flex bg-slate-50 p-2 rounded-2xl border border-slate-100 gap-1 overflow-x-auto max-w-full">
+              {['All', 'Fitrah', 'Profesi', 'Maal', 'Emas'].map(cat => (
+                <button 
+                  key={cat}
+                  onClick={() => setZakatFilter(cat)}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-[10px] font-black uppercase italic whitespace-nowrap transition-all",
+                    zakatFilter === cat ? "bg-emerald-500 text-white shadow-lg" : "text-slate-400 hover:text-slate-600"
+                  )}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {mockZakatProjects
+              .filter(p => zakatFilter === 'All' || p.type === zakatFilter)
+              .slice(0, 3)
+              .map(project => (
+                <ZakatCard key={project.id} project={project} onClick={(id) => onNavigate({ view: 'zakat-detail', projectId: id })} />
+              ))}
+          </div>
+
+          <div className="mt-16 text-center">
+             <button 
+               onClick={() => onNavigate({ view: 'zakat' })}
+               className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-emerald-600 hover:text-emerald-700 transition-colors group"
+             >
+               Lihat Semua Program Zakat <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+             </button>
           </div>
         </div>
       </section>

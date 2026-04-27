@@ -13,6 +13,8 @@ import ExternalDashboardPage from './components/pages/ExternalDashboardPage'
 import ParticipationDetailPage from './components/pages/ParticipationDetailPage'
 import { AboutPage } from './components/pages/AboutPage'
 import { TermsPage, PrivacyPage } from './components/pages/StaticPages'
+import ZakatPage from './components/pages/ZakatPage'
+import ZakatDetailPage from './components/pages/ZakatDetailPage'
 import { PublicLayout } from './components/templates/PublicLayout'
 
 import { mockLogin } from './mockAuth'
@@ -49,6 +51,8 @@ type View =
   | 'terms'
   | 'privacy'
   | 'about'
+  | 'zakat'
+  | 'zakat-detail'
 
 interface ViewState {
   view: View
@@ -113,6 +117,8 @@ function App() {
       case 'terms': return '/terms'
       case 'privacy': return '/privacy'
       case 'about': return '/about'
+      case 'zakat': return '/zakat'
+      case 'zakat-detail': return `/zakat/${s.projectId || ''}`
       case 'dashboard': return '/dashboard'
       default: return '/'
     }
@@ -198,7 +204,7 @@ function App() {
     <ErrorBoundary>
       <div className="App">
         {/* PUBLIC MARKETING WRAPPER */}
-        {['home', 'browse', 'about', 'project-details', 'terms', 'privacy'].includes(view) && (
+        {['home', 'browse', 'about', 'project-details', 'terms', 'privacy', 'zakat', 'zakat-detail'].includes(view) && (
           <PublicLayout activeView={view} onNavigate={navigate}>
             {view === 'home' && (
               <HomePage
@@ -247,6 +253,17 @@ function App() {
 
             {view === 'privacy' && (
               <PrivacyPage onBack={() => navigate({ view: 'home' })} />
+            )}
+
+            {view === 'zakat' && (
+              <ZakatPage onBack={() => navigate({ view: 'home' })} onSelectProject={(id) => navigate({ view: 'zakat-detail', projectId: id })} />
+            )}
+
+            {view === 'zakat-detail' && projectId && (
+              <ZakatDetailPage 
+                projectId={projectId} 
+                onBack={() => navigate({ view: 'zakat' })} 
+              />
             )}
           </PublicLayout>
         )}
