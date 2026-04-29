@@ -15,7 +15,14 @@ import { AboutPage } from './components/pages/AboutPage'
 import { TermsPage, PrivacyPage } from './components/pages/StaticPages'
 import ZakatPage from './components/pages/ZakatPage'
 import ZakatDetailPage from './components/pages/ZakatDetailPage'
+import ZakatPaymentFlow from './components/pages/ZakatPaymentFlow'
 import { PublicLayout } from './components/templates/PublicLayout'
+
+// ZIS Implementation Pages
+import InfaqShadaqahFlow from './components/pages/InfaqShadaqahFlowPage'
+import ZakatDistributionPage from './components/pages/ZakatDistributionPage'
+import ZISConfigurationPage from './components/pages/ZISConfigurationPage'
+import TransparencyPage from './components/pages/TransparencyPage'
 
 import { mockLogin } from './mockAuth'
 import { RoleBasedLayout } from './components/templates/RoleBasedLayout'
@@ -53,6 +60,11 @@ type View =
   | 'about'
   | 'zakat'
   | 'zakat-detail'
+  | 'zakat-payment'
+  | 'infaq-shadaqah'
+  | 'zakat-distribution'
+  | 'zis-configuration'
+  | 'transparency'
 
 interface ViewState {
   view: View
@@ -119,6 +131,11 @@ function App() {
       case 'about': return '/about'
       case 'zakat': return '/zakat'
       case 'zakat-detail': return `/zakat/${s.projectId || ''}`
+      case 'zakat-payment': return '/zakat/payment'
+      case 'infaq-shadaqah': return '/infaq-shadaqah'
+      case 'zakat-distribution': return '/zakat-distribution'
+      case 'zis-configuration': return '/zis-configuration'
+      case 'transparency': return '/transparency'
       case 'dashboard': return '/dashboard'
       default: return '/'
     }
@@ -144,12 +161,20 @@ function App() {
 
   // === Auth Handlers ===
   const handleLogin = (authData: AuthResponse) => {
+    const userRole = authData.user.role.toLowerCase();
+    
     setCurrentUser({
       id: authData.user.id,
       name: authData.user.name,
-      role: authData.user.role.toLowerCase()
+      role: userRole
     })
-    navigate({ view: 'dashboard' })
+    
+    // Role-based navigation - same logic as handleQuickLogin
+    if (['investor_micro', 'investor_enterprise', 'infaq_donor', 'waqf_donor', 'muzakki', 'mustahiq', 'external_user'].includes(userRole)) {
+      navigate({ view: 'ex-dashboard' })
+    } else {
+      navigate({ view: 'dashboard' })
+    }
   }
 
   const handleQuickLogin = async (role: string) => {
@@ -160,18 +185,22 @@ function App() {
       'reza': 'reza', 'admin': 'reza',
       'investasi_mikro': 'investor_micro', 'investor_micro': 'investor_micro',
       'investasi_enterprise': 'investor_enterprise', 'investor_enterprise': 'investor_enterprise',
-      'muzakki': 'funder', 'munfiq': 'funder', 'mutashadiq': 'funder', 'wakif': 'funder', 'funder': 'funder',
+      'muzakki': 'muzakki', 'munfiq': 'infaq_donor', 'mutashadiq': 'infaq_donor', 
+      'wakif': 'waqf_donor', 'funder': 'infaq_donor', 'infaq_donor': 'infaq_donor',
       'mustahiq': 'mustahiq', 'project_owner': 'project_owner',
       'investment': 'arief', 'finance': 'hendra',
       // External user roles
-      'external_user': 'external_user',
+      'external_user': 'external_user', 'investor': 'investor_micro',
+      'waqf_donor': 'waqf_donor',
     }
     const nameMap: Record<string, string> = {
       'arief': 'Arief Wijaksana', 'sinta': 'Sinta Portfolio', 'hendra': 'Hendra Finance',
-      'reza': 'Reza Admin', 'investor_micro': 'Budi (Micro Investor)',
-      'investor_enterprise': 'Citra (Corp Investor)', 'funder': 'Sholeh (Universal Funder)',
-      'mustahiq': 'Maimunah (Recipient)', 'project_owner': 'Mitra Tani Sejahtera',
+      'reza': 'Reza Admin', 'investor_micro': 'Budi Santoso (Investor)',
+      'investor_enterprise': 'Citra (Corp Investor)', 'infaq_donor': 'Ahmad Ramadhan (Muzakki)',
+      'mustahiq': 'Maimunah (Mustahiq)', 'project_owner': 'Mitra Tani Sejahtera',
       'external_user': 'Budi Santoso',
+      'muzakki': 'Ahmad Ramadhan (Muzakki)',
+      'waqf_donor': 'Fatimah Zahra (Wakif)',
     }
     const tRole = roleMap[role.toLowerCase()] || 'arief'
     setCurrentUser({
@@ -180,7 +209,7 @@ function App() {
       role: tRole,
       kycVerified: !['mustahiq', 'external_user'].includes(tRole)
     })
-    if (['investor_micro', 'investor_enterprise', 'funder', 'external_user'].includes(tRole)) {
+    if (['investor_micro', 'investor_enterprise', 'infaq_donor', 'waqf_donor', 'muzakki', 'mustahiq', 'external_user'].includes(tRole)) {
       navigate({ view: 'ex-dashboard' })
     } else {
       navigate({ view: 'dashboard' })
@@ -204,7 +233,7 @@ function App() {
     <ErrorBoundary>
       <div className="App">
         {/* PUBLIC MARKETING WRAPPER */}
-        {['home', 'browse', 'about', 'project-details', 'terms', 'privacy', 'zakat', 'zakat-detail'].includes(view) && (
+        {['home', 'browse', 'about', 'project-details', 'terms', 'privacy', 'zakat', 'zakat-detail', 'infaq-shadaqah', 'transparency'].includes(view) && (
           <PublicLayout activeView={view} onNavigate={navigate}>
             {view === 'home' && (
               <HomePage
@@ -256,13 +285,40 @@ function App() {
             )}
 
             {view === 'zakat' && (
-              <ZakatPage onBack={() => navigate({ view: 'home' })} onSelectProject={(id) => navigate({ view: 'zakat-detail', projectId: id })} />
+              <ZakatPage
+                onBack={() => navigate({ view: 'home' })}
+                onSelectProject={(id) => navigate({ view: 'zakat-detail', projectId: id })}
+                onNavigateToPayment={() => navigate({ view: 'zakat-payment' })}
+              />
+            )}
+
+            {view === 'zakat-payment' && (
+              <ZakatPaymentFlow
+                onBack={() => navigate({ view: 'zakat' })}
+                onPaymentSuccess={(transactionId) => {
+                  // Handle successful payment - could navigate to receipt page or dashboard
+                  console.log('Zakat payment successful:', transactionId);
+                }}
+              />
             )}
 
             {view === 'zakat-detail' && projectId && (
-              <ZakatDetailPage 
-                projectId={projectId} 
-                onBack={() => navigate({ view: 'zakat' })} 
+              <ZakatDetailPage
+                projectId={projectId}
+                onBack={() => navigate({ view: 'zakat' })}
+              />
+            )}
+
+            {view === 'infaq-shadaqah' && (
+              <InfaqShadaqahFlow
+                onBack={() => navigate({ view: 'home' })}
+                onSuccess={() => navigate({ view: 'home' })}
+              />
+            )}
+
+            {view === 'transparency' && (
+              <TransparencyPage
+                onBack={() => navigate({ view: 'home' })}
               />
             )}
           </PublicLayout>
@@ -337,6 +393,21 @@ function App() {
           <ParticipationDetailPage
             participationId={participationId}
             onBack={() => navigate({ view: 'ex-dashboard' })}
+          />
+        )}
+
+        {/* ZIS PAGES */}
+        {/* P-FR-06: Zakat Distribution to Asnaf */}
+        {view === 'zakat-distribution' && currentUser && (
+          <ZakatDistributionPage
+            onBack={() => navigate({ view: 'dashboard' })}
+          />
+        )}
+
+        {/* P-AO-07: ZIS Platform Configuration */}
+        {view === 'zis-configuration' && currentUser && (
+          <ZISConfigurationPage
+            onBack={() => navigate({ view: 'dashboard' })}
           />
         )}
       </div>

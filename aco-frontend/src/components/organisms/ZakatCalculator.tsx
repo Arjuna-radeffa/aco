@@ -4,7 +4,11 @@ import { cn } from '../../utils/cn';
 
 type CalcType = 'profesi' | 'maal' | 'emas' | 'perdagangan' | 'pertanian' | 'tabungan' | 'ternak';
 
-const ZakatCalculator: React.FC = () => {
+interface ZakatCalculatorProps {
+  onNavigateToPayment?: () => void;
+}
+
+const ZakatCalculator: React.FC<ZakatCalculatorProps> = ({ onNavigateToPayment }) => {
   const [activeType, setActiveType] = useState<CalcType>('profesi');
   const [inputs, setInputs] = useState({
     income: '',
@@ -256,7 +260,10 @@ const ZakatCalculator: React.FC = () => {
           </h2>
 
           <div className="space-y-4">
-            <button className="w-full py-5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-emerald-950/40 flex items-center justify-center gap-3 uppercase text-xs tracking-widest active:scale-95 group">
+            <button
+              onClick={onNavigateToPayment}
+              className="w-full py-5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-emerald-950/40 flex items-center justify-center gap-3 uppercase text-xs tracking-widest active:scale-95 group"
+            >
               Tunaikan Sekarang <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <p className="text-[10px] text-slate-500 text-center font-bold uppercase tracking-widest">

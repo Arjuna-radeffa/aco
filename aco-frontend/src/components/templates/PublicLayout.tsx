@@ -32,6 +32,8 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
     { label: 'Beranda', view: 'home', id: 'p-nav-home' },
     { label: 'Browse', view: 'browse', id: 'p-nav-browse' },
     { label: 'Zakat', view: 'zakat', id: 'p-nav-zakat' },
+    { label: 'Infaq & Shadaqah', view: 'infaq-shadaqah', id: 'p-nav-infaq' },
+    { label: 'Waqf & Transparansi', view: 'transparency', id: 'p-nav-waqf' },
     { label: 'Tentang ACO', view: 'about', id: 'p-nav-about' },
   ];
 

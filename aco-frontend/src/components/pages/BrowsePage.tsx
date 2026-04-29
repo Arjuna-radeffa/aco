@@ -1,10 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import {
   Search, SlidersHorizontal, TrendingUp, X, ChevronRight,
-  MapPin, Users, Building2, Heart, CheckSquare, Square
+  MapPin, Users, Building2, Heart, CheckSquare, Square,
+  Scale, HandCoins, Landmark, Gift
 } from 'lucide-react';
 import { mockProjects } from '../../data/projectMockData';
+import { mockZakatProjects } from '../../data/zakatMockData';
+import { mockInfaqPrograms } from '../../data/zisMockData';
+import { mockWaqfSocialAssets } from '../../data/zisMockData';
 import { Project } from '../../types/projectTypes';
+import { ZakatProject } from '../../types/appTypes';
+import { InfaqProgram, WaqfSocialAsset } from '../../types/zisTypes';
 
 interface BrowsePageProps {
   currentUser: any;
@@ -15,6 +21,10 @@ interface BrowsePageProps {
 
 type SortOption = 'terbaru' | 'progress-tertinggi' | 'target-terbesar';
 type CategoryFilter = 'Semua' | 'Properti Komersial' | 'Logistik' | 'Wakaf Sosial' | 'Kesehatan Sosial' | 'Hybrid Housing' | 'Healthcare & Education';
+type ZISCategory = 'projects' | 'zakat' | 'infaq-shadaqah' | 'waqf';
+type ZakatTypeFilter = 'Semua' | 'Fitrah' | 'Profesi' | 'Maal' | 'Emas' | 'Perdagangan';
+type InfaqCategoryFilter = 'Semua' | 'pendidikan' | 'kesehatan' | 'usaha' | 'infrastruktur' | 'bencana' | 'dakwah' | 'lainnya';
+type WaqfTypeFilter = 'Semua' | 'immovable' | 'movable' | 'cash_based' | 'productive';
 
 const formatRp = (n: number) => {
   if (n >= 1_000_000_000) return `Rp ${(n / 1_000_000_000).toFixed(1)}M`;
@@ -30,58 +40,116 @@ const BrowsePage: React.FC<BrowsePageProps> = ({
   const [sort, setSort] = useState<SortOption>('terbaru');
   const [filterCommercial, setFilterCommercial] = useState(true);
   const [filterSocial, setFilterSocial] = useState(true);
+  const [activeZISCategory, setActiveZISCategory] = useState<ZISCategory>('projects');
+  const [zakatTypeFilter, setZakatTypeFilter] = useState<ZakatTypeFilter>('Semua');
+  const [infaqCategoryFilter, setInfaqCategoryFilter] = useState<InfaqCategoryFilter>('Semua');
+  const [waqfTypeFilter, setWaqfTypeFilter] = useState<WaqfTypeFilter>('Semua');
 
   const categories: CategoryFilter[] = [
     'Semua', 'Properti Komersial', 'Logistik', 'Wakaf Sosial',
     'Kesehatan Sosial', 'Hybrid Housing', 'Healthcare & Education'
   ];
 
+  const zakatTypes: ZakatTypeFilter[] = ['Semua', 'Fitrah', 'Profesi', 'Maal', 'Emas', 'Perdagangan'];
+  const infaqCategories: InfaqCategoryFilter[] = ['Semua', 'pendidikan', 'kesehatan', 'usaha', 'infrastruktur', 'bencana', 'dakwah', 'lainnya'];
+  const waqfTypes: WaqfTypeFilter[] = ['Semua', 'immovable', 'movable', 'cash_based', 'productive'];
+
   const filtered = useMemo(() => {
-    let list = [...mockProjects];
+    let list: any[] = [];
 
-    // === Checkbox filter logic ===
-    // Commercial checked, Social unchecked → allocation.commercial === 100
-    // Commercial unchecked, Social checked → allocation.social === 100
-    // Both checked → mixed (neither 0% nor 100%)
-    // Both unchecked → show nothing (edge case, show all)
-    if (filterCommercial && !filterSocial) {
-      list = list.filter(p => p.metadata.allocation.commercial === 100);
-    } else if (!filterCommercial && filterSocial) {
-      list = list.filter(p => p.metadata.allocation.social === 100);
-    } else if (filterCommercial && filterSocial) {
-      list = list.filter(
-        p => p.metadata.allocation.commercial > 0 && p.metadata.allocation.social > 0
-      );
+    // Select data based on active ZIS category
+    switch (activeZISCategory) {
+      case 'projects':
+        list = [...mockProjects];
+        
+        // === Checkbox filter logic ===
+        // Commercial checked, Social unchecked → allocation.commercial === 100
+        // Commercial unchecked, Social checked → allocation.social === 100
+        // Both checked → mixed (neither 0% nor 100%)
+        // Both unchecked → show nothing (edge case, show all)
+        if (filterCommercial && !filterSocial) {
+          list = list.filter(p => p.metadata.allocation.commercial === 100);
+        } else if (!filterCommercial && filterSocial) {
+          list = list.filter(p => p.metadata.allocation.social === 100);
+        } else if (filterCommercial && filterSocial) {
+          list = list.filter(
+            p => p.metadata.allocation.commercial > 0 && p.metadata.allocation.social > 0
+          );
+        }
+        // Both unchecked: show nothing (return empty)
+        if (!filterCommercial && !filterSocial) return [];
+
+        // Category filter
+        if (category !== 'Semua') {
+          list = list.filter(p => p.category === category);
+        }
+        break;
+
+      case 'zakat':
+        list = [...mockZakatProjects];
+        // Zakat type filter
+        if (zakatTypeFilter !== 'Semua') {
+          list = list.filter(p => p.type === zakatTypeFilter);
+        }
+        break;
+
+      case 'infaq-shadaqah':
+        list = [...mockInfaqPrograms];
+        // Infaq category filter
+        if (infaqCategoryFilter !== 'Semua') {
+          list = list.filter(p => p.category === infaqCategoryFilter);
+        }
+        break;
+
+      case 'waqf':
+        list = [...mockWaqfSocialAssets];
+        // Waqf type filter
+        if (waqfTypeFilter !== 'Semua') {
+          list = list.filter(p => p.assetType === waqfTypeFilter);
+        }
+        break;
     }
-    // Both unchecked: show nothing (return empty)
-    if (!filterCommercial && !filterSocial) return [];
 
-    // Category filter
-    if (category !== 'Semua') {
-      list = list.filter(p => p.category === category);
-    }
-
-    // Search
+    // Search filter (applies to all categories)
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter(
-        p => p.title.toLowerCase().includes(q) ||
-             p.location.toLowerCase().includes(q) ||
-             p.category.toLowerCase().includes(q)
-      );
+      list = list.filter(item => {
+        if (activeZISCategory === 'projects') {
+          return item.title.toLowerCase().includes(q) ||
+                 item.location.toLowerCase().includes(q) ||
+                 item.category.toLowerCase().includes(q);
+        } else if (activeZISCategory === 'zakat') {
+          return item.title.toLowerCase().includes(q) ||
+                 item.description.toLowerCase().includes(q) ||
+                 item.type.toLowerCase().includes(q);
+        } else if (activeZISCategory === 'infaq-shadaqah') {
+          return item.name.toLowerCase().includes(q) ||
+                 item.description.toLowerCase().includes(q) ||
+                 item.category.toLowerCase().includes(q);
+        } else if (activeZISCategory === 'waqf') {
+          return item.name.toLowerCase().includes(q) ||
+                 item.description.toLowerCase().includes(q) ||
+                 item.assetType.toLowerCase().includes(q) ||
+                 item.location.toLowerCase().includes(q);
+        }
+        return false;
+      });
     }
 
-    // Sort
-    if (sort === 'progress-tertinggi') {
+    // Sort (only applies to projects for now)
+    if (activeZISCategory === 'projects' && sort === 'progress-tertinggi') {
       list.sort((a, b) =>
         (b.currentFunding / b.targetFunding) - (a.currentFunding / a.targetFunding)
       );
-    } else if (sort === 'target-terbesar') {
+    } else if (activeZISCategory === 'projects' && sort === 'target-terbesar') {
       list.sort((a, b) => b.targetFunding - a.targetFunding);
     }
 
     return list;
-  }, [filterCommercial, filterSocial, category, search, sort]);
+  }, [
+    filterCommercial, filterSocial, category, search, sort,
+    activeZISCategory, zakatTypeFilter, infaqCategoryFilter, waqfTypeFilter
+  ]);
 
   const isKycPending = currentUser && currentUser.kycVerified === false;
 

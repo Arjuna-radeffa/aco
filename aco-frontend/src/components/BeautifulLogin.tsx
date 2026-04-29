@@ -13,6 +13,9 @@ import { cn } from '../utils/cn';
 
 const ROLES = [
   { id: 'ext-001', role: 'External User', email: 'external@aco.id' },
+  { id: 'muz-001', role: 'Muzakki (Zakat Payer)', email: 'muzakki@aco.id' },
+  { id: 'inf-001', role: 'Infaq & Shadaqah Donor', email: 'infaq@aco.id' },
+  { id: 'waf-001', role: 'Wakif (Waqf Donor)', email: 'wakif@aco.id' },
   { id: 'inv-001', role: 'Investor / Wakif', email: 'investor@aco.id' },
   { id: 'own-001', role: 'Project Owner', email: 'owner@aco.id' },
   { id: 'io-001', role: 'Investment Officer', email: 'io@aco.id' },
@@ -20,7 +23,7 @@ const ROLES = [
   { id: 'naz-001', role: 'Nazir Admin', email: 'nazir@aco.id' },
   { id: 'fin-001', role: 'Finance Officer', email: 'finance@aco.id' },
   { id: 'obs-001', role: 'Auditor / Observer', email: 'auditor@aco.id' },
-  { id: 'mus-001', role: 'Mustahiq', email: 'mustahiq@aco.id' },
+  { id: 'mus-001', role: 'Mustahiq (Recipient)', email: 'mustahiq@aco.id' },
   { id: 'adm-001', role: 'Super Admin', email: 'admin@aco.id' },
 ];
 
@@ -38,6 +41,26 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const determineUserRole = (email: string): string => {
+    const roleMap: Record<string, string> = {
+      'external@aco.id': 'external_user',
+      'muzakki@aco.id': 'muzakki',
+      'infaq@aco.id': 'infaq_donor',
+      'wakif@aco.id': 'waqf_donor',
+      'investor@aco.id': 'investor_micro',
+      'owner@aco.id': 'project_owner',
+      'io@aco.id': 'investment_officer',
+      'pm@aco.id': 'portfolio_monitor',
+      'nazir@aco.id': 'nazir_admin',
+      'finance@aco.id': 'finance_officer',
+      'auditor@aco.id': 'auditor_observer',
+      'mustahiq@aco.id': 'mustahiq',
+      'admin@aco.id': 'admin'
+    };
+    
+    return roleMap[email] || 'external_user';
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -46,7 +69,15 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
     // Simulate Login Logic
     setTimeout(() => {
       setLoading(false);
-      window.location.href = '/dashboard';
+      // Determine user role based on email and navigate accordingly
+      const userRole = determineUserRole(email);
+      onLogin({
+        user: {
+          id: 'demo-user',
+          name: email.split('@')[0],
+          role: userRole
+        }
+      });
     }, 1000);
   };
 
@@ -175,7 +206,7 @@ const BeautifulLogin: React.FC<BeautifulLoginProps> = ({ onLogin, onQuickLogin, 
               {ROLES.map((role) => (
                 <button
                   key={role.id}
-                  onClick={() => fillDemo(role.email)}
+                  onClick={() => onQuickLogin(role.role)}
                   className="flex flex-col items-start p-4 bg-white rounded-2xl border border-slate-100 hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/5 transition-all text-left group"
                 >
                   <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-1 italic px-1.5 py-0.5 bg-blue-50 rounded-md">Role: {role.role}</span>

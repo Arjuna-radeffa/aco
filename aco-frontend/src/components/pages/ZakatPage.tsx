@@ -8,9 +8,10 @@ import { cn } from '../../utils/cn';
 interface ZakatPageProps {
   onBack: () => void;
   onSelectProject: (id: string) => void;
+  onNavigateToPayment: () => void;
 }
 
-const ZakatPage: React.FC<ZakatPageProps> = ({ onBack, onSelectProject }) => {
+const ZakatPage: React.FC<ZakatPageProps> = ({ onBack, onSelectProject, onNavigateToPayment }) => {
   const [filter, setFilter] = useState('All');
   const [activeTab, setActiveTab] = useState<'info' | 'faq' | 'syarat'>('info');
 
@@ -38,7 +39,7 @@ const ZakatPage: React.FC<ZakatPageProps> = ({ onBack, onSelectProject }) => {
       {/* Calculator Section */}
       <section className="py-10 -mt-16 relative z-20">
         <div className="container mx-auto px-6">
-          <ZakatCalculator />
+          <ZakatCalculator onNavigateToPayment={onNavigateToPayment} />
         </div>
       </section>
 
